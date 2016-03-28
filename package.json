@@ -1,0 +1,36 @@
+{
+  "name": "iocane",
+  "version": "0.1.0",
+  "description": "Textual encryption library",
+  "main": "source/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npm run test:nodeunit",
+    "test:nodeunit": "node node_modules/nodeunit/bin/nodeunit tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perry-mitchell/iocane.git"
+  },
+  "keywords": [
+    "crypto",
+    "encrypt",
+    "decrypt",
+    "buttercup",
+    "text"
+  ],
+  "author": "Perry Mitchell <perry@perrymitchell.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/perry-mitchell/iocane/issues"
+  },
+  "homepage": "https://github.com/perry-mitchell/iocane#readme",
+  "devDependencies": {
+    "nodeunit": "^0.9.1"
+  },
+  "dependencies": {
+    "pbkdf2": "^3.0.4"
+  }
+}

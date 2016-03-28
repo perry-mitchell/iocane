@@ -66,7 +66,7 @@
         },
 
         decryptWithPassword: function(text, password) {
-            var encryptedComponents = packing.unpackEncryptedContent(text)
+            var encryptedComponents = packing.unpackEncryptedContent(text),
                 keyDerivationInfo = derivation.deriveFromPassword(
                     password,
                     encryptedComponents.salt,

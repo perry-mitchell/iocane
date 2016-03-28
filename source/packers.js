@@ -2,7 +2,7 @@
 
     "use strict";
 
-    var config = require("__buttercup/encryption/encryptionConfig.js");
+    var config = require("./config.js");
 
     var lib = module.exports = {
 

@@ -2,8 +2,10 @@
 
     "use strict";
 
-    var pbkdf2 = require("pbkdf2"),
-        config = require("__buttercup/encryption/encryptionConfig.js");
+    var pbkdf2 = require("pbkdf2");
+
+    var config = require("./config.js"),
+        generators = require("./generators.js");
 
     function getRandomInRange(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -16,8 +18,8 @@
                 config.DERIVED_KEY_ITERATIONS_MIN,
                 config.DERIVED_KEY_ITERATIONS_MAX
             );
-            salt = salt || lib.generateSalt(config.SALT_LENGTH),
-                derivedKey = pbkdf2.pbkdf2Sync(
+            salt = salt || generators.generateSalt(config.SALT_LENGTH);
+            var derivedKey = pbkdf2.pbkdf2Sync(
                     password,
                     salt,
                     rounds,
