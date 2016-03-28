@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm run test:nodeunit",
+    "test": "npm run test:lint && npm run test:nodeunit",
+    "test:lint": "node node_modules/eslint/bin/eslint.js source/",
     "test:nodeunit": "node node_modules/nodeunit/bin/nodeunit tests"
   },
   "repository": {
@@ -28,9 +29,10 @@
   },
   "homepage": "https://github.com/perry-mitchell/iocane#readme",
   "devDependencies": {
+    "eslint": "^2.5.3",
     "nodeunit": "^0.9.1"
   },
   "dependencies": {
-    "pbkdf2": "^3.0.4"
+    "pbkdf2": "~3.0.4"
   }
 }
