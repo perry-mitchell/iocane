@@ -11,14 +11,32 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    function sanitiseRounds(rounds) {
+        return rounds || getRandomInRange(
+            config.DERIVED_KEY_ITERATIONS_MIN,
+            config.DERIVED_KEY_ITERATIONS_MAX
+        );
+    }
+
+    function sanitiseSalt(salt) {
+        return salt || generators.generateSalt(config.SALT_LENGTH);
+    }
+
     var lib = module.exports = {
 
+        deriveFromFile: function(filename, callback, salt, rounds) {
+            generators.generateFileHash(filename, function(err, hash) {
+                if (err) {
+                    (callback)(err, null);
+                } else {
+                    (callback)(null, lib.deriveFromPassword(hash, salt, rounds));
+                }
+            });
+        },
+
         deriveFromPassword: function(password, salt, rounds) {
-            rounds = rounds || getRandomInRange(
-                config.DERIVED_KEY_ITERATIONS_MIN,
-                config.DERIVED_KEY_ITERATIONS_MAX
-            );
-            salt = salt || generators.generateSalt(config.SALT_LENGTH);
+            rounds = sanitiseRounds(rounds);
+            salt = sanitiseSalt(salt);
             var derivedKey = pbkdf2.pbkdf2Sync(
                     password,
                     salt,

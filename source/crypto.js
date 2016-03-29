@@ -37,6 +37,16 @@
             );
         },
 
+        encryptWithKeyFile: function(text, file, callback) {
+            derivation.deriveFromFile(file, function(err, keyDerivationInfo) {
+                if (err) {
+                    (callback)(err, null);
+                } else {
+                    (callback)(null, lib.encrypt(text, keyDerivationInfo));
+                }
+            });
+        },
+
         encryptWithPassword: function(text, password) {
             var keyDerivationInfo = derivation.deriveFromPassword(password);
             return lib.encrypt(text, keyDerivationInfo);
@@ -63,6 +73,17 @@
             var decryptTool = Crypto.createDecipheriv(config.ENC_ALGORITHM, keyDerivationInfo.key, iv),
                 decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
             return decryptedText + decryptTool.final("utf8");
+        },
+
+        decryptWithKeyFile: function(text, file, callback) {
+            var encryptedComponents = packing.unpackEncryptedContent(text);
+            derivation.deriveFromFile(file, function(error, keyDerivationInfo) {
+                if (err) {
+                    (callback)(err, null);
+                } else {
+                    (callback)(null, lib.decrypt(encryptedComponents, keyDerivationInfo));
+                }
+            }, encryptedComponents.salt, encryptedComponents.rounds);
         },
 
         decryptWithPassword: function(text, password) {
