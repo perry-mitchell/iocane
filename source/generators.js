@@ -2,9 +2,16 @@
 
     "use strict";
 
-    var Crypto = require("crypto");
+    var Crypto = require("crypto"),
+        hashFile = require("hash_file");
+
+    var config = require("./config.js");
 
     var lib = module.exports = {
+
+        generateFileHash: function(filename, callback) {
+            hashFile(filename, config.FILE_HASH_ALGORITHM, callback);
+        },
 
         generateIV: function() {
             return new Buffer(Crypto.randomBytes(16));
