@@ -9,8 +9,16 @@
 
     var lib = module.exports = {
 
-        generateFileHash: function(filename, callback) {
-            hashFile(filename, config.FILE_HASH_ALGORITHM, callback);
+        generateFileHash: function(filename) {
+            return new Promise(function(resolve, reject) {
+                hashFile(filename, config.FILE_HASH_ALGORITHM, function(err, hash) {
+                    if (err) {
+                        (reject)(err);
+                    } else {
+                        (resolve)(hash);
+                    }
+                });
+            });
         },
 
         generateIV: function() {

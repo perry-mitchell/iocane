@@ -24,37 +24,36 @@
 
     var lib = module.exports = {
 
-        deriveFromFile: function(filename, callback, salt, rounds) {
-            generators.generateFileHash(filename, function(err, hash) {
-                if (err) {
-                    (callback)(err, null);
-                } else {
-                    (callback)(null, lib.deriveFromPassword(hash, salt, rounds));
-                }
-            });
+        deriveFromFile: function(filename, salt, rounds) {
+            return generators.generateFileHash(filename)
+                .then(function(hash) {
+                    return lib.deriveFromPassword(hash, salt, rounds);
+                });
         },
 
         deriveFromPassword: function(password, salt, rounds) {
             rounds = sanitiseRounds(rounds);
             salt = sanitiseSalt(salt);
-            var derivedKey = pbkdf2.pbkdf2Sync(
+            return new Promise(function(resolve) {
+                let derivedKey = pbkdf2.pbkdf2Sync(
                     password,
                     salt,
                     rounds,
                     config.PASSWORD_KEY_SIZE + config.HMAC_KEY_SIZE, // size
                     config.DERIVED_KEY_ALGORITHM
                 );
-            // Get key and split it into 2 buffers: 1 for the password, 1 for the HMAC key
-            var derivedKeyHex = derivedKey.toString("hex"),
-                dkhLength = derivedKeyHex.length,
-                keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex"),
-                hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
-            return {
-                salt: salt,
-                key: keyBuffer,
-                hmac: hmacBuffer,
-                rounds: rounds
-            };
+                // Get key and split it into 2 buffers: 1 for the password, 1 for the HMAC key
+                var derivedKeyHex = derivedKey.toString("hex"),
+                    dkhLength = derivedKeyHex.length,
+                    keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex"),
+                    hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
+                (resolve)({
+                    salt: salt,
+                    key: keyBuffer,
+                    hmac: hmacBuffer,
+                    rounds: rounds
+                });
+            });
         }
 
     };
