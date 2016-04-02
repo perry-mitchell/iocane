@@ -8,6 +8,9 @@ Encrypting things is difficult, but it doesn't have to be. iocane encrypts text 
 
 iocane was extracted from [Buttercup](https://github.com/buttercup-pw/buttercup-core)'s encryption process, and retains ties to the archiving process. Changes to iocane are subject to compatibility restraints with regards to the Buttercup suite of applications. This includes performance aspects of the browser-based versions.
 
+### Node compatibility
+iocane makes use of ES6 features available in NodeJS 4.2 and onwards.
+
 ## Usage
 Encrypting text is simple:
 
