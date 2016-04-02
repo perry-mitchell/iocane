@@ -13,15 +13,15 @@ module.exports = {
     generateFileHash: {
 
         testGeneratesCorrectHash: function(test) {
-            lib.generators.generateFileHash(__dirname + "/resources/gradient.png", function(err, hash) {
-                if (err) {
-                    console.log(err);
-                }
-                test.ok(!err, "No error should be present");
-                test.strictEqual(hash, "06a6ff94e408765d01a07fdb3987e20636220cb917172efdd2e2467e28b3cc3e",
-                    "Hash should match");
-                test.done();
-            });
+            lib.generators.generateFileHash(__dirname + "/resources/gradient.png")
+                .then(function(hash) {
+                    test.strictEqual(hash, "06a6ff94e408765d01a07fdb3987e20636220cb917172efdd2e2467e28b3cc3e",
+                        "Hash should match");
+                    test.done();
+                })
+                .catch(function(err) {
+                    console.error(err);
+                });
         }
 
     },

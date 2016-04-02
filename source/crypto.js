@@ -38,18 +38,13 @@
         },
 
         encryptWithKeyFile: function(text, file, callback) {
-            derivation.deriveFromFile(file, function(err, keyDerivationInfo) {
-                if (err) {
-                    (callback)(err, null);
-                } else {
-                    (callback)(null, lib.encrypt(text, keyDerivationInfo));
-                }
-            });
+            return derivation.deriveFromFile(file)
+                .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
         },
 
         encryptWithPassword: function(text, password) {
-            var keyDerivationInfo = derivation.deriveFromPassword(password);
-            return lib.encrypt(text, keyDerivationInfo);
+            return derivation.deriveFromPassword(password)
+                .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
         },
 
         decrypt: function(encryptedComponents, keyDerivationInfo) {
@@ -77,23 +72,15 @@
 
         decryptWithKeyFile: function(text, file, callback) {
             var encryptedComponents = packing.unpackEncryptedContent(text);
-            derivation.deriveFromFile(file, function(error, keyDerivationInfo) {
-                if (err) {
-                    (callback)(err, null);
-                } else {
-                    (callback)(null, lib.decrypt(encryptedComponents, keyDerivationInfo));
-                }
-            }, encryptedComponents.salt, encryptedComponents.rounds);
+            return derivation.deriveFromFile(file)
+                .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));
+
         },
 
         decryptWithPassword: function(text, password) {
-            var encryptedComponents = packing.unpackEncryptedContent(text),
-                keyDerivationInfo = derivation.deriveFromPassword(
-                    password,
-                    encryptedComponents.salt,
-                    encryptedComponents.rounds
-                );
-            return lib.decrypt(encryptedComponents, keyDerivationInfo);
+            var encryptedComponents = packing.unpackEncryptedContent(text)
+            return derivation.deriveFromPassword(password, encryptedComponents.salt, encryptedComponents.rounds)
+                .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));
         }
 
     };
