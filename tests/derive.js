@@ -94,6 +94,24 @@ module.exports = {
                 .catch(function(err) {
                     console.error(err);
                 });
+        },
+
+        testSupportsExternalMethod: function(test) {
+            var args;
+            lib.components.setPBKDF2(function() {
+                args = Array.prototype.slice.call(arguments);
+                return Promise.resolve(new Buffer(0));
+            });
+            lib.derivation.deriveFromPassword("def")
+                .then(function(output) {
+                    test.strictEqual(args[0], "def", "Password should be passed to PBKDF2 function");
+                    lib.components.setPBKDF2(undefined);
+                    test.done();
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    lib.components.setPBKDF2(undefined);
+                })
         }
 
     }

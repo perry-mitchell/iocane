@@ -1,18 +1,20 @@
-(function(module) {
+// ╔════════╗
+// ║ iocane ║
+// ╚════════╝
+//  developed by Perry Mitchell @perry_mitchell
+//  originally developed for the Buttercup project
 
-    "use strict";
+module.exports = {
 
-    module.exports = {
+    crypto:     require("./crypto.js"),
 
-        crypto:     require("./crypto.js"),
+    components: require("./components.js"),
 
-        derivation: require("./derive.js"),
-        generators: require("./generators.js"),
-        packers:    require("./packers.js"),
-        security:   require("./security.js"),
+    derivation: require("./derive.js"),
+    generators: require("./generators.js"),
+    packers:    require("./packers.js"),
+    security:   require("./security.js"),
 
-        config:     require("./config.js")
+    config:     require("./config.js")
 
-    };
-
-})(module);
+};

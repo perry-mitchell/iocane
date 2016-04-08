@@ -34,3 +34,16 @@ var decryptedText = crypto.decryptWithPassword(encryptedText, "passw0rd");
 ```
 
 There are a variety of other useful methods, like key derivation etc., available on the `iocane` base object.
+
+### Overriding the built-in PBKDF2 function
+You can override the built in key derivation method like so:
+
+```
+var iocane = require("iocane");
+iocane.components.setPBKDF2(function(password, salt, rounds, bits, algorithm) {
+    // do something
+    // return Promise.<Buffer>
+})
+```
+
+This is useful when using iocane in other environments, like the browser.
