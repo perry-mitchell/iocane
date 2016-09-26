@@ -72,7 +72,7 @@
 
         decryptWithKeyFile: function(text, file, callback) {
             var encryptedComponents = packing.unpackEncryptedContent(text);
-            return derivation.deriveFromFile(file)
+            return derivation.deriveFromFile(file, encryptedComponents.salt, encryptedComponents.rounds)
                 .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));
 
         },
