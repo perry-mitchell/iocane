@@ -1,6 +1,7 @@
 var lib = require("../source/index.js");
 
-var path = require("path");
+var path = require("path"),
+    fs = require("fs");
 
 var filename = path.resolve(__dirname, "./resources/gradient.png");
 
@@ -27,6 +28,21 @@ module.exports = {
                 .catch(function(err) {
                     console.error(err);
                 });
+        },
+
+        encryptsUsingData: function(test) {
+            fs.readFile(filename, function(err, data) {
+                var text = "some random text";
+                lib.crypto.encryptWithKeyFile(text, filename)
+                    .then(function(encrypted) {
+                        test.notStrictEqual(encrypted, text, "Encrypted text should not match original");
+                        test.ok(encrypted.length > text.length, "Encrypted text should be longer");
+                        test.done();
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                    });
+            });
         }
 
     },
