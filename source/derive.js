@@ -23,8 +23,14 @@
 
     var lib = module.exports = {
 
-        deriveFromFile: function(filename, salt, rounds) {
-            return generators.generateFileHash(filename)
+        /**
+         * Derive a key from a file, using its filename or contents
+         * @param {string|Buffer} filenameOrBuffer The filename or contents of the file
+         * @param {string=} salt The salt
+         * @param {number=} rounds The number of rounds
+         */
+        deriveFromFile: function(filenameOrBuffer, salt, rounds) {
+            return generators.generateFileHash(filenameOrBuffer)
                 .then(function(hash) {
                     return lib.deriveFromPassword(hash, salt, rounds);
                 });

@@ -37,8 +37,15 @@
             );
         },
 
-        encryptWithKeyFile: function(text, file, callback) {
-            return derivation.deriveFromFile(file)
+        /**
+         * Encrypt some text using a file (filename or buffer)
+         * @param {string} text The text to encrypt
+         * @param {string|Buffer} filenameOrBuffer The filename or a buffer
+         * @param {Function=} callback An optional callback
+         * @returns {Promise.<string>} A promise that resolves with the encrypted text
+         */
+        encryptWithKeyFile: function(text, filenameOrBuffer, callback) {
+            return derivation.deriveFromFile(filenameOrBuffer)
                 .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
         },
 
