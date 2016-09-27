@@ -12,6 +12,7 @@ iocane was extracted from [Buttercup](https://github.com/buttercup-pw/buttercup-
  - AES 256 bit CBC encryption
  - SHA-256 HMAC
  - 6-8k PBKDF2 round derived keys (SHA-256)
+ - Key-file support (path or buffer)
 
 ### Node compatibility
 iocane makes use of ES6 features available in NodeJS 4.2 and onwards.
@@ -22,7 +23,9 @@ Encrypting text is simple:
 ```
 var crypto = require("iocane").crypto;
 
-var encryptedText = crypto.encryptWithPassword("some random text", "passw0rd");
+crypto
+    .encryptWithPassword("some random text", "passw0rd")
+    .then(encrypted => { });
 ```
 
 Encrypted content can then be easily decrypted later:
@@ -30,7 +33,27 @@ Encrypted content can then be easily decrypted later:
 ```
 var crypto = require("iocane").crypto;
 
-var decryptedText = crypto.decryptWithPassword(encryptedText, "passw0rd");
+crypto
+    .decryptWithPassword(encryptedText, "passw0rd")
+    .then(decrypted => { });
+```
+
+You can also use a file to perform encryption:
+
+```
+crypto
+    .encryptWithKeyFile("some random text", "/tmp/somefile.bin")
+    .then(encrypted => { });
+```
+
+The file to use can also be stored in a Buffer:
+
+```
+fs.readFile("/tmp/somefile.bin", function(err, data) {
+    crypto
+        .encryptWithKeyFile("some random text", data)
+        .then(encrypted => { });
+});
 ```
 
 There are a variety of other useful methods, like key derivation etc., available on the `iocane` base object.
@@ -43,7 +66,7 @@ var iocane = require("iocane");
 iocane.components.setPBKDF2(function(password, salt, rounds, bits, algorithm) {
     // do something
     // return Promise.<Buffer>
-})
+});
 ```
 
 This is useful when using iocane in other environments, like the browser.

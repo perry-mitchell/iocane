@@ -9,9 +9,15 @@
 
     var lib = module.exports = {
 
-        generateFileHash: function(filename) {
+        /**
+         * Generate a file hash using a filename or buffer
+         * @param {string|Buffer} filenameOrBuffer The name of a file to generate a hash for, or a buffer containing
+         *      the contents of a file
+         * @returns {Promise.<string>} Returns a promise that resolves with the hash string
+         */
+        generateFileHash: function(filenameOrBuffer) {
             return new Promise(function(resolve, reject) {
-                hashFile(filename, config.FILE_HASH_ALGORITHM, function(err, hash) {
+                hashFile(filenameOrBuffer, config.FILE_HASH_ALGORITHM, function(err, hash) {
                     if (err) {
                         (reject)(err);
                     } else {
