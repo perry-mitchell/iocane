@@ -1,6 +1,6 @@
 {
   "name": "iocane",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Textual encryption library",
   "main": "source/index.js",
   "directories": {
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run test:lint && npm run test:nodeunit",
     "test:lint": "node node_modules/eslint/bin/eslint.js source/",
-    "test:nodeunit": "node node_modules/nodeunit/bin/nodeunit tests"
+    "test:nodeunit": "./node_modules/nodeunit/bin/nodeunit -r tests"
   },
   "repository": {
     "type": "git",
