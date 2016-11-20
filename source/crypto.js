@@ -72,7 +72,7 @@ var lib = module.exports = {
         var newHmaxHex = hmacTool.digest("hex");
         // Check hmac for tampering
         if (security.constantTimeCompare(hmacData, newHmaxHex) !== true) {
-            throw new Error("Encrypted content has been tampered with");
+            throw new Error("Authentication failed while decrypting content");
         }
         // Decrypt
         var decryptTool = Crypto.createDecipheriv(config.ENC_ALGORITHM, keyDerivationInfo.key, iv),
