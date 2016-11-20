@@ -1,7 +1,7 @@
 # iocane
 NodeJS textual encryption library
 
-[![Buttercup](https://buttercup.pw/buttercup.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane)
+[![Buttercup](https://dl.dropboxusercontent.com/u/16657557/Works/Buttercup/badge.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane)
 
 ## About
 Encrypting things is difficult, but it doesn't have to be. iocane encrypts text (not binary data) and outputs packed, encrypted text which can be decrypted by iocane. iocane uses strong, current-day encryption techniques to encrypt text, and doesn't reinvent anything. iocane uses PBKDF2 for key derivation, HMAC (SHA-256) for authentication and AES-256-CBC for encryption.
