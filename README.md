@@ -20,7 +20,7 @@ iocane makes use of ES6 features available in NodeJS 4.2 and onwards.
 ## Usage
 Encrypting text is simple:
 
-```
+```javascript
 var crypto = require("iocane").crypto;
 
 crypto
@@ -30,7 +30,7 @@ crypto
 
 Encrypted content can then be easily decrypted later:
 
-```
+```javascript
 var crypto = require("iocane").crypto;
 
 crypto
@@ -40,7 +40,7 @@ crypto
 
 You can also use a file to perform encryption:
 
-```
+```javascript
 crypto
     .encryptWithKeyFile("some random text", "/tmp/somefile.bin")
     .then(encrypted => { });
@@ -48,7 +48,7 @@ crypto
 
 The file to use can also be stored in a Buffer:
 
-```
+```javascript
 fs.readFile("/tmp/somefile.bin", function(err, data) {
     crypto
         .encryptWithKeyFile("some random text", data)
@@ -61,7 +61,7 @@ There are a variety of other useful methods, like key derivation etc., available
 ### Overriding the built-in PBKDF2 function
 You can override the built in key derivation method like so:
 
-```
+```javascript
 var iocane = require("iocane");
 iocane.components.setPBKDF2(function(password, salt, rounds, bits, algorithm) {
     // do something
