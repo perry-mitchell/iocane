@@ -1,5 +1,10 @@
 # iocane changelog
 
+## 0.7.0
+_2017-04-27_
+
+ * Add support for configuring PBKDF2 round boundaries externally
+
 ## 0.6.0
 _2017-03-06_
 
