@@ -1,6 +1,6 @@
 "use strict";
 
-var config = require("./config.js"),
+var constants = require("./constants.js"),
     debug = require("./debug.js");
 
 var lib = module.exports = {
@@ -19,7 +19,7 @@ var lib = module.exports = {
         if (components.length < 4 || components.length > 5) {
             throw new Error("Decryption error - unexpected number of encrypted components");
         }
-        var pbkdf2Rounds = (components.length > 4) ? parseInt(components[4], 10) : config.PBKDF2_ROUND_DEFAULT;
+        var pbkdf2Rounds = (components.length > 4) ? parseInt(components[4], 10) : constants.PBKDF2_ROUND_DEFAULT;
         return {
             content: components[0],
             iv: components[1],

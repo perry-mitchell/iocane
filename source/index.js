@@ -15,6 +15,6 @@ module.exports = {
     packers:    require("./packers.js"),
     security:   require("./security.js"),
 
-    config:     require("./config.js")
+    constants:     require("./constants.js")
 
 };

@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = Object.freeze({
 
     DERIVED_KEY_ALGORITHM:                  "sha256",
     DERIVED_KEY_ITERATIONS_MIN:             200000,
@@ -11,4 +11,4 @@ module.exports = {
     PBKDF2_ROUND_DEFAULT:                   1000,
     SALT_LENGTH:                            12
 
-};
+});

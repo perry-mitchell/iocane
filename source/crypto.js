@@ -6,7 +6,7 @@ var derivation = require("./derive.js"),
     generation = require("./generators.js"),
     packing = require("./packers.js"),
     security = require("./security.js"),
-    config = require("./config.js"),
+    constants = require("./constants.js"),
     debug = require("./debug.js");
 
 var lib = module.exports = {
@@ -15,8 +15,8 @@ var lib = module.exports = {
         debug("encrypt content");
         var iv = generation.generateIV(),
             ivHex = iv.toString("hex");
-        var encryptTool = Crypto.createCipheriv(config.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-            hmacTool = Crypto.createHmac(config.HMAC_ALGORITHM, keyDerivationInfo.hmac),
+        var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+            hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
             saltHex = keyDerivationInfo.salt.toString("hex"),
             pbkdf2Rounds = keyDerivationInfo.rounds;
         // Perform encryption
@@ -64,7 +64,7 @@ var lib = module.exports = {
             salt = encryptedComponents.salt,
             hmacData = encryptedComponents.hmac;
         // Get HMAC tool
-        var hmacTool = Crypto.createHmac(config.HMAC_ALGORITHM, keyDerivationInfo.hmac);
+        var hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac);
         // Generate the HMAC
         hmacTool.update(encryptedContent);
         hmacTool.update(encryptedComponents.iv);
@@ -75,7 +75,7 @@ var lib = module.exports = {
             throw new Error("Authentication failed while decrypting content");
         }
         // Decrypt
-        var decryptTool = Crypto.createDecipheriv(config.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+        var decryptTool = Crypto.createDecipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
             decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
         return decryptedText + decryptTool.final("utf8");
     },
