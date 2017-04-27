@@ -3,7 +3,7 @@
 var Crypto = require("crypto"),
     hashFile = require("hash_file");
 
-var config = require("./config.js"),
+var constants = require("./constants.js"),
     debug = require("./debug.js");
 
 var lib = module.exports = {
@@ -17,7 +17,7 @@ var lib = module.exports = {
     generateFileHash: function(filenameOrBuffer) {
         debug("generate file hash");
         return new Promise(function(resolve, reject) {
-            hashFile(filenameOrBuffer, config.FILE_HASH_ALGORITHM, function(err, hash) {
+            hashFile(filenameOrBuffer, constants.FILE_HASH_ALGORITHM, function(err, hash) {
                 if (err) {
                     debug("error hashing file");
                     (reject)(err);

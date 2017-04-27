@@ -70,3 +70,12 @@ iocane.components.setPBKDF2(function(password, salt, rounds, bits, algorithm) {
 ```
 
 This is useful when using iocane in other environments, like the browser.
+
+### Overriding default PBKDF2 round bounds
+Although it is **not recommended** outside of testing, you can override the minimum and maximum PBKDF2 round boundaries (which are typically in the hundreds of thousands). This is useful for running tests involving calls to iocane.
+
+```javascript
+var iocane = require("iocane");
+// set the range for PBKDF2 rounds to be between 10k and 20k
+iocane.config.setDerivedKeyIterationRange(10000, 20000);
+```

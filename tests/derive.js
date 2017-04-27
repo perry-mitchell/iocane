@@ -1,7 +1,9 @@
+var path = require("path");
 var lib = require("../source/index.js");
 
 function deriveFromFile(salt, rounds) {
-    return lib.derivation.deriveFromFile(__dirname + "/resources/gradient.png", salt, rounds)
+    return lib.derivation
+        .deriveFromFile(path.resolve(__dirname, "./resources/gradient.png"), salt, rounds)
         .catch(function(err) {
             console.error(err);
         });
@@ -24,16 +26,16 @@ module.exports = {
                 .then(function(derived) {
                     test.strictEqual(
                         derived.key.length,
-                        lib.config.PASSWORD_KEY_SIZE,
+                        lib.constants.PASSWORD_KEY_SIZE,
                         "Derived key should be correct length"
                     );
                     test.strictEqual(
                         derived.hmac.length,
-                        lib.config.HMAC_KEY_SIZE,
+                        lib.constants.HMAC_KEY_SIZE,
                         "HMAC should be correct length"
                     );
-                    test.ok(derived.rounds >= lib.config.DERIVED_KEY_ITERATIONS_MIN &&
-                        derived.rounds <= lib.config.DERIVED_KEY_ITERATIONS_MAX,
+                    test.ok(derived.rounds >= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MIN &&
+                        derived.rounds <= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MAX,
                         "Derived rounds should be in the acceptable range");
                     test.done();
                 })
@@ -62,16 +64,16 @@ module.exports = {
                 .then(function(derived) {
                     test.strictEqual(
                         derived.key.length,
-                        lib.config.PASSWORD_KEY_SIZE,
+                        lib.constants.PASSWORD_KEY_SIZE,
                         "Derived key should be correct length"
                     );
                     test.strictEqual(
                         derived.hmac.length,
-                        lib.config.HMAC_KEY_SIZE,
+                        lib.constants.HMAC_KEY_SIZE,
                         "HMAC should be correct length"
                     );
-                    test.ok(derived.rounds >= lib.config.DERIVED_KEY_ITERATIONS_MIN &&
-                        derived.rounds <= lib.config.DERIVED_KEY_ITERATIONS_MAX,
+                    test.ok(derived.rounds >= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MIN &&
+                        derived.rounds <= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MAX,
                         "Derived rounds should be in the acceptable range");
                     test.done();
                 })

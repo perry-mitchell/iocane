@@ -1,9 +1,12 @@
 "use strict";
 
-var config = require("./config.js"),
+var constants = require("./constants.js"),
+    config = require("./config.js"),
     generators = require("./generators.js"),
     components = require("./components.js"),
     debug = require("debug");
+
+var getConfigValue = config.getConfigValue;
 
 function getRandomInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -11,13 +14,13 @@ function getRandomInRange(min, max) {
 
 function sanitiseRounds(rounds) {
     return rounds || getRandomInRange(
-        config.DERIVED_KEY_ITERATIONS_MIN,
-        config.DERIVED_KEY_ITERATIONS_MAX
+        getConfigValue("derivedKeyIterationsMin"),
+        getConfigValue("derivedKeyIterationsMax")
     );
 }
 
 function sanitiseSalt(salt) {
-    return salt || generators.generateSalt(config.SALT_LENGTH);
+    return salt || generators.generateSalt(constants.SALT_LENGTH);
 }
 
 var lib = module.exports = {
@@ -27,6 +30,7 @@ var lib = module.exports = {
      * @param {string|Buffer} filenameOrBuffer The filename or contents of the file
      * @param {string=} salt The salt
      * @param {number=} rounds The number of rounds
+     * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with derived key info
      */
     deriveFromFile: function(filenameOrBuffer, salt, rounds) {
         debug("derive key from file");
@@ -56,13 +60,13 @@ var lib = module.exports = {
         debug("derive key from password");
         rounds = sanitiseRounds(rounds);
         salt = sanitiseSalt(salt);
-        let bits = (config.PASSWORD_KEY_SIZE + config.HMAC_KEY_SIZE)  * 8;
+        let bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
         return components.getPBKDF2()(
                 password,
                 salt,
                 rounds,
                 bits,
-                config.DERIVED_KEY_ALGORITHM
+                constants.DERIVED_KEY_ALGORITHM
             )
             .then((derivedKeyData) => derivedKeyData.toString("hex"))
             .then(function(derivedKeyHex) {
