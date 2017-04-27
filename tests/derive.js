@@ -34,8 +34,8 @@ module.exports = {
                         lib.constants.HMAC_KEY_SIZE,
                         "HMAC should be correct length"
                     );
-                    test.ok(derived.rounds >= lib.constants.DERIVED_KEY_ITERATIONS_MIN &&
-                        derived.rounds <= lib.constants.DERIVED_KEY_ITERATIONS_MAX,
+                    test.ok(derived.rounds >= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MIN &&
+                        derived.rounds <= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MAX,
                         "Derived rounds should be in the acceptable range");
                     test.done();
                 })
@@ -72,8 +72,8 @@ module.exports = {
                         lib.constants.HMAC_KEY_SIZE,
                         "HMAC should be correct length"
                     );
-                    test.ok(derived.rounds >= lib.constants.DERIVED_KEY_ITERATIONS_MIN &&
-                        derived.rounds <= lib.constants.DERIVED_KEY_ITERATIONS_MAX,
+                    test.ok(derived.rounds >= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MIN &&
+                        derived.rounds <= lib.constants.DEFAULT_DERIVED_KEY_ITERATIONS_MAX,
                         "Derived rounds should be in the acceptable range");
                     test.done();
                 })

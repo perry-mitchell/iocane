@@ -1,9 +1,12 @@
 "use strict";
 
 var constants = require("./constants.js"),
+    config = require("./config.js"),
     generators = require("./generators.js"),
     components = require("./components.js"),
     debug = require("debug");
+
+var getConfigValue = config.getConfigValue;
 
 function getRandomInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -11,8 +14,8 @@ function getRandomInRange(min, max) {
 
 function sanitiseRounds(rounds) {
     return rounds || getRandomInRange(
-        constants.DERIVED_KEY_ITERATIONS_MIN,
-        constants.DERIVED_KEY_ITERATIONS_MAX
+        getConfigValue("derivedKeyIterationsMin"),
+        getConfigValue("derivedKeyIterationsMax")
     );
 }
 
