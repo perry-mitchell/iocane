@@ -13,7 +13,7 @@ iocane was extracted from [Buttercup](https://github.com/buttercup-pw/buttercup-
 ### Features
  - AES 256 bit CBC encryption
  - SHA-256 HMAC
- - 6-8k PBKDF2 round derived keys (SHA-256)
+ - 200-250k PBKDF2 round derived keys (SHA-256)
  - Key-file support (path or buffer)
 
 ### Node compatibility
