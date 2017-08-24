@@ -1,13 +1,8 @@
 "use strict";
 
-var Crypto = require("crypto");
-
 var derivation = require("./derive.js"),
     components = require("./components.js"),
-    generation = require("./generators.js"),
     packing = require("./packers.js"),
-    security = require("./security.js"),
-    constants = require("./constants.js"),
     debug = require("./debug.js");
 
 var lib = module.exports = {
@@ -23,28 +18,6 @@ var lib = module.exports = {
             res.hmac,
             res.rounds
         );
-        // var iv = generation.generateIV(),
-        //     ivHex = iv.toString("hex");
-        // var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-        //     hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
-        //     saltHex = keyDerivationInfo.salt.toString("hex"),
-        //     pbkdf2Rounds = keyDerivationInfo.rounds;
-        // // Perform encryption
-        // var encryptedContent = encryptTool.update(text, "utf8", "base64");
-        // encryptedContent += encryptTool.final("base64");
-        // // Generate hmac
-        // hmacTool.update(encryptedContent);
-        // hmacTool.update(ivHex);
-        // hmacTool.update(saltHex);
-        // var hmacHex = hmacTool.digest("hex");
-        // Return packed content
-        // return packing.packEncryptedContent(
-        //     encryptedContent,
-        //     ivHex,
-        //     saltHex,
-        //     hmacHex,
-        //     pbkdf2Rounds
-        // );
     },
 
     /**
@@ -68,26 +41,8 @@ var lib = module.exports = {
 
     decrypt: function(encryptedComponents, keyDerivationInfo) {
         debug("decrypt content");
-        // Extract the components
-        var encryptedContent = encryptedComponents.content,
-            iv = new Buffer(encryptedComponents.iv, "hex"),
-            salt = encryptedComponents.salt,
-            hmacData = encryptedComponents.hmac;
-        // Get HMAC tool
-        var hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac);
-        // Generate the HMAC
-        hmacTool.update(encryptedContent);
-        hmacTool.update(encryptedComponents.iv);
-        hmacTool.update(salt);
-        var newHmaxHex = hmacTool.digest("hex");
-        // Check hmac for tampering
-        if (security.constantTimeCompare(hmacData, newHmaxHex) !== true) {
-            throw new Error("Authentication failed while decrypting content");
-        }
-        // Decrypt
-        var decryptTool = Crypto.createDecipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-            decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
-        return decryptedText + decryptTool.final("utf8");
+        var tool = components.getDecryptTool()
+        return tool(encryptedComponents, keyDerivationInfo);
     },
 
     decryptWithKeyFile: function(text, file, callback) {

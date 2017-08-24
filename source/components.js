@@ -4,7 +4,31 @@ var Crypto = require("crypto"),
     pbkdf2 = require("pbkdf2");
 
 var generation = require("./generators.js"),
-    constants = require("./constants.js");
+    constants = require("./constants.js"),
+    security = require("./security.js");
+
+function decrypt_def(encryptedComponents, keyDerivationInfo) {
+    // Extract the components
+    var encryptedContent = encryptedComponents.content,
+        iv = new Buffer(encryptedComponents.iv, "hex"),
+        salt = encryptedComponents.salt,
+        hmacData = encryptedComponents.hmac;
+    // Get HMAC tool
+    var hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac);
+    // Generate the HMAC
+    hmacTool.update(encryptedContent);
+    hmacTool.update(encryptedComponents.iv);
+    hmacTool.update(salt);
+    var newHmaxHex = hmacTool.digest("hex");
+    // Check hmac for tampering
+    if (security.constantTimeCompare(hmacData, newHmaxHex) !== true) {
+        throw new Error("Authentication failed while decrypting content");
+    }
+    // Decrypt
+    var decryptTool = Crypto.createDecipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+        decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
+    return decryptedText + decryptTool.final("utf8");
+}
 
 function encrypt_def(text, keyDerivationInfo) {
     var iv = generation.generateIV(),
@@ -57,6 +81,10 @@ let pbkdf2Override,
 
 module.exports = {
 
+    getDecryptTool: function getDecryptTool() {
+        return decryptionOverride ? decryptionOverride : decrypt_def;
+    },
+
     getEncryptTool: function getEncryptTool() {
         return encryptionOverride ? encryptionOverride : encrypt_def;
     },
@@ -67,6 +95,10 @@ module.exports = {
      */
     getPBKDF2: function getPBKDF2() {
         return pbkdf2Override ? pbkdf2Override : pbkdf2_def;
+    },
+
+    setDecryptionTool: function setDecryptionTool(fn) {
+        decryptionOverride = fn;
     },
 
     setEncryptTool: function setEncryptTool(fn) {
