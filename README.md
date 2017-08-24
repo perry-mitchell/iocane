@@ -81,3 +81,27 @@ var iocane = require("iocane");
 // set the range for PBKDF2 rounds to be between 10k and 20k
 iocane.config.setDerivedKeyIterationRange(10000, 20000);
 ```
+
+### Overriding the built-in encryption and decryption functions
+The built-in crypto functions are replaceable, which can be useful for special environments (such as React-Native or the browser):
+
+```javascript
+var iocane = require("iocane");
+
+iocane.components.setDecryptTool(function decrypt(encryptedComponents, keyDerivationInfo) {
+    // Synchronously decrypt components and return a string
+});
+
+iocane.components.setEncrypTool(function encrypt(text, keyDerivationInfo) {
+    // Synchronously encrypt text and return encrypted components:
+    // return {
+    //     hmac,
+    //     iv,
+    //     salt,
+    //     rounds,
+    //     encryptedContent
+    // };
+});
+```
+
+To get a better idea of what inputs and outputs should be for these override methods, check out the default [encrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L33) and [decrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L10) methods.
