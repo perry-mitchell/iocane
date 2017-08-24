@@ -97,7 +97,7 @@ module.exports = {
         return pbkdf2Override ? pbkdf2Override : pbkdf2_def;
     },
 
-    setDecryptionTool: function setDecryptionTool(fn) {
+    setDecryptTool: function setDecryptTool(fn) {
         decryptionOverride = fn;
     },
 
