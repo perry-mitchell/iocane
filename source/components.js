@@ -81,10 +81,18 @@ let pbkdf2Override,
 
 module.exports = {
 
+    /**
+     * Get decryption tool method
+     * @returns {Function} The decryption method
+     */
     getDecryptTool: function getDecryptTool() {
         return decryptionOverride ? decryptionOverride : decrypt_def;
     },
 
+    /**
+     * Get encryption tool method
+     * @returns {Function} The encryption method
+     */
     getEncryptTool: function getEncryptTool() {
         return encryptionOverride ? encryptionOverride : encrypt_def;
     },
@@ -97,10 +105,18 @@ module.exports = {
         return pbkdf2Override ? pbkdf2Override : pbkdf2_def;
     },
 
+    /**
+     * Set the decryption tool method
+     * @param {Function} fn The decryption method
+     */
     setDecryptTool: function setDecryptTool(fn) {
         decryptionOverride = fn;
     },
 
+    /**
+     * Set the encryption tool method
+     * @param {Function} fn The encryption method
+     */
     setEncryptTool: function setEncryptTool(fn) {
         encryptionOverride = fn;
     },
@@ -108,7 +124,6 @@ module.exports = {
     /**
      * Set the PBKDF2 function to use. Setting undefined puts the default back in use.
      * @param {Function|undefined} fn The PBKDF2 function to use
-     * @returns {undefined}
      */
     setPBKDF2: function setPBKDF2(fn) {
         pbkdf2Override = fn;
