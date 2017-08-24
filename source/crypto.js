@@ -7,7 +7,13 @@ var derivation = require("./derive.js"),
 
 var lib = module.exports = {
 
-    encrypt: function(text, keyDerivationInfo) {
+    /**
+     * Encrypt a string with derivation information
+     * @param {String} text The text to encrypt
+     * @param {DerivedKeyInfo} keyDerivationInfo The derived key information
+     * @returns {String} An encrypted string
+     */
+    encrypt: function encrypt(text, keyDerivationInfo) {
         debug("encrypt content");
         var encryptor = components.getEncryptTool();
         var res = encryptor(text, keyDerivationInfo);
@@ -22,41 +28,67 @@ var lib = module.exports = {
 
     /**
      * Encrypt some text using a file (filename or buffer)
-     * @param {string} text The text to encrypt
-     * @param {string|Buffer} filenameOrBuffer The filename or a buffer
-     * @param {Function=} callback An optional callback
-     * @returns {Promise.<string>} A promise that resolves with the encrypted text
+     * @param {String} text The text to encrypt
+     * @param {String|Buffer} filenameOrBuffer The filename or a buffer
+     * @returns {Promise.<String>} A promise that resolves with the encrypted text
      */
-    encryptWithKeyFile: function(text, filenameOrBuffer, callback) {
+    encryptWithKeyFile: function encryptWithKeyFile(text, filenameOrBuffer) {
         debug("encrypt using keyfile");
-        return derivation.deriveFromFile(filenameOrBuffer)
+        return derivation
+            .deriveFromFile(filenameOrBuffer)
             .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
     },
 
-    encryptWithPassword: function(text, password) {
+    /**
+     * Encrypt a piece of text with a password
+     * @param {String} text The text to encrypt
+     * @param {String} password The password to use for encryption
+     * @returns {Promise.<String>} A promise that resolves with the encrypted text
+     */
+    encryptWithPassword: function encryptWithPassword(text, password) {
         debug("encrypt using password");
-        return derivation.deriveFromPassword(password)
+        return derivation
+            .deriveFromPassword(password)
             .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
     },
 
-    decrypt: function(encryptedComponents, keyDerivationInfo) {
+    /**
+     * Decrypt an encrypted string
+     * @param {EncryptedComponents} encryptedComponents The encrypted components to decrypt
+     * @param {DerivedKeyInfo} keyDerivationInfo The derived key information
+     * @returns {String} The decrypted text
+     */
+    decrypt: function decrypt(encryptedComponents, keyDerivationInfo) {
         debug("decrypt content");
         var tool = components.getDecryptTool()
         return tool(encryptedComponents, keyDerivationInfo);
     },
 
-    decryptWithKeyFile: function(text, file, callback) {
+    /**
+     * Decrypt some text using a key-file
+     * @param {String} text The text to decrypt
+     * @param {String|Buffer} file The file to use for key derivation (filename or contents buffer)
+     * @returns {Promise.<String>} The decrypted text
+     */
+    decryptWithKeyFile: function decryptWithKeyFile(text, file) {
         debug("decrypt using keyfile");
         var encryptedComponents = packing.unpackEncryptedContent(text);
-        return derivation.deriveFromFile(file, encryptedComponents.salt, encryptedComponents.rounds)
+        return derivation
+            .deriveFromFile(file, encryptedComponents.salt, encryptedComponents.rounds)
             .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));
-
     },
 
+    /**
+     * Decrypt some text using a password
+     * @param {String} text The text to decrypt
+     * @param {String} password The password to use for decryption
+     * @returns {Promise.<String>} The decrypted text
+     */
     decryptWithPassword: function(text, password) {
         debug("decrypt using password");
         var encryptedComponents = packing.unpackEncryptedContent(text)
-        return derivation.deriveFromPassword(password, encryptedComponents.salt, encryptedComponents.rounds)
+        return derivation
+            .deriveFromPassword(password, encryptedComponents.salt, encryptedComponents.rounds)
             .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));
     }
 
