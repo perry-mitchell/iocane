@@ -1,5 +1,10 @@
 # iocane changelog
 
+## 0.8.0
+_2017-08-24_
+
+ * Add support for overriding built in encryption and decryption methods
+
 ## 0.7.0
 _2017-04-27_
 
