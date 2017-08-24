@@ -3,6 +3,7 @@
 var Crypto = require("crypto");
 
 var derivation = require("./derive.js"),
+    components = require("./components.js"),
     generation = require("./generators.js"),
     packing = require("./packers.js"),
     security = require("./security.js"),
@@ -13,28 +14,37 @@ var lib = module.exports = {
 
     encrypt: function(text, keyDerivationInfo) {
         debug("encrypt content");
-        var iv = generation.generateIV(),
-            ivHex = iv.toString("hex");
-        var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-            hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
-            saltHex = keyDerivationInfo.salt.toString("hex"),
-            pbkdf2Rounds = keyDerivationInfo.rounds;
-        // Perform encryption
-        var encryptedContent = encryptTool.update(text, "utf8", "base64");
-        encryptedContent += encryptTool.final("base64");
-        // Generate hmac
-        hmacTool.update(encryptedContent);
-        hmacTool.update(ivHex);
-        hmacTool.update(saltHex);
-        var hmacHex = hmacTool.digest("hex");
-        // Return packed content
+        var encryptor = components.getEncryptTool();
+        var res = encryptor(text, keyDerivationInfo);
         return packing.packEncryptedContent(
-            encryptedContent,
-            ivHex,
-            saltHex,
-            hmacHex,
-            pbkdf2Rounds
+            res.encryptedContent,
+            res.iv,
+            res.salt,
+            res.hmac,
+            res.rounds
         );
+        // var iv = generation.generateIV(),
+        //     ivHex = iv.toString("hex");
+        // var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+        //     hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
+        //     saltHex = keyDerivationInfo.salt.toString("hex"),
+        //     pbkdf2Rounds = keyDerivationInfo.rounds;
+        // // Perform encryption
+        // var encryptedContent = encryptTool.update(text, "utf8", "base64");
+        // encryptedContent += encryptTool.final("base64");
+        // // Generate hmac
+        // hmacTool.update(encryptedContent);
+        // hmacTool.update(ivHex);
+        // hmacTool.update(saltHex);
+        // var hmacHex = hmacTool.digest("hex");
+        // Return packed content
+        // return packing.packEncryptedContent(
+        //     encryptedContent,
+        //     ivHex,
+        //     saltHex,
+        //     hmacHex,
+        //     pbkdf2Rounds
+        // );
     },
 
     /**
