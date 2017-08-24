@@ -3,14 +3,39 @@
 var constants = require("./constants.js"),
     debug = require("./debug.js");
 
+/**
+ * Encrypted content components
+ * @typedef {Object} EncryptedComponents
+ * @property {String} content - The encrypted string
+ * @property {String} iv - The IV in hex form
+ * @property {String} salt - The salt
+ * @property {String} hmac - The HMAC in hex form
+ * @property {Number} rounds - The PBKDF2 rounds
+ */
+
 var lib = module.exports = {
 
-    packEncryptedContent: function(encryptedContent, iv, salt, hmacFinal, rounds) {
+    /**
+     * Pack encrypted content components into the final encrypted form
+     * @param {String} encryptedContent The encrypted text
+     * @param {String} iv The IV in hex form
+     * @param {String} salt The salt
+     * @param {String} hmac The HMAC in hex form
+     * @param {Number} rounds The PBKDF2 round count
+     * @returns {String} The final encrypted form
+     */
+    packEncryptedContent: function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds) {
         debug("pack encrypted content");
-        return [encryptedContent, iv, salt, hmacFinal, rounds].join("$");
+        return [encryptedContent, iv, salt, hmac, rounds].join("$");
     },
 
-    unpackEncryptedContent: function(encryptedContent) {
+    /**
+     * Unpack encrypted content components from an encrypted string
+     * @param {String} encryptedContent The encrypted string
+     * @returns {EncryptedComponents} The extracted components
+     * @throws {Error} Throws if the number of components is incorrect
+     */
+    unpackEncryptedContent: function unpackEncryptedContent(encryptedContent) {
         debug("unpack encrypted content");
         var components = encryptedContent.split("$");
         // iocane was originally part of Buttercup's core package, and therefore has ties to its archive format.

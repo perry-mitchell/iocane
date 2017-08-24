@@ -12,12 +12,12 @@ module.exports = {
 
     constantTimeCompare: {
 
-        testComparesSame: function(test) {
+        comparesSame: function(test) {
             test.ok(lib.security.constantTimeCompare("abc", "abc"), "Comparision should be same");
             test.done();
         },
 
-        testComparesDifferent: function(test) {
+        comparesDifferent: function(test) {
             test.ok(!lib.security.constantTimeCompare("abc", "cba"), "Comparision should be different");
             test.done();
         }
