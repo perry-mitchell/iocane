@@ -92,7 +92,7 @@ iocane.components.setDecryptTool(function decrypt(encryptedComponents, keyDeriva
     // Synchronously decrypt components and return a string
 });
 
-iocane.components.setEncrypTool(function encrypt(text, keyDerivationInfo) {
+iocane.components.setEncryptTool(function encrypt(text, keyDerivationInfo) {
     // Synchronously encrypt text and return encrypted components:
     // return {
     //     hmac,
