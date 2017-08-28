@@ -89,18 +89,18 @@ The built-in crypto functions are replaceable, which can be useful for special e
 var iocane = require("iocane");
 
 iocane.components.setDecryptTool(function decrypt(encryptedComponents, keyDerivationInfo) {
-    // Synchronously decrypt components and return a string
+    // Asynchronously decrypt components and return Promise->String
 });
 
 iocane.components.setEncrypTool(function encrypt(text, keyDerivationInfo) {
-    // Synchronously encrypt text and return encrypted components:
-    // return {
+    // Asynchronously encrypt text and return encrypted components:
+    // return Promise.resolve({
     //     hmac,
     //     iv,
     //     salt,
     //     rounds,
     //     encryptedContent
-    // };
+    // });
 });
 ```
 
