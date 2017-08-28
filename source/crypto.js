@@ -1,29 +1,29 @@
 "use strict";
 
-var derivation = require("./derive.js"),
-    components = require("./components.js"),
-    packing = require("./packers.js"),
-    debug = require("./debug.js");
+const derivation = require("./derive.js");
+const components = require("./components.js");
+const packing = require("./packers.js");
+const debug = require("./debug.js");
 
-var lib = module.exports = {
+const lib = module.exports = {
 
     /**
      * Encrypt a string with derivation information
      * @param {String} text The text to encrypt
      * @param {DerivedKeyInfo} keyDerivationInfo The derived key information
-     * @returns {String} An encrypted string
+     * @returns {Promise.<String>} An encrypted string
      */
     encrypt: function encrypt(text, keyDerivationInfo) {
         debug("encrypt content");
-        var encryptor = components.getEncryptTool();
-        var res = encryptor(text, keyDerivationInfo);
-        return packing.packEncryptedContent(
-            res.encryptedContent,
-            res.iv,
-            res.salt,
-            res.hmac,
-            res.rounds
-        );
+        const encryptor = components.getEncryptTool();
+        return encryptor(text, keyDerivationInfo)
+            .then(res => packing.packEncryptedContent(
+                res.encryptedContent,
+                res.iv,
+                res.salt,
+                res.hmac,
+                res.rounds
+            ));
     },
 
     /**
@@ -56,11 +56,11 @@ var lib = module.exports = {
      * Decrypt an encrypted string
      * @param {EncryptedComponents} encryptedComponents The encrypted components to decrypt
      * @param {DerivedKeyInfo} keyDerivationInfo The derived key information
-     * @returns {String} The decrypted text
+     * @returns {Promise.<String>} A promise that resolves with the decrypted text
      */
     decrypt: function decrypt(encryptedComponents, keyDerivationInfo) {
         debug("decrypt content");
-        var tool = components.getDecryptTool()
+        const tool = components.getDecryptTool();
         return tool(encryptedComponents, keyDerivationInfo);
     },
 
@@ -84,9 +84,9 @@ var lib = module.exports = {
      * @param {String} password The password to use for decryption
      * @returns {Promise.<String>} The decrypted text
      */
-    decryptWithPassword: function(text, password) {
+    decryptWithPassword: function decryptWithPassword(text, password) {
         debug("decrypt using password");
-        var encryptedComponents = packing.unpackEncryptedContent(text)
+        const encryptedComponents = packing.unpackEncryptedContent(text)
         return derivation
             .deriveFromPassword(password, encryptedComponents.salt, encryptedComponents.rounds)
             .then((keyDerivationInfo) => lib.decrypt(encryptedComponents, keyDerivationInfo));

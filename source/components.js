@@ -1,12 +1,18 @@
 "use strict";
 
-var Crypto = require("crypto"),
-    pbkdf2 = require("pbkdf2");
+const Crypto = require("crypto");
+const pbkdf2 = require("pbkdf2");
 
-var generation = require("./generators.js"),
-    constants = require("./constants.js"),
-    security = require("./security.js");
+const generation = require("./generators.js");
+const constants = require("./constants.js");
+const security = require("./security.js");
 
+/**
+ * Default decryption method
+ * @param {EncryptedComponents} encryptedComponents Encrypted components
+ * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @returns {Promise.<String>} A promise that resolves with the decrypted string
+ */
 function decrypt_def(encryptedComponents, keyDerivationInfo) {
     // Extract the components
     var encryptedContent = encryptedComponents.content,
@@ -27,9 +33,15 @@ function decrypt_def(encryptedComponents, keyDerivationInfo) {
     // Decrypt
     var decryptTool = Crypto.createDecipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
         decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
-    return decryptedText + decryptTool.final("utf8");
+    return Promise.resolve(decryptedText + decryptTool.final("utf8"));
 }
 
+/**
+ * Default encryption method
+ * @param {String} text The text to encrypt
+ * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
+ */
 function encrypt_def(text, keyDerivationInfo) {
     var iv = generation.generateIV(),
         ivHex = iv.toString("hex");
@@ -45,13 +57,13 @@ function encrypt_def(text, keyDerivationInfo) {
     hmacTool.update(ivHex);
     hmacTool.update(saltHex);
     var hmacHex = hmacTool.digest("hex");
-    return {
+    return Promise.resolve({
         hmac: hmacHex,
         iv: ivHex,
         salt: saltHex,
         rounds: pbkdf2Rounds,
         encryptedContent
-    };
+    });
 }
 
 /**
