@@ -1,6 +1,6 @@
 {
   "name": "iocane",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Textual encryption library",
   "main": "source/index.js",
   "directories": {
@@ -33,8 +33,8 @@
     "nodeunit": "^0.9.1"
   },
   "dependencies": {
-    "debug": "^2.3.2",
-    "hash_file": "^0.1.1",
+    "debug": "~2.3.2",
+    "hash_file": "~0.1.1",
     "pbkdf2": "~3.0.4"
   }
 }

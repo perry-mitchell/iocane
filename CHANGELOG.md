@@ -1,5 +1,10 @@
 # iocane changelog
 
+## 0.9.0
+_2017-08-28_
+
+ * Core encryption methods now async
+
 ## 0.8.0
 _2017-08-24_
 
