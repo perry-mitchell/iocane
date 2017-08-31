@@ -1,7 +1,7 @@
 # iocane
 NodeJS textual encryption library
 
-[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane)
+[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_74x21.png)](https://paypal.me/perryjamesmitchell)
 
 [![NPM](https://nodei.co/npm/iocane.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/iocane/)
 
@@ -105,3 +105,8 @@ iocane.components.setEncryptTool(function encrypt(text, keyDerivationInfo) {
 ```
 
 To get a better idea of what inputs and outputs should be for these override methods, check out the default [encrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L33) and [decrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L10) methods.
+
+## Supporting this project
+I develop this project in my free time as programming is my passion. I do not expect payment for what I make public, but all donations go towards supporting my development efforts. I use this money to pay for servers, software and other necessities. I greatly appreciate whatever I am given, no matter what the amount. If you've donated I'm extremely grateful for the help!
+
+[![Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_74x21.png)](https://paypal.me/perryjamesmitchell)
