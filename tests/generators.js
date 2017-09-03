@@ -51,7 +51,8 @@ module.exports = {
                     lib.generators.generateSalt(35)
                 ])
                 .then(function(salts) {
-                    const [salt10, salt35] = salts;
+                    const salt10 = salts[0];
+                    const salt35 = salts[1];
                     test.strictEqual(salt10.length, 10, "Salt should be correct length (10)");
                     test.strictEqual(salt35.length, 35, "Salt should be correct length (35)");
                     test.done();
