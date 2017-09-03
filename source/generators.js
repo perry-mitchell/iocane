@@ -1,10 +1,10 @@
 "use strict";
 
-var Crypto = require("crypto"),
-    hashFile = require("hash_file");
+// var Crypto = require("crypto"),
+const hashFile = require("hash_file");
 
-var constants = require("./constants.js"),
-    debug = require("./debug.js");
+const constants = require("./constants.js");
+const debug = require("./debug.js");
 
 var lib = module.exports = {
 
@@ -20,24 +20,36 @@ var lib = module.exports = {
             hashFile(filenameOrBuffer, constants.FILE_HASH_ALGORITHM, function(err, hash) {
                 if (err) {
                     debug("error hashing file");
-                    (reject)(err);
+                    reject(err);
                 } else {
                     debug("generated hash from file");
-                    (resolve)(hash);
+                    resolve(hash);
                 }
             });
         });
     },
 
+    /**
+     * Generate an IV
+     * @returns {Promise.<Buffer>} A promise that resolves with a buffer
+     */
     generateIV: function() {
         debug("generate IV");
-        return new Buffer(Crypto.randomBytes(16));
+        const components = require("./components.js");
+        const generate = components.getIVGenerationTool();
+        return generate();
     },
 
+    /**
+     * Generate a salt of a certain length
+     * @param {Number} length The length of the string to generate
+     * @returns {Promise.<String>} A promise that resolves with a salt string
+     */
     generateSalt: function(length) {
         debug("generate salt");
-        var genLen = length % 2 ? length + 1 : length;
-        return Crypto.randomBytes(genLen / 2).toString("hex").substring(0, length);
+        const components = require("./components.js");
+        const generate = components.getSaltGenerationTool();
+        return generate(length);
     }
 
 };
