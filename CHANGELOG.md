@@ -1,5 +1,10 @@
 # iocane changelog
 
+## 0.10.0
+_2017-09-03_
+
+ * Overrides for salt and IV generation
+
 ## 0.9.0
 _2017-08-28_
 
