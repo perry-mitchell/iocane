@@ -43,27 +43,38 @@ function decrypt_def(encryptedComponents, keyDerivationInfo) {
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
 function encrypt_def(text, keyDerivationInfo) {
-    var iv = generation.generateIV(),
-        ivHex = iv.toString("hex");
-    var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-        hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
-        saltHex = keyDerivationInfo.salt.toString("hex"),
-        pbkdf2Rounds = keyDerivationInfo.rounds;
-    // Perform encryption
-    var encryptedContent = encryptTool.update(text, "utf8", "base64");
-    encryptedContent += encryptTool.final("base64");
-    // Generate hmac
-    hmacTool.update(encryptedContent);
-    hmacTool.update(ivHex);
-    hmacTool.update(saltHex);
-    var hmacHex = hmacTool.digest("hex");
-    return Promise.resolve({
-        hmac: hmacHex,
-        iv: ivHex,
-        salt: saltHex,
-        rounds: pbkdf2Rounds,
-        encryptedContent
-    });
+    return generation
+        .generateIV()
+        .then(function _encrypt(iv) {
+            const ivHex = iv.toString("hex");
+            var encryptTool = Crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+                hmacTool = Crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
+                saltHex = keyDerivationInfo.salt.toString("hex"),
+                pbkdf2Rounds = keyDerivationInfo.rounds;
+            // Perform encryption
+            var encryptedContent = encryptTool.update(text, "utf8", "base64");
+            encryptedContent += encryptTool.final("base64");
+            // Generate hmac
+            hmacTool.update(encryptedContent);
+            hmacTool.update(ivHex);
+            hmacTool.update(saltHex);
+            var hmacHex = hmacTool.digest("hex");
+            return Promise.resolve({
+                hmac: hmacHex,
+                iv: ivHex,
+                salt: saltHex,
+                rounds: pbkdf2Rounds,
+                encryptedContent
+            });
+        })
+}
+
+/**
+ * Default IV generator
+ * @returns {Promise.<Buffer>} A promise that resolves with an IV
+ */
+function iv_gen_def() {
+    return Promise.resolve(new Buffer(Crypto.randomBytes(16)));
 }
 
 /**
@@ -77,7 +88,7 @@ function encrypt_def(text, keyDerivationInfo) {
  */
 function pbkdf2_def(password, salt, rounds, bits, algo) {
     return new Promise(function(resolve) {
-        (resolve)(pbkdf2.pbkdf2Sync(
+        resolve(pbkdf2.pbkdf2Sync(
             password,
             salt,
             rounds,
@@ -87,9 +98,21 @@ function pbkdf2_def(password, salt, rounds, bits, algo) {
     });
 }
 
+/**
+ * Default salt generator
+ * @param {Number} length The length of the string to generate
+ * @returns {Promise.<String>} A promise that resolves with a salt
+ */
+function salt_gen_def(length) {
+    const genLen = length % 2 ? length + 1 : length;
+    return Promise.resolve(Crypto.randomBytes(genLen / 2).toString("hex").substring(0, length))
+}
+
 let pbkdf2Override,
     encryptionOverride,
-    decryptionOverride;
+    decryptionOverride,
+    saltGenerateOverride,
+    ivGenerateOverride;
 
 module.exports = {
 
@@ -110,6 +133,14 @@ module.exports = {
     },
 
     /**
+     * Get the current IV generation method
+     * @returns {Function} The IV generation function
+     */
+    getIVGenerationTool: function getIVGenerationTool() {
+        return ivGenerateOverride ? ivGenerateOverride : iv_gen_def;
+    },
+
+    /**
      * Get the current PBKDF2 method
      * @returns {Function} The PBKDF2 function
      */
@@ -118,8 +149,16 @@ module.exports = {
     },
 
     /**
+     * Get the salt generation method
+     * @returns {Function} The salt generation function
+     */
+    getSaltGenerationTool: function getSaltGenerationTool() {
+        return saltGenerateOverride ? saltGenerateOverride : salt_gen_def;
+    },
+
+    /**
      * Set the decryption tool method
-     * @param {Function} fn The decryption method
+     * @param {Function|undefined} fn The decryption method
      */
     setDecryptTool: function setDecryptTool(fn) {
         decryptionOverride = fn;
@@ -127,10 +166,18 @@ module.exports = {
 
     /**
      * Set the encryption tool method
-     * @param {Function} fn The encryption method
+     * @param {Function|undefined} fn The encryption method
      */
     setEncryptTool: function setEncryptTool(fn) {
         encryptionOverride = fn;
+    },
+
+    /**
+     * Set the current IV generation tool
+     * @param {Function|undefined} fn The new method
+     */
+    setIVGenerationTool: function setIVGenerationTool(fn) {
+        ivGenerateOverride = fn;
     },
 
     /**
@@ -139,6 +186,14 @@ module.exports = {
      */
     setPBKDF2: function setPBKDF2(fn) {
         pbkdf2Override = fn;
+    },
+
+    /**
+     * Set the current salt generation tool
+     * @param {Function|undefined} fn The new method
+     */
+    setSaltGenerationTool: function setSaltGenerationTool(fn) {
+        saltGenerateOverride = fn;
     }
 
 };

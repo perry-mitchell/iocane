@@ -20,7 +20,8 @@ function sanitiseRounds(rounds) {
 }
 
 function sanitiseSalt(salt) {
-    return salt || generators.generateSalt(constants.SALT_LENGTH);
+    return salt && Promise.resolve(salt) ||
+        generators.generateSalt(constants.SALT_LENGTH);
 }
 
 var lib = module.exports = {
@@ -43,36 +44,41 @@ var lib = module.exports = {
     /**
      * Derived key info
      * @typedef DerivedKeyInfo
-     * @property {string} salt - The salt used
+     * @property {String} salt - The salt used
      * @property {Buffer} key - The derived key
      * @property {Buffer} hmac - The HMAC
-     * @property {number} rounds - The number of rounds used
+     * @property {Number} rounds - The number of rounds used
      */
 
     /**
      * Derive a key from a password
-     * @param {string} password The password to derive from
-     * @param {string=} salt The salt (Optional)
-     * @param {number=} rounds The number of iterations
+     * @param {String} password The password to derive from
+     * @param {String=} saltRaw The salt (Optional)
+     * @param {Number=} rounds The number of iterations
      * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with an object (DerivedKeyInfo)
      */
-    deriveFromPassword: function(password, salt, rounds) {
+    deriveFromPassword: function(password, saltRaw, rounds) {
         debug("derive key from password");
+        let salt;
         rounds = sanitiseRounds(rounds);
-        salt = sanitiseSalt(salt);
-        let bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
-        return components.getPBKDF2()(
+        const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
+        const pbkdf2Gen = components.getPBKDF2();
+        return sanitiseSalt(saltRaw)
+            .then(sanitisedSalt => {
+                salt = sanitisedSalt;
+            })
+            .then(() => pbkdf2Gen(
                 password,
                 salt,
                 rounds,
                 bits,
                 constants.DERIVED_KEY_ALGORITHM
-            )
+            ))
             .then((derivedKeyData) => derivedKeyData.toString("hex"))
             .then(function(derivedKeyHex) {
-                let dkhLength = derivedKeyHex.length,
-                    keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex"),
-                    hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
+                const dkhLength = derivedKeyHex.length;
+                const keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex");
+                const hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
                 return {
                     salt: salt,
                     key: keyBuffer,
