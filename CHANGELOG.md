@@ -1,5 +1,12 @@
 # iocane changelog
 
+## 0.10.1
+_2017-11-17_
+
+**Security update**
+
+ * [#21 Fix for `debug` package vulnerability](https://github.com/perry-mitchell/iocane/pull/21) (as described in the security issue [here](https://nodesecurity.io/advisories/534))
+
 ## 0.10.0
 _2017-09-03_
 
