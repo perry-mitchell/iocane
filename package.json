@@ -33,7 +33,7 @@
     "nodeunit": "^0.9.1"
   },
   "dependencies": {
-    "debug": "~2.3.2",
+    "debug": "~3.1.0",
     "hash_file": "~0.1.1",
     "pbkdf2": "~3.0.4"
   }
