@@ -14,7 +14,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} An encrypted string
      */
     encrypt: function encrypt(text, keyDerivationInfo) {
-        debug("encrypt content");
+        debug("encrypting content");
         const encryptor = components.getEncryptTool();
         return encryptor(text, keyDerivationInfo)
             .then(res => packing.packEncryptedContent(
@@ -33,7 +33,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} A promise that resolves with the encrypted text
      */
     encryptWithKeyFile: function encryptWithKeyFile(text, filenameOrBuffer) {
-        debug("encrypt using keyfile");
+        debug("encrypting using keyfile");
         return derivation
             .deriveFromFile(filenameOrBuffer)
             .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
@@ -46,7 +46,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} A promise that resolves with the encrypted text
      */
     encryptWithPassword: function encryptWithPassword(text, password) {
-        debug("encrypt using password");
+        debug("encrypting using password");
         return derivation
             .deriveFromPassword(password)
             .then((keyDerivationInfo) => lib.encrypt(text, keyDerivationInfo));
@@ -59,7 +59,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} A promise that resolves with the decrypted text
      */
     decrypt: function decrypt(encryptedComponents, keyDerivationInfo) {
-        debug("decrypt content");
+        debug("decrypting content");
         const tool = components.getDecryptTool();
         return tool(encryptedComponents, keyDerivationInfo);
     },
@@ -71,7 +71,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} The decrypted text
      */
     decryptWithKeyFile: function decryptWithKeyFile(text, file) {
-        debug("decrypt using keyfile");
+        debug("decrypting using keyfile");
         var encryptedComponents = packing.unpackEncryptedContent(text);
         return derivation
             .deriveFromFile(file, encryptedComponents.salt, encryptedComponents.rounds)
@@ -85,7 +85,7 @@ const lib = module.exports = {
      * @returns {Promise.<String>} The decrypted text
      */
     decryptWithPassword: function decryptWithPassword(text, password) {
-        debug("decrypt using password");
+        debug("decrypting using password");
         const encryptedComponents = packing.unpackEncryptedContent(text)
         return derivation
             .deriveFromPassword(password, encryptedComponents.salt, encryptedComponents.rounds)
