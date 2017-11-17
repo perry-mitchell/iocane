@@ -15,7 +15,7 @@ var lib = module.exports = {
      * @returns {Promise.<string>} Returns a promise that resolves with the hash string
      */
     generateFileHash: function(filenameOrBuffer) {
-        debug("generate file hash");
+        debug("generating file hash");
         return new Promise(function(resolve, reject) {
             hashFile(filenameOrBuffer, constants.FILE_HASH_ALGORITHM, function(err, hash) {
                 if (err) {
@@ -34,7 +34,7 @@ var lib = module.exports = {
      * @returns {Promise.<Buffer>} A promise that resolves with a buffer
      */
     generateIV: function() {
-        debug("generate IV");
+        debug("generating IV");
         const components = require("./components.js");
         const generate = components.getIVGenerationTool();
         return generate();
@@ -46,7 +46,7 @@ var lib = module.exports = {
      * @returns {Promise.<String>} A promise that resolves with a salt string
      */
     generateSalt: function(length) {
-        debug("generate salt");
+        debug("generating salt of length: " + length);
         const components = require("./components.js");
         const generate = components.getSaltGenerationTool();
         return generate(length);

@@ -25,7 +25,7 @@ var lib = module.exports = {
      * @returns {String} The final encrypted form
      */
     packEncryptedContent: function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds) {
-        debug("pack encrypted content");
+        debug("packing encrypted content");
         return [encryptedContent, iv, salt, hmac, rounds].join("$");
     },
 
@@ -36,7 +36,7 @@ var lib = module.exports = {
      * @throws {Error} Throws if the number of components is incorrect
      */
     unpackEncryptedContent: function unpackEncryptedContent(encryptedContent) {
-        debug("unpack encrypted content");
+        debug("unpacking encrypted content");
         var components = encryptedContent.split("$");
         // iocane was originally part of Buttercup's core package, and therefore has ties to its archive format.
         // There will be 4 components for pre 0.15.0 archives, and 5 in newer archives. The 5th component

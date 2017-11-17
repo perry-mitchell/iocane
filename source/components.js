@@ -6,6 +6,7 @@ const pbkdf2 = require("pbkdf2");
 const generation = require("./generators.js");
 const constants = require("./constants.js");
 const security = require("./security.js");
+const debug = require("./debug.js");
 
 /**
  * Default decryption method
@@ -14,6 +15,7 @@ const security = require("./security.js");
  * @returns {Promise.<String>} A promise that resolves with the decrypted string
  */
 function decrypt_def(encryptedComponents, keyDerivationInfo) {
+    debug("decrypting using build-in method");
     // Extract the components
     var encryptedContent = encryptedComponents.content,
         iv = new Buffer(encryptedComponents.iv, "hex"),
@@ -43,6 +45,7 @@ function decrypt_def(encryptedComponents, keyDerivationInfo) {
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
 function encrypt_def(text, keyDerivationInfo) {
+    debug("encrypting using build-in method");
     return generation
         .generateIV()
         .then(function _encrypt(iv) {
@@ -74,6 +77,7 @@ function encrypt_def(text, keyDerivationInfo) {
  * @returns {Promise.<Buffer>} A promise that resolves with an IV
  */
 function iv_gen_def() {
+    debug("generating IV using build-in method");
     return Promise.resolve(new Buffer(Crypto.randomBytes(16)));
 }
 
@@ -87,6 +91,7 @@ function iv_gen_def() {
  * @returns {Promise.<Buffer>} A Promise that resolves with the hash
  */
 function pbkdf2_def(password, salt, rounds, bits, algo) {
+    debug("generating derived key using build-in method");
     return new Promise(function(resolve) {
         resolve(pbkdf2.pbkdf2Sync(
             password,
@@ -104,6 +109,7 @@ function pbkdf2_def(password, salt, rounds, bits, algo) {
  * @returns {Promise.<String>} A promise that resolves with a salt
  */
 function salt_gen_def(length) {
+    debug("generating salt using build-in method");
     const genLen = length % 2 ? length + 1 : length;
     return Promise.resolve(Crypto.randomBytes(genLen / 2).toString("hex").substring(0, length))
 }

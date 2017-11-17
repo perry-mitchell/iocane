@@ -2,7 +2,7 @@ logs
 *.log
 npm-debug.log*
 node_modules
-# Optional npm cache directory
+.DS_Store
 .npm
 .node_repl_history
 .history

@@ -34,7 +34,7 @@ var lib = module.exports = {
      * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with derived key info
      */
     deriveFromFile: function(filenameOrBuffer, salt, rounds) {
-        debug("derive key from file");
+        debug("deriving key from file");
         return generators.generateFileHash(filenameOrBuffer)
             .then(function(hash) {
                 return lib.deriveFromPassword(hash, salt, rounds);
@@ -58,7 +58,7 @@ var lib = module.exports = {
      * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with an object (DerivedKeyInfo)
      */
     deriveFromPassword: function(password, saltRaw, rounds) {
-        debug("derive key from password");
+        debug("deriving key from password");
         let salt;
         rounds = sanitiseRounds(rounds);
         const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
