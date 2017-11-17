@@ -1,9 +1,7 @@
 # iocane
 NodeJS textual encryption library
 
-[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_74x21.png)](https://paypal.me/perryjamesmitchell)
-
-[![NPM](https://nodei.co/npm/iocane.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/iocane/)
+[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Downloads per month on NPM](https://img.shields.io/npm/dm/iocane.svg?maxAge=2592000)](https://www.npmjs.com/package/iocane/) [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_74x21.png)](https://paypal.me/perryjamesmitchell)
 
 ## About
 Encrypting things is difficult, but it doesn't have to be. iocane encrypts text (not binary data) and outputs packed, encrypted text which can be decrypted by iocane. iocane uses strong, current-day encryption techniques to encrypt text, and doesn't reinvent anything. iocane uses PBKDF2 for key derivation, HMAC (SHA-256) for authentication and AES-256-CBC for encryption.
