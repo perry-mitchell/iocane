@@ -1,4 +1,5 @@
-# iocane
+![iocane](https://raw.githubusercontent.com/perry-mitchell/iocane/master/iocane_header.jpg)
+
 NodeJS textual encryption library
 
 [![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Downloads per month on NPM](https://img.shields.io/npm/dm/iocane.svg?maxAge=2592000)](https://www.npmjs.com/package/iocane/) [![npm version](https://badge.fury.io/js/iocane.svg)](https://www.npmjs.com/package/iocane/) [![Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_74x21.png)](https://paypal.me/perryjamesmitchell)
