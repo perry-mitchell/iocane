@@ -1,5 +1,10 @@
 const crypto = require("crypto");
 
+const ENC_ALGORITHM = "aes-256-cbc";
+const HMAC_ALGORITHM = "sha256";
+const HMAC_KEY_SIZE = 32;
+const PASSWORD_KEY_SIZE = 32;
+
 /**
  * Default decryption method
  * @param {EncryptedComponents} encryptedComponents Encrypted components
@@ -13,7 +18,7 @@ function decryptCBC(encryptedComponents, keyDerivationInfo) {
         salt = encryptedComponents.salt,
         hmacData = encryptedComponents.hmac;
     // Get HMAC tool
-    var hmacTool = crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac);
+    var hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
     // Generate the HMAC
     hmacTool.update(encryptedContent);
     hmacTool.update(encryptedComponents.iv);
@@ -24,7 +29,7 @@ function decryptCBC(encryptedComponents, keyDerivationInfo) {
         throw new Error("Authentication failed while decrypting content");
     }
     // Decrypt
-    var decryptTool = crypto.createDecipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
+    var decryptTool = crypto.createDecipheriv(ENC_ALGORITHM, keyDerivationInfo.key, iv),
         decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
     return Promise.resolve(decryptedText + decryptTool.final("utf8"));
 }
@@ -39,8 +44,8 @@ function encryptCBC(text, keyDerivationInfo) {
     return generateIV()
         .then(function _encrypt(iv) {
             const ivHex = iv.toString("hex");
-            var encryptTool = crypto.createCipheriv(constants.ENC_ALGORITHM, keyDerivationInfo.key, iv),
-                hmacTool = crypto.createHmac(constants.HMAC_ALGORITHM, keyDerivationInfo.hmac),
+            var encryptTool = crypto.createCipheriv(ENC_ALGORITHM, keyDerivationInfo.key, iv),
+                hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac),
                 saltHex = keyDerivationInfo.salt.toString("hex"),
                 pbkdf2Rounds = keyDerivationInfo.rounds;
             // Perform encryption

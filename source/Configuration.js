@@ -1,22 +1,29 @@
 const { pbkdf2 } = require("./derivation.js");
 const { encryptCBC, decryptCBC, generateIV, generateSalt } = require("./encryption.js");
+const { ALGO_DEFAULT } = require("./shared.js");
 
+const DERIVED_KEY_ALGORITHM = "sha256";
+const DERIVED_KEY_ITERATIONS_MIN = 200000;
+const DERIVED_KEY_ITERATIONS_MAX = 250000;
 const METHODS = ["cbc", "gcm"];
+const SALT_LENGTH = 12;
 
 function getDefaultOptions() {
     return {
         decryption: {
             cbc: decryptCBC
         },
-        derivationMax: 250000,
-        derivationMin: 200000,
+        derivationMax: DERIVED_KEY_ITERATIONS_MAX,
+        derivationMin: DERIVED_KEY_ITERATIONS_MIN,
         encryption: {
             cbc: encryptCBC
         },
         generateIV,
         generateSalt,
-        method: "cbc",
-        pbkdf2
+        method: ALGO_DEFAULT,
+        pbkdf2,
+        pbkdf2Algorithm: DERIVED_KEY_ALGORITHM,
+        saltLength: SALT_LENGTH
     };
 }
 

@@ -1,4 +1,43 @@
-const pbkdf2 = require("pbkdf2");
+const deriveKey = require("pbkdf2");
+
+/**
+ * Derived key info
+ * @typedef DerivedKeyInfo
+ * @property {String} salt - The salt used
+ * @property {Buffer} key - The derived key
+ * @property {Buffer} hmac - The HMAC
+ * @property {Number} rounds - The number of rounds used
+ */
+
+/**
+ * Derive a key from a password
+ * @param {String} password The password to derive from
+ * @param {String=} salt The salt (Optional)
+ * @param {Number=} rounds The number of iterations
+ * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with an object (DerivedKeyInfo)
+ */
+function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
+    const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
+    return pbkdf2Gen(
+            password,
+            salt,
+            rounds,
+            bits,
+            constants.DERIVED_KEY_ALGORITHM
+        )
+        .then((derivedKeyData) => derivedKeyData.toString("hex"))
+        .then(function(derivedKeyHex) {
+            const dkhLength = derivedKeyHex.length;
+            const keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex");
+            const hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
+            return {
+                salt: salt,
+                key: keyBuffer,
+                hmac: hmacBuffer,
+                rounds: rounds
+            };
+        });
+}
 
 /**
  * The default PBKDF2 function
@@ -11,7 +50,7 @@ const pbkdf2 = require("pbkdf2");
  */
 function pbkdf2(password, salt, rounds, bits, algo) {
     return new Promise((resolve, reject) => {
-        pbkdf2(password, salt, rounds, bits / 8, algo, (err, key) => {
+        deriveKey(password, salt, rounds, bits / 8, algo, (err, key) => {
             if (err) {
                 return reject(err);
             }
@@ -21,5 +60,6 @@ function pbkdf2(password, salt, rounds, bits, algo) {
 }
 
 module.exports = {
+    deriveFromPassword,
     pbkdf2
 };
