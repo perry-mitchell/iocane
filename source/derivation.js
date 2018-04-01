@@ -1,6 +1,8 @@
-const deriveKey = require("pbkdf2");
+const { pbkdf2: deriveKey } = require("pbkdf2");
 
 const DERIVED_KEY_ALGORITHM = "sha256";
+const HMAC_KEY_SIZE = 32;
+const PASSWORD_KEY_SIZE = 32;
 
 /**
  * Derived key info
@@ -32,14 +34,14 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
     if (!rounds || rounds <= 0) {
         return Promise.reject(new Error("Failed deriving key: Rounds must be greater than 0"));
     }
-    const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE) * 8;
+    const bits = (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8;
     return pbkdf2Gen(
             password,
             salt,
             rounds,
             bits
         )
-        .then(derivedKeyDat => derivedKeyData.toString("hex"))
+        .then(derivedKeyData => derivedKeyData.toString("hex"))
         .then(function(derivedKeyHex) {
             const dkhLength = derivedKeyHex.length;
             const keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex");
