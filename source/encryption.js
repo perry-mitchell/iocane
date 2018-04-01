@@ -1,13 +1,14 @@
 const crypto = require("crypto");
 const { constantTimeCompare } = require("./timing.js");
 
-const ENC_ALGORITHM = "aes-256-cbc";
+const ENC_ALGORITHM_CBC = "aes-256-cbc";
+const ENC_ALGORITHM_GCM = "aes-256-gcm";
 const HMAC_ALGORITHM = "sha256";
 const HMAC_KEY_SIZE = 32;
 const PASSWORD_KEY_SIZE = 32;
 
 /**
- * Default decryption method
+ * Decrypt text using AES-CBC
  * @param {EncryptedComponents} encryptedComponents Encrypted components
  * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
  * @returns {Promise.<String>} A promise that resolves with the decrypted string
@@ -30,13 +31,33 @@ function decryptCBC(encryptedComponents, keyDerivationInfo) {
         throw new Error("Authentication failed while decrypting content");
     }
     // Decrypt
-    const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM, keyDerivationInfo.key, iv);
+    const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
     const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
     return Promise.resolve(`${decryptedText}${decryptTool.final("utf8")}`);
 }
 
 /**
- * Default AES-CBC encryption method
+ * Decrypt text using AES-GCM
+ * @param {EncryptedComponents} encryptedComponents Encrypted components
+ * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @returns {Promise.<String>} A promise that resolves with the decrypted string
+ */
+function decryptGCM(encryptedComponents, keyDerivationInfo) {
+    // Extract the components
+    const encryptedContent = encryptedComponents.content;
+    const iv = new Buffer(encryptedComponents.iv, "hex");
+    const { tag: tagHex, salt, hmac: hmacData } = encryptedComponents;
+    // Prepare tag
+    const tag = new Buffer(tagHex, "hex");
+    // Decrypt
+    const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+    decryptTool.setAuthTag(tag);
+    const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
+    return Promise.resolve(`${decryptedText}${decryptTool.final("utf8")}`);
+}
+
+/**
+ * Encrypt text using AES-CBC
  * @param {String} text The text to encrypt
  * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
@@ -45,9 +66,9 @@ function encryptCBC(text, keyDerivationInfo) {
     return generateIV()
         .then(function _encrypt(iv) {
             const ivHex = iv.toString("hex");
-            const encryptTool = crypto.createCipheriv(ENC_ALGORITHM, keyDerivationInfo.key, iv);
+            const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
             const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
-            const pbkdf2Rounds = keyDerivationInfo.rounds;
+            const { rounds } = keyDerivationInfo;
             // Perform encryption
             let encryptedContent = encryptTool.update(text, "utf8", "base64");
             encryptedContent += encryptTool.final("base64");
@@ -56,14 +77,45 @@ function encryptCBC(text, keyDerivationInfo) {
             hmacTool.update(ivHex);
             hmacTool.update(keyDerivationInfo.salt);
             const hmacHex = hmacTool.digest("hex");
+            // Output encrypted components
             return Promise.resolve({
+                mode: "cbc",
                 hmac: hmacHex,
                 iv: ivHex,
                 salt: keyDerivationInfo.salt,
-                rounds: pbkdf2Rounds,
+                rounds,
                 content: encryptedContent
             });
-        })
+        });
+}
+
+/**
+ * Encrypt text using AES-GCM
+ * @param {String} text The text to encrypt
+ * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
+ */
+function encryptGCM(text, keyDerivationInfo) {
+    return generateIV()
+        .then(function _encrypt(iv) {
+            const ivHex = iv.toString("hex");
+            const { rounds } = keyDerivationInfo;
+            const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+            // Perform encryption
+            let encryptedContent = encryptTool.update(text, "utf8", "base64");
+            encryptedContent += encryptTool.final("base64");
+            // Handle authentication
+            const tag = encryptTool.getAuthTag();
+            // Output encrypted components
+            return Promise.resolve({
+                mode: "gcm",
+                iv: ivHex,
+                salt: keyDerivationInfo.salt,
+                rounds,
+                content: encryptedContent,
+                tag: tag.toString("hex")
+            });
+        });
 }
 
 /**
@@ -86,7 +138,9 @@ function generateSalt(length) {
 
 module.exports = {
     decryptCBC,
+    decryptGCM,
     encryptCBC,
+    encryptGCM,
     generateIV,
     generateSalt
 };
