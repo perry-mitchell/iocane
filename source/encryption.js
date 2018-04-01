@@ -8,6 +8,17 @@ const HMAC_KEY_SIZE = 32;
 const PASSWORD_KEY_SIZE = 32;
 
 /**
+ * Encrypted content components
+ * @typedef {Object} EncryptedComponents
+ * @property {String} content - The encrypted string
+ * @property {String} iv - The IV in hex form
+ * @property {String} salt - The salt
+ * @property {String} auth - The HMAC in hex form for CBC, or tag in hex form for GCM
+ * @property {Number} rounds - The PBKDF2 rounds
+ * @property {String} method - The encryption method (gcm/cbc)
+ */
+
+/**
  * Decrypt text using AES-CBC
  * @param {EncryptedComponents} encryptedComponents Encrypted components
  * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
