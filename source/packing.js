@@ -10,6 +10,7 @@ const PBKDF2_ROUND_DEFAULT = 1000;
  * @property {String} salt - The salt
  * @property {String} hmac - The HMAC in hex form
  * @property {Number} rounds - The PBKDF2 rounds
+ * @property {String} method - The encryption method (cbc/gcm)
  */
 
 /**
@@ -19,10 +20,11 @@ const PBKDF2_ROUND_DEFAULT = 1000;
  * @param {String} salt The salt
  * @param {String} hmac The HMAC in hex form
  * @param {Number} rounds The PBKDF2 round count
+ * @param {String} method The encryption method (cbc/gcm)
  * @returns {String} The final encrypted form
  */
-function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds) {
-    return [encryptedContent, iv, salt, hmac, rounds].join("$");
+function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds, method) {
+    return [encryptedContent, iv, salt, hmac, rounds, method].join("$");
 }
 
 /**
@@ -32,19 +34,19 @@ function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds) {
  * @throws {Error} Throws if the number of components is incorrect
  */
 function unpackEncryptedContent(encryptedContent) {
-    var components = encryptedContent.split("$");
-    // iocane was originally part of Buttercup's core package, and therefore has ties to its archive format.
+    const [content, iv, salt, hmac, rounds: roundsRaw, method: methodRaw] = encryptedContent.split("$");
+    // iocane was originally part of Buttercup's core package and used defaults from that originally.
     // There will be 4 components for pre 0.15.0 archives, and 5 in newer archives. The 5th component
-    // is the pbkdf2 round count, which is optional.
-    if (components.length < 4 || components.length > 5) {
-        throw new Error("Decryption error - unexpected number of encrypted components");
-    }
-    var pbkdf2Rounds = (components.length > 4) ? parseInt(components[4], 10) : PBKDF2_ROUND_DEFAULT;
+    // is the pbkdf2 round count, which is optional:
+    const rounds = roundsRaw ? parseInt(roundsRaw, 10) : PBKDF2_ROUND_DEFAULT;
+    // Originally only "cbc" was supported, but GCM was added in version 1
+    const method = methodRaw || "cbc";
     return {
-        content: components[0],
-        iv: components[1],
-        salt: components[2],
-        hmac: components[3],
-        rounds: pbkdf2Rounds
+        content,
+        iv,
+        salt,
+        hmac,
+        rounds,
+        method
     };
 }
