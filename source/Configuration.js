@@ -3,8 +3,7 @@ const { encryptCBC, decryptCBC, generateIV, generateSalt } = require("./encrypti
 const { ALGO_DEFAULT } = require("./shared.js");
 
 const DERIVED_KEY_ALGORITHM = "sha256";
-const DERIVED_KEY_ITERATIONS_MIN = 200000;
-const DERIVED_KEY_ITERATIONS_MAX = 250000;
+const DERIVED_KEY_ITERATIONS = 250000;
 const METHODS = ["cbc", "gcm"];
 const SALT_LENGTH = 12;
 
@@ -13,8 +12,7 @@ function getDefaultOptions() {
         decryption: {
             cbc: decryptCBC
         },
-        derivationMax: DERIVED_KEY_ITERATIONS_MAX,
-        derivationMin: DERIVED_KEY_ITERATIONS_MIN,
+        derivationRounds: DERIVED_KEY_ITERATIONS,
         encryption: {
             cbc: encryptCBC
         },
@@ -74,12 +72,9 @@ class Configuration {
         return this;
     }
 
-    setDerivationRounds(min, max) {
-        if (typeof min === "number") {
-            this._options.derivationMin = min;
-        }
-        if (typeof max === "number") {
-            this._options.derivationMax = max;
+    setDerivationRounds(rounds) {
+        if (typeof rounds === "number") {
+            this._options.derivationRounds = rounds;
         }
         return this;
     }

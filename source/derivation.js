@@ -11,13 +11,26 @@ const deriveKey = require("pbkdf2");
 
 /**
  * Derive a key from a password
+ * @param {Function} pbkdf2Gen The generator method
  * @param {String} password The password to derive from
- * @param {String=} salt The salt (Optional)
- * @param {Number=} rounds The number of iterations
+ * @param {String} salt The salt (Optional)
+ * @param {Number} rounds The number of iterations
+ * @throws {Error} Rejects if no password is provided
+ * @throws {Error} Rejects if no salt is provided
+ * @throws {Error} Rejects if no rounds are provided
  * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with an object (DerivedKeyInfo)
  */
 function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
-    const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE)  * 8;
+    if (!password) {
+        return Promise.reject(new Error("Failed deriving key: Password must be provided"));
+    }
+    if (!salt) {
+        return Promise.reject(new Error("Failed deriving key: Salt must be provided"));
+    }
+    if (!rounds || rounds <= 0) {
+        return Promise.reject(new Error("Failed deriving key: Rounds must be greater than 0"));
+    }
+    const bits = (constants.PASSWORD_KEY_SIZE + constants.HMAC_KEY_SIZE) * 8;
     return pbkdf2Gen(
             password,
             salt,
@@ -25,7 +38,7 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
             bits,
             constants.DERIVED_KEY_ALGORITHM
         )
-        .then((derivedKeyData) => derivedKeyData.toString("hex"))
+        .then(derivedKeyDat => derivedKeyData.toString("hex"))
         .then(function(derivedKeyHex) {
             const dkhLength = derivedKeyHex.length;
             const keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex");
