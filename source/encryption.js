@@ -18,7 +18,7 @@ function decryptCBC(encryptedComponents, keyDerivationInfo) {
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
     const salt = encryptedComponents.salt;
-    const hmacData = encryptedComponents.hmac;
+    const hmacData = encryptedComponents.auth;
     // Get HMAC tool
     const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
     // Generate the HMAC
@@ -46,7 +46,7 @@ function decryptGCM(encryptedComponents, keyDerivationInfo) {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
-    const { tag: tagHex, salt, hmac: hmacData } = encryptedComponents;
+    const { auth: tagHex, salt } = encryptedComponents;
     // Prepare tag
     const tag = new Buffer(tagHex, "hex");
     // Decrypt
@@ -80,7 +80,7 @@ function encryptCBC(text, keyDerivationInfo) {
             // Output encrypted components
             return Promise.resolve({
                 mode: "cbc",
-                hmac: hmacHex,
+                auth: hmacHex,
                 iv: ivHex,
                 salt: keyDerivationInfo.salt,
                 rounds,
@@ -113,7 +113,7 @@ function encryptGCM(text, keyDerivationInfo) {
                 salt: keyDerivationInfo.salt,
                 rounds,
                 content: encryptedContent,
-                tag: tag.toString("hex")
+                auth: tag.toString("hex")
             });
         });
 }
@@ -133,7 +133,7 @@ function generateIV() {
  */
 function generateSalt(length) {
     const genLen = length % 2 ? length + 1 : length;
-    return Promise.resolve(Crypto.randomBytes(genLen / 2).toString("hex").substring(0, length))
+    return Promise.resolve(crypto.randomBytes(genLen / 2).toString("hex").substring(0, length));
 }
 
 module.exports = {

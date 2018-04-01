@@ -59,7 +59,7 @@ describe("encryption", function() {
 
         it("outputs expected components", function() {
             return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
-                expect(encrypted).to.have.property("hmac").that.matches(/^[a-f0-9]{64}$/);
+                expect(encrypted).to.have.property("auth").that.matches(/^[a-f0-9]{64}$/);
                 expect(encrypted).to.have.property("rounds", 1000);
                 expect(encrypted).to.have.property("iv").that.matches(/^[a-f0-9]+$/);
                 expect(encrypted).to.have.property("salt", "salt");
@@ -84,7 +84,7 @@ describe("encryption", function() {
 
         it("outputs expected components", function() {
             return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
-                expect(encrypted).to.have.property("tag").that.matches(/^[a-f0-9]+$/);
+                expect(encrypted).to.have.property("auth").that.matches(/^[a-f0-9]+$/);
                 expect(encrypted).to.have.property("rounds", 1000);
                 expect(encrypted).to.have.property("iv").that.matches(/^[a-f0-9]+$/);
                 expect(encrypted).to.have.property("salt", "salt");

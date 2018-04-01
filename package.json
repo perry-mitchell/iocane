@@ -4,7 +4,8 @@
   "description": "Textual encryption library",
   "main": "source/index.js",
   "scripts": {
-    "test": "npm run test:unit",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:integration": "mocha -r tests/index.js 'tests/integration/**/*.spec.js'",
     "test:unit": "mocha -r tests/index.js 'tests/unit/**/*.spec.js'",
     "test:unit:watch": "nodemon --exec 'npm run test:unit'"
   },

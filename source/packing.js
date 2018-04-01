@@ -18,13 +18,13 @@ const PBKDF2_ROUND_DEFAULT = 1000;
  * @param {String} encryptedContent The encrypted text
  * @param {String} iv The IV in hex form
  * @param {String} salt The salt
- * @param {String} hmac The HMAC in hex form
+ * @param {String} auth The HMAC for CBC mode, or the authentication tag for GCM mode
  * @param {Number} rounds The PBKDF2 round count
  * @param {String} method The encryption method (cbc/gcm)
  * @returns {String} The final encrypted form
  */
-function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds, method) {
-    return [encryptedContent, iv, salt, hmac, rounds, method].join("$");
+function packEncryptedContent(encryptedContent, iv, salt, auth, rounds, method) {
+    return [encryptedContent, iv, salt, auth, rounds, method].join("$");
 }
 
 /**
@@ -34,7 +34,7 @@ function packEncryptedContent(encryptedContent, iv, salt, hmac, rounds, method) 
  * @throws {Error} Throws if the number of components is incorrect
  */
 function unpackEncryptedContent(encryptedContent) {
-    const [content, iv, salt, hmac, rounds: roundsRaw, method: methodRaw] = encryptedContent.split("$");
+    const [content, iv, salt, auth, roundsRaw, methodRaw] = encryptedContent.split("$");
     // iocane was originally part of Buttercup's core package and used defaults from that originally.
     // There will be 4 components for pre 0.15.0 archives, and 5 in newer archives. The 5th component
     // is the pbkdf2 round count, which is optional:
@@ -45,8 +45,13 @@ function unpackEncryptedContent(encryptedContent) {
         content,
         iv,
         salt,
-        hmac,
+        auth,
         rounds,
         method
     };
 }
+
+module.exports = {
+    packEncryptedContent,
+    unpackEncryptedContent
+};
