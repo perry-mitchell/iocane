@@ -13,14 +13,14 @@ function getDefaultOptions() {
             cbc: decryptCBC
         },
         derivationRounds: DERIVED_KEY_ITERATIONS,
+        deriveKey: pbkdf2,
+        deriveKeyAlgorithm: DERIVED_KEY_ALGORITHM,
         encryption: {
             cbc: encryptCBC
         },
         generateIV,
         generateSalt,
         method: ALGO_DEFAULT,
-        pbkdf2,
-        pbkdf2Algorithm: DERIVED_KEY_ALGORITHM,
         saltLength: SALT_LENGTH
     };
 }
@@ -42,28 +42,28 @@ class Configuration {
 
     overrideDecryption(method, func) {
         validateEncryptionMethod(method);
-        this._options.decryption[method] = func  || getDefaultOptions().decryption[method];
+        this._options.decryption[method] = func || getDefaultOptions().decryption[method];
         return this;
     }
 
-    overrideEncryption(method) {
+    overrideEncryption(method, func) {
         validateEncryptionMethod(method);
         this._options.encryption[method] = func || getDefaultOptions().encryption[method];
         return this;
     }
 
-    overrideIVGeneration(method) {
-        this._options.generateIV = method || getDefaultOptions().generateIV;
+    overrideIVGeneration(func) {
+        this._options.generateIV = func || getDefaultOptions().generateIV;
         return this;
     }
 
-    overrideKeyDerivation(method) {
-        this._options.pbkdf2 = method || getDefaultOptions().pbkdf2;
+    overrideKeyDerivation(func) {
+        this._options.deriveKey = func || getDefaultOptions().deriveKey;
         return this;
     }
 
-    overrideSaltGeneration(method) {
-        this._options.generateSalt = method || getDefaultOptions().generateSalt;
+    overrideSaltGeneration(func) {
+        this._options.generateSalt = func || getDefaultOptions().generateSalt;
         return this;
     }
 
@@ -85,5 +85,7 @@ class Configuration {
         return this;
     }
 }
+
+Configuration.getDefaultOptions = getDefaultOptions;
 
 module.exports = Configuration;
