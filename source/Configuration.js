@@ -8,14 +8,10 @@ const SALT_LENGTH = 12;
 
 function getDefaultOptions() {
     return {
-        decryption: {
-            cbc: decryptCBC
-        },
+        decryption_cbc: decryptCBC,
         derivationRounds: DERIVED_KEY_ITERATIONS,
         deriveKey: pbkdf2,
-        encryption: {
-            cbc: encryptCBC
-        },
+        encryption_cbc: encryptCBC,
         generateIV,
         generateSalt,
         method: ALGO_DEFAULT,
@@ -40,13 +36,13 @@ class Configuration {
 
     overrideDecryption(method, func) {
         validateEncryptionMethod(method);
-        this._options.decryption[method] = func || getDefaultOptions().decryption[method];
+        this._options[`decryption_${method}`] = func || getDefaultOptions()[`decryption_${method}`];
         return this;
     }
 
     overrideEncryption(method, func) {
         validateEncryptionMethod(method);
-        this._options.encryption[method] = func || getDefaultOptions().encryption[method];
+        this._options[`encryption_${method}`] = func || getDefaultOptions()[`encryption_${method}`];
         return this;
     }
 

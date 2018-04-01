@@ -30,15 +30,15 @@ describe("Configuration", function() {
         it("overrides the decryption method", function() {
             const noop = () => {};
             this.configuration.overrideDecryption("cbc", noop);
-            expect(this.configuration.options.decryption.cbc).to.equal(noop);
+            expect(this.configuration.options.decryption_cbc).to.equal(noop);
         });
 
         it("is able to reset the decryption method", function() {
             const noop = () => {};
             this.configuration.overrideDecryption("cbc", noop);
             this.configuration.overrideDecryption("cbc");
-            expect(this.configuration.options.decryption.cbc).to.not.equal(noop);
-            expect(this.configuration.options.decryption.cbc).to.be.a("function");
+            expect(this.configuration.options.decryption_cbc).to.not.equal(noop);
+            expect(this.configuration.options.decryption_cbc).to.be.a("function");
         });
 
         it("returns self", function() {
@@ -54,15 +54,15 @@ describe("Configuration", function() {
         it("overrides the encryption method", function() {
             const noop = () => {};
             this.configuration.overrideEncryption("cbc", noop);
-            expect(this.configuration.options.encryption.cbc).to.equal(noop);
+            expect(this.configuration.options.encryption_cbc).to.equal(noop);
         });
 
         it("is able to reset the encryption method", function() {
             const noop = () => {};
             this.configuration.overrideEncryption("cbc", noop);
             this.configuration.overrideEncryption("cbc");
-            expect(this.configuration.options.encryption.cbc).to.not.equal(noop);
-            expect(this.configuration.options.encryption.cbc).to.be.a("function");
+            expect(this.configuration.options.encryption_cbc).to.not.equal(noop);
+            expect(this.configuration.options.encryption_cbc).to.be.a("function");
         });
 
         it("returns self", function() {
