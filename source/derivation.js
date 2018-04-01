@@ -1,5 +1,7 @@
 const deriveKey = require("pbkdf2");
 
+const DERIVED_KEY_ALGORITHM = "sha256";
+
 /**
  * Derived key info
  * @typedef DerivedKeyInfo
@@ -35,8 +37,7 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
             password,
             salt,
             rounds,
-            bits,
-            constants.DERIVED_KEY_ALGORITHM
+            bits
         )
         .then(derivedKeyDat => derivedKeyData.toString("hex"))
         .then(function(derivedKeyHex) {
@@ -58,12 +59,11 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
  * @param {String} salt The salt to use
  * @param {Number} rounds The number of iterations
  * @param {Number} bits The size of the key to generate, in bits
- * @param {String} algo The NodeJS compatible hashing algorithm to use
  * @returns {Promise.<Buffer>} A Promise that resolves with the hash
  */
-function pbkdf2(password, salt, rounds, bits, algo) {
+function pbkdf2(password, salt, rounds, bits) {
     return new Promise((resolve, reject) => {
-        deriveKey(password, salt, rounds, bits / 8, algo, (err, key) => {
+        deriveKey(password, salt, rounds, bits / 8, DERIVED_KEY_ALGORITHM, (err, key) => {
             if (err) {
                 return reject(err);
             }
