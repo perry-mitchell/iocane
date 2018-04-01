@@ -17,5 +17,12 @@ describe("derivation", function() {
                 expect(keyInfo.hmac).to.have.lengthOf(32);
             });
         });
+
+        it("supports disabling HMAC", function() {
+            return deriveFromPassword(pbkdf2, "pass", "aaaa", 1001, false).then(keyInfo => {
+                expect(keyInfo.key).to.have.lengthOf(32);
+                expect(keyInfo.hmac).to.be.undefined;
+            });
+        });
     });
 });

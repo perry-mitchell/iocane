@@ -19,12 +19,13 @@ const PASSWORD_KEY_SIZE = 32;
  * @param {String} password The password to derive from
  * @param {String} salt The salt (Optional)
  * @param {Number} rounds The number of iterations
+ * @param {Boolean=} generateHMAC Enable HMAC key generation
  * @throws {Error} Rejects if no password is provided
  * @throws {Error} Rejects if no salt is provided
  * @throws {Error} Rejects if no rounds are provided
  * @returns {Promise.<DerivedKeyInfo>} A promise that resolves with an object (DerivedKeyInfo)
  */
-function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
+function deriveFromPassword(pbkdf2Gen, password, salt, rounds, generateHMAC = true) {
     if (!password) {
         return Promise.reject(new Error("Failed deriving key: Password must be provided"));
     }
@@ -34,7 +35,9 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
     if (!rounds || rounds <= 0) {
         return Promise.reject(new Error("Failed deriving key: Rounds must be greater than 0"));
     }
-    const bits = (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8;
+    const bits = generateHMAC ?
+        (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8 :
+        PASSWORD_KEY_SIZE * 8;
     return pbkdf2Gen(
             password,
             salt,
@@ -44,14 +47,18 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds) {
         .then(derivedKeyData => derivedKeyData.toString("hex"))
         .then(function(derivedKeyHex) {
             const dkhLength = derivedKeyHex.length;
-            const keyBuffer = new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex");
-            const hmacBuffer = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
-            return {
+            const keyBuffer = generateHMAC ?
+                new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex") :
+                new Buffer(derivedKeyHex, "hex");
+            const output = {
                 salt: salt,
                 key: keyBuffer,
-                hmac: hmacBuffer,
                 rounds: rounds
             };
+            if (generateHMAC) {
+                output.hmac = new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex");
+            }
+            return output;
         });
 }
 
