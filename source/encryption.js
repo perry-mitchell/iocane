@@ -130,7 +130,7 @@ function encryptGCM(text, keyDerivationInfo, iv) {
 }
 
 /**
- * Default IV generator
+ * IV generator
  * @returns {Promise.<Buffer>} A promise that resolves with an IV
  */
 function generateIV() {

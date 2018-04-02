@@ -52,8 +52,6 @@
     "sinon": "^4.5.0"
   },
   "dependencies": {
-    "debug": "~3.1.0",
-    "hash_file": "~0.1.1",
     "pbkdf2": "~3.0.4"
   }
 }
