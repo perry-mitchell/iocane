@@ -6,6 +6,26 @@ const DERIVED_KEY_ITERATIONS = 250000;
 const METHODS = ["cbc", "gcm"];
 const SALT_LENGTH = 12;
 
+/**
+ * @typedef {Object} ConfigurationOptions
+ * @property {Function} decryption_cbc - The CBC decryption method
+ * @property {Function} decryption_gcm - The GCM decryption method
+ * @property {Number} derivationRounds - The number of key derivation iterations
+ * @property {Function} deriveKey - The key derivation function (default: PBKDF2)
+ * @property {Function} encryption_cbc - The CBC encryption method
+ * @property {Function} encryption_gcm - The GCM encryption method
+ * @property {Function} generateIV - The IV generation method
+ * @property {Function} generateSalt - The salt generation method
+ * @property {String} method - The encryption method (cbc/gcm)
+ * @property {Number} saltLength - The length of the salt
+ */
+
+/**
+ * Get the default options
+ * @static
+ * @returns {ConfigurationOptions} Default configuration options
+ * @memberof Configuration
+ */
 function getDefaultOptions() {
     return {
         decryption_cbc: decryptCBC,
@@ -21,6 +41,12 @@ function getDefaultOptions() {
     };
 }
 
+/**
+ * Validate an encryption method specification
+ * @param {String} method The method to validate
+ * @throws {Error} Throws if the method is not valid
+ * @private
+ */
 function validateEncryptionMethod(method) {
     if (METHODS.indexOf(method) === -1) {
         throw new Error(`Invalid encryption/decryption method: ${method}`);
