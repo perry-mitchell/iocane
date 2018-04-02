@@ -4,6 +4,7 @@
   "description": "Textual encryption library",
   "main": "source/index.js",
   "scripts": {
+    "docs": "jsdoc2md source/**/*.js > API.md",
     "format": "prettier --write '{source,test}/**/*.js'",
     "precommit": "lint-staged",
     "test": "run-s test:unit test:integration test:format",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "husky": "^0.14.3",
+    "jsdoc-to-markdown": "^4.0.1",
     "lint-staged": "^7.0.2",
     "mocha": "^5.0.5",
     "nodemon": "^1.17.3",
