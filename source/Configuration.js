@@ -1,5 +1,12 @@
 const { pbkdf2 } = require("./derivation.js");
-const { decryptCBC, decryptGCM, encryptCBC, encryptGCM, generateIV, generateSalt } = require("./encryption.js");
+const {
+    decryptCBC,
+    decryptGCM,
+    encryptCBC,
+    encryptGCM,
+    generateIV,
+    generateSalt
+} = require("./encryption.js");
 const { ALGO_DEFAULT } = require("./shared.js");
 
 const DERIVED_KEY_ITERATIONS = 250000;

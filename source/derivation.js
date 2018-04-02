@@ -35,21 +35,14 @@ function deriveFromPassword(pbkdf2Gen, password, salt, rounds, generateHMAC = tr
     if (!rounds || rounds <= 0) {
         return Promise.reject(new Error("Failed deriving key: Rounds must be greater than 0"));
     }
-    const bits = generateHMAC ?
-        (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8 :
-        PASSWORD_KEY_SIZE * 8;
-    return pbkdf2Gen(
-            password,
-            salt,
-            rounds,
-            bits
-        )
+    const bits = generateHMAC ? (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8 : PASSWORD_KEY_SIZE * 8;
+    return pbkdf2Gen(password, salt, rounds, bits)
         .then(derivedKeyData => derivedKeyData.toString("hex"))
         .then(function(derivedKeyHex) {
             const dkhLength = derivedKeyHex.length;
-            const keyBuffer = generateHMAC ?
-                new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex") :
-                new Buffer(derivedKeyHex, "hex");
+            const keyBuffer = generateHMAC
+                ? new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex")
+                : new Buffer(derivedKeyHex, "hex");
             const output = {
                 salt: salt,
                 key: keyBuffer,

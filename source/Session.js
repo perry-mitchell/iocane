@@ -22,14 +22,11 @@ class Session extends Configuration {
      */
     decrypt(text, password) {
         const encryptedComponents = unpackEncryptedContent(text);
-        const {
-            salt,
-            rounds,
-            method
-        } = encryptedComponents;
+        const { salt, rounds, method } = encryptedComponents;
         const decryptMethod = this.options[`decryption_${method}`];
-        return this._deriveKey(password, salt, rounds, method)
-            .then(keyDerivationInfo => decryptMethod(encryptedComponents, keyDerivationInfo));
+        return this._deriveKey(password, salt, rounds, method).then(keyDerivationInfo =>
+            decryptMethod(encryptedComponents, keyDerivationInfo)
+        );
     }
 
     /**
@@ -42,11 +39,7 @@ class Session extends Configuration {
     encrypt(text, password) {
         const { generateIV, method } = this.options;
         const encryptMethod = this.options[`encryption_${method}`];
-        return Promise
-            .all([
-                this._deriveNewKey(password),
-                generateIV()
-            ])
+        return Promise.all([this._deriveNewKey(password), generateIV()])
             .then(([keyDerivationInfo, iv]) => encryptMethod(text, keyDerivationInfo, iv))
             .then(encryptedComponents => {
                 const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
@@ -73,9 +66,17 @@ class Session extends Configuration {
     _deriveKey(password, salt, rounds, encryptionMethod) {
         const { derivationRounds, deriveKey, method: optionsMethod } = this.options;
         const method = encryptionMethod || optionsMethod;
-        const deriveKeyCall = method === "gcm" ?
-            () => deriveFromPassword(deriveKey, password, salt, rounds || derivationRounds, /* HMAC: */ false) :
-            () => deriveFromPassword(deriveKey, password, salt, rounds || derivationRounds);
+        const deriveKeyCall =
+            method === "gcm"
+                ? () =>
+                      deriveFromPassword(
+                          deriveKey,
+                          password,
+                          salt,
+                          rounds || derivationRounds,
+                          /* HMAC: */ false
+                      )
+                : () => deriveFromPassword(deriveKey, password, salt, rounds || derivationRounds);
         return deriveKeyCall();
     }
 
@@ -88,8 +89,7 @@ class Session extends Configuration {
      */
     _deriveNewKey(password) {
         const { generateSalt, saltLength } = this.options;
-        return generateSalt(saltLength)
-            .then(salt => this._deriveKey(password, salt));
+        return generateSalt(saltLength).then(salt => this._deriveKey(password, salt));
     }
 }
 

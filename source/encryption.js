@@ -75,30 +75,29 @@ function decryptGCM(encryptedComponents, keyDerivationInfo) {
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
 function encryptCBC(text, keyDerivationInfo, iv) {
-    return Promise.resolve()
-        .then(() => {
-            const ivHex = iv.toString("hex");
-            const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
-            const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
-            const { rounds } = keyDerivationInfo;
-            // Perform encryption
-            let encryptedContent = encryptTool.update(text, "utf8", "base64");
-            encryptedContent += encryptTool.final("base64");
-            // Generate hmac
-            hmacTool.update(encryptedContent);
-            hmacTool.update(ivHex);
-            hmacTool.update(keyDerivationInfo.salt);
-            const hmacHex = hmacTool.digest("hex");
-            // Output encrypted components
-            return {
-                mode: "cbc",
-                auth: hmacHex,
-                iv: ivHex,
-                salt: keyDerivationInfo.salt,
-                rounds,
-                content: encryptedContent
-            };
-        });
+    return Promise.resolve().then(() => {
+        const ivHex = iv.toString("hex");
+        const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
+        const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
+        const { rounds } = keyDerivationInfo;
+        // Perform encryption
+        let encryptedContent = encryptTool.update(text, "utf8", "base64");
+        encryptedContent += encryptTool.final("base64");
+        // Generate hmac
+        hmacTool.update(encryptedContent);
+        hmacTool.update(ivHex);
+        hmacTool.update(keyDerivationInfo.salt);
+        const hmacHex = hmacTool.digest("hex");
+        // Output encrypted components
+        return {
+            mode: "cbc",
+            auth: hmacHex,
+            iv: ivHex,
+            salt: keyDerivationInfo.salt,
+            rounds,
+            content: encryptedContent
+        };
+    });
 }
 
 /**
@@ -109,26 +108,25 @@ function encryptCBC(text, keyDerivationInfo, iv) {
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
 function encryptGCM(text, keyDerivationInfo, iv) {
-    return Promise.resolve()
-        .then(() => {
-            const ivHex = iv.toString("hex");
-            const { rounds } = keyDerivationInfo;
-            const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
-            // Perform encryption
-            let encryptedContent = encryptTool.update(text, "utf8", "base64");
-            encryptedContent += encryptTool.final("base64");
-            // Handle authentication
-            const tag = encryptTool.getAuthTag();
-            // Output encrypted components
-            return {
-                mode: "gcm",
-                iv: ivHex,
-                salt: keyDerivationInfo.salt,
-                rounds,
-                content: encryptedContent,
-                auth: tag.toString("hex")
-            };
-        });
+    return Promise.resolve().then(() => {
+        const ivHex = iv.toString("hex");
+        const { rounds } = keyDerivationInfo;
+        const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+        // Perform encryption
+        let encryptedContent = encryptTool.update(text, "utf8", "base64");
+        encryptedContent += encryptTool.final("base64");
+        // Handle authentication
+        const tag = encryptTool.getAuthTag();
+        // Output encrypted components
+        return {
+            mode: "gcm",
+            iv: ivHex,
+            salt: keyDerivationInfo.salt,
+            rounds,
+            content: encryptedContent,
+            auth: tag.toString("hex")
+        };
+    });
 }
 
 /**
@@ -146,7 +144,12 @@ function generateIV() {
  */
 function generateSalt(length) {
     const genLen = length % 2 ? length + 1 : length;
-    return Promise.resolve(crypto.randomBytes(genLen / 2).toString("hex").substring(0, length));
+    return Promise.resolve(
+        crypto
+            .randomBytes(genLen / 2)
+            .toString("hex")
+            .substring(0, length)
+    );
 }
 
 module.exports = {
