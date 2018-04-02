@@ -1,21 +1,26 @@
-// ╔════════╗
-// ║ iocane ║
-// ╚════════╝
-//  developed by Perry Mitchell @perry_mitchell
-//  originally developed for the Buttercup project
+const { getConfiguration } = require("./global.js");
+const Session = require("./Session.js");
 
+/**
+ * Configure global values
+ * @returns {Configuration} The global configuration instance
+ */
+function configure() {
+    return getConfiguration();
+}
+
+/**
+ * Start new encryption/decryption session
+ * @returns {Session} New crypto session
+ */
+function createSession() {
+    return new Session();
+}
+
+/**
+ * @module iocane
+ */
 module.exports = {
-
-    crypto:     require("./crypto.js"),
-
-    components: require("./components.js"),
-
-    derivation: require("./derive.js"),
-    generators: require("./generators.js"),
-    packers:    require("./packers.js"),
-    security:   require("./security.js"),
-
-    constants:  require("./constants.js"),
-    config:     require("./config.js")
-
+    configure,
+    createSession
 };
