@@ -58,11 +58,13 @@ function decryptGCM(encryptedComponents, keyDerivationInfo) {
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
     const { auth: tagHex, salt } = encryptedComponents;
-    // Prepare tag
-    const tag = new Buffer(tagHex, "hex");
-    // Decrypt
+    // Prepare tool
     const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
-    decryptTool.setAuthTag(tag);
+    // Add additional auth data
+    decryptTool.setAAD(new Buffer(`${encryptedComponents.iv}${keyDerivationInfo.salt}`, "utf8"));
+    // Set auth tag
+    decryptTool.setAuthTag(new Buffer(tagHex, "hex"));
+    // Perform decryption
     const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
     return Promise.resolve(`${decryptedText}${decryptTool.final("utf8")}`);
 }
@@ -112,6 +114,8 @@ function encryptGCM(text, keyDerivationInfo, iv) {
         const ivHex = iv.toString("hex");
         const { rounds } = keyDerivationInfo;
         const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+        // Add additional auth data
+        encryptTool.setAAD(new Buffer(`${ivHex}${keyDerivationInfo.salt}`, "utf8"));
         // Perform encryption
         let encryptedContent = encryptTool.update(text, "utf8", "base64");
         encryptedContent += encryptTool.final("base64");
