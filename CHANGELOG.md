@@ -1,5 +1,15 @@
 # iocane changelog
 
+## **1.0.0** (1.0.0-rc1)
+_2018-04-02_
+
+ * New, simpler API
+   * Easier overriding of crypto methods
+ * AES-GCM support
+ * Global configuration with session-level overrides (eg. key derivation rounds)
+ * Dropped features
+   * Encryption using key files has been removed
+
 ## 0.10.1
 _2017-11-17_
 
