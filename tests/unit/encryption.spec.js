@@ -1,4 +1,4 @@
-const { decryptCBC, decryptGCM, encryptCBC, encryptGCM, generateIV } = require("../../source/encryption.js");
+const { decryptCBC, decryptGCM, encryptCBC, encryptGCM, generateIV, generateSalt } = require("../../source/encryption.js");
 const { deriveFromPassword, pbkdf2 } = require("../../source/derivation.js");
 
 const ENCRYPTED_SAMPLE = "at5427PQdplGgZgcmIjy/Fv0xZaiKO+bzmY7NsnYj90=";
@@ -106,6 +106,38 @@ describe("encryption", function() {
                 expect(encrypted).to.have.property("salt", "salt");
                 expect(encrypted).to.have.property("mode", "gcm");
             });
+        });
+    });
+
+    describe("generateIV", function() {
+        it("generates a buffer", function() {
+            return generateIV()
+                .then(iv => {
+                    expect(iv).to.be.an.instanceof(Buffer);
+                });
+        });
+
+        it("generates a non-empty value", function() {
+            return generateIV()
+                .then(iv => {
+                    expect(iv.toString("hex")).to.have.length.above(0);
+                });
+        });
+    });
+
+    describe("generateSalt", function() {
+        it("generates the correct length", function() {
+            return generateSalt(42)
+                .then(salt => {
+                    expect(salt).to.have.lengthOf(42);
+                });
+        });
+
+        it("generates hex", function() {
+            return generateSalt(31)
+                .then(salt => {
+                    expect(salt).to.match(/^[a-f0-9]{31}$/);
+                });
         });
     });
 });

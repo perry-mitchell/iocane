@@ -142,7 +142,7 @@ function generateIV() {
 /**
  * Salt generator
  * @param {Number} length The length of the string to generate
- * @returns {Promise.<String>} A promise that resolves with a salt
+ * @returns {Promise.<String>} A promise that resolves with a salt (hex)
  */
 function generateSalt(length) {
     const genLen = length % 2 ? length + 1 : length;
