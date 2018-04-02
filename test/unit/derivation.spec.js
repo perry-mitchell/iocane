@@ -6,8 +6,12 @@ describe("derivation", function() {
             return deriveFromPassword(pbkdf2, "pass", "aaaa", 1001).then(keyInfo => {
                 expect(keyInfo).to.have.property("salt", "aaaa");
                 expect(keyInfo).to.have.property("rounds", 1001);
-                expect(keyInfo).to.have.property("key").that.is.an.instanceof(Buffer);
-                expect(keyInfo).to.have.property("hmac").that.is.an.instanceof(Buffer);
+                expect(keyInfo)
+                    .to.have.property("key")
+                    .that.is.an.instanceof(Buffer);
+                expect(keyInfo)
+                    .to.have.property("hmac")
+                    .that.is.an.instanceof(Buffer);
             });
         });
 

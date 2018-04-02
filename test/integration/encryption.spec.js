@@ -7,8 +7,7 @@ describe("encryption", function() {
             .setDerivationRounds(1000)
             .encrypt("secret text", "passw0rd")
             .then(encrypted => {
-                return createSession()
-                    .decrypt(encrypted, "passw0rd");
+                return createSession().decrypt(encrypted, "passw0rd");
             })
             .then(decrypted => {
                 expect(decrypted).to.equal("secret text");
@@ -21,8 +20,7 @@ describe("encryption", function() {
             .setDerivationRounds(1000)
             .encrypt("secret text", "passw0rd")
             .then(encrypted => {
-                return createSession()
-                    .decrypt(encrypted, "passw0rd");
+                return createSession().decrypt(encrypted, "passw0rd");
             })
             .then(decrypted => {
                 expect(decrypted).to.equal("secret text");

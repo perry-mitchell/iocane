@@ -151,7 +151,9 @@ describe("Configuration", function() {
             this.configuration.setDerivationRounds(1234);
             expect(this.configuration.options.derivationRounds).to.equal(1234);
             this.configuration.reset();
-            expect(this.configuration.options.derivationRounds).to.equal(Configuration.getDefaultOptions().derivationRounds);
+            expect(this.configuration.options.derivationRounds).to.equal(
+                Configuration.getDefaultOptions().derivationRounds
+            );
         });
 
         it("returns self", function() {
@@ -171,11 +173,17 @@ describe("Configuration", function() {
 
         it("does not set rounds if invalid", function() {
             this.configuration.setDerivationRounds("abc");
-            expect(this.configuration.options.derivationRounds).to.equal(Configuration.getDefaultOptions().derivationRounds);
+            expect(this.configuration.options.derivationRounds).to.equal(
+                Configuration.getDefaultOptions().derivationRounds
+            );
             this.configuration.setDerivationRounds(true);
-            expect(this.configuration.options.derivationRounds).to.equal(Configuration.getDefaultOptions().derivationRounds);
+            expect(this.configuration.options.derivationRounds).to.equal(
+                Configuration.getDefaultOptions().derivationRounds
+            );
             this.configuration.setDerivationRounds(null);
-            expect(this.configuration.options.derivationRounds).to.equal(Configuration.getDefaultOptions().derivationRounds);
+            expect(this.configuration.options.derivationRounds).to.equal(
+                Configuration.getDefaultOptions().derivationRounds
+            );
         });
 
         it("returns self", function() {
