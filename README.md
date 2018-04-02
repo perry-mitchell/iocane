@@ -5,102 +5,80 @@ NodeJS textual encryption library
 [![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Downloads per month on NPM](https://img.shields.io/npm/dm/iocane.svg?maxAge=2592000)](https://www.npmjs.com/package/iocane/) [![npm version](https://badge.fury.io/js/iocane.svg)](https://www.npmjs.com/package/iocane/)
 
 ## About
-Encrypting things is difficult, but it doesn't have to be. iocane encrypts text (not binary data) and outputs packed, encrypted text which can be decrypted by iocane. iocane uses strong, current-day encryption techniques to encrypt text, and doesn't reinvent anything. iocane uses PBKDF2 for key derivation, HMAC (SHA-256) for authentication and AES-256-CBC for encryption.
+**iocane** makes text encryption and decryption easy by bundling all the complicated processes into one succinct library. Encrypt and decrypt strings easily by using iocane's encryption format - strings in, strings out.
 
-iocane was extracted from [Buttercup](https://github.com/buttercup-pw/buttercup-core)'s encryption process, and retains ties to the archiving process. Changes to iocane are subject to compatibility restraints with regards to the Buttercup suite of applications. This includes performance aspects of the browser-based versions.
+This library uses a global configuration that is inherited by _sessions_. A session describes one encryption/decryption action, and can also have options be further overridden at the time of execution. Check the examples below for a better idea of how this process works.
 
 ### Features
- - AES 256 bit CBC encryption
- - SHA-256 HMAC
- - 200-250k PBKDF2 round derived keys (SHA-256)
- - Key-file support (path or buffer)
+**iocane** by default boasts the following features:
 
-### Node compatibility
-iocane makes use of ES6 features available in NodeJS 4.2 and onwards.
+ * AES-CBC or AES-GCM encryption
+ * 256bit keys
+ * PBKDF2 key derivation (with 250k iterations)
+
+## Installation
+Install `iocane` as a dependency using `npm`:
+
+```shell
+npm install iocane --save
+```
 
 ## Usage
-Encrypting text is simple:
+**iocane** can be easily used to encrypt text:
 
 ```javascript
-var crypto = require("iocane").crypto;
+const { createSession } = require("iocane");
 
-crypto
-    .encryptWithPassword("some random text", "passw0rd")
-    .then(encrypted => { });
+createSession()
+    .encrypt("some secret text", "myPassword")
+    .then(encryptedString => {
+        // do something with the encrypted text
+    });
 ```
 
-Encrypted content can then be easily decrypted later:
+Decryption is even simpler, as instructions on _how_ to decrypt the payload is included in the payload itself:
 
 ```javascript
-var crypto = require("iocane").crypto;
-
-crypto
-    .decryptWithPassword(encryptedText, "passw0rd")
-    .then(decrypted => { });
+createSession()
+    .decrypt(encryptedString, "myPassword")
+    .then(decryptedString => {
+        // ...
+    });
 ```
 
-You can also use a file to perform encryption:
+During encryption, you can override a variety of options:
 
 ```javascript
-crypto
-    .encryptWithKeyFile("some random text", "/tmp/somefile.bin")
-    .then(encrypted => { });
+createSession()
+    .use("gcm") // use GCM encryption
+    .setDerivationRounds(300000)
+    .encrypt(target, password);
 ```
 
-The file to use can also be stored in a Buffer:
+Each cryptographic function can be overridden:
 
 ```javascript
-fs.readFile("/tmp/somefile.bin", function(err, data) {
-    crypto
-        .encryptWithKeyFile("some random text", data)
-        .then(encrypted => { });
-});
+createSession()
+    .overrideDecryption("cbc", cbcDecFn)
+    .overrideDecryption("gcm", gcmDecFn)
+    .overrideEncryption("cbc", cbcEncFn)
+    .overrideEncryption("gcm", gcmEncFn)
+    .overrideIVGeneration(genIV)
+    .overrideKeyDerivation(deriveKey)
+    .overrideSaltGeneration(genSalt)
+    .encrypt(/* ... */);
 ```
 
-There are a variety of other useful methods, like key derivation etc., available on the `iocane` base object.
+_Note that the default encryption mode is `"cbc"` (AES-CBC encryption)._
 
-### Overriding the built-in PBKDF2 function
-You can override the built in key derivation method like so:
+You can check out the [API documentation](API.md) for more information.
 
-```javascript
-var iocane = require("iocane");
-iocane.components.setPBKDF2(function(password, salt, rounds, bits, algorithm) {
-    // do something
-    // return Promise.<Buffer>
-});
-```
+## Supported environments
+**iocane** supports NodeJS version 6 and above. Versions prior to 6 were supported in `0.x` but are not anymore.
 
-This is useful when using iocane in other environments, like the browser.
+**iocane** is used in the browser as well, but in very custom situations. Support for using iocane in the browser is not provided through this repository. Please see respositories like [`buttercup`](https://github.com/buttercup/buttercup-core) and [Buttercup browser extension](https://github.com/buttercup/buttercup-browser-extension) for web usage.
 
-### Overriding default PBKDF2 round bounds
-Although it is **not recommended** outside of testing, you can override the minimum and maximum PBKDF2 round boundaries (which are typically in the hundreds of thousands). This is useful for running tests involving calls to iocane.
+_Note: when using iocane in the browser, at very least the key derivation process should be overridden. This is extremely slow if left to the internal derivation method._
 
-```javascript
-var iocane = require("iocane");
-// set the range for PBKDF2 rounds to be between 10k and 20k
-iocane.config.setDerivedKeyIterationRange(10000, 20000);
-```
-
-### Overriding the built-in encryption and decryption functions
-The built-in crypto functions are replaceable, which can be useful for special environments (such as React-Native or the browser):
-
-```javascript
-var iocane = require("iocane");
-
-iocane.components.setDecryptTool(function decrypt(encryptedComponents, keyDerivationInfo) {
-    // Asynchronously decrypt components and return Promise->String
-});
-
-iocane.components.setEncryptTool(function encrypt(text, keyDerivationInfo) {
-    // Asynchronously encrypt text and return encrypted components:
-    // return Promise.resolve({
-    //     hmac,
-    //     iv,
-    //     salt,
-    //     rounds,
-    //     encryptedContent
-    // });
-});
-```
-
-To get a better idea of what inputs and outputs should be for these override methods, check out the default [encrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L33) and [decrypt](https://github.com/perry-mitchell/iocane/blob/b7fc976ac3790603b4748016b95e5b320b4c8283/source/components.js#L10) methods.
+## Buttercup
+**iocane** was originally part of the [Buttercup](https://github.com/buttercup) suite. Buttercup is a supported dependent of iocane and efforts are made to align iocane with Buttercup's target platforms and uses.
