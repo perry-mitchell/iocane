@@ -71,11 +71,12 @@ function decryptGCM(encryptedComponents, keyDerivationInfo) {
  * Encrypt text using AES-CBC
  * @param {String} text The text to encrypt
  * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @param {Buffer} iv A buffer containing the IV
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
-function encryptCBC(text, keyDerivationInfo) {
-    return generateIV()
-        .then(function _encrypt(iv) {
+function encryptCBC(text, keyDerivationInfo, iv) {
+    return Promise.resolve()
+        .then(() => {
             const ivHex = iv.toString("hex");
             const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
             const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
@@ -89,14 +90,14 @@ function encryptCBC(text, keyDerivationInfo) {
             hmacTool.update(keyDerivationInfo.salt);
             const hmacHex = hmacTool.digest("hex");
             // Output encrypted components
-            return Promise.resolve({
+            return {
                 mode: "cbc",
                 auth: hmacHex,
                 iv: ivHex,
                 salt: keyDerivationInfo.salt,
                 rounds,
                 content: encryptedContent
-            });
+            };
         });
 }
 
@@ -104,11 +105,12 @@ function encryptCBC(text, keyDerivationInfo) {
  * Encrypt text using AES-GCM
  * @param {String} text The text to encrypt
  * @param {DerivedKeyInfo} keyDerivationInfo Key derivation information
+ * @param {Buffer} iv A buffer containing the IV
  * @returns {Promise.<EncryptedComponents>} A promise that resolves with encrypted components
  */
-function encryptGCM(text, keyDerivationInfo) {
-    return generateIV()
-        .then(function _encrypt(iv) {
+function encryptGCM(text, keyDerivationInfo, iv) {
+    return Promise.resolve()
+        .then(() => {
             const ivHex = iv.toString("hex");
             const { rounds } = keyDerivationInfo;
             const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
@@ -118,14 +120,14 @@ function encryptGCM(text, keyDerivationInfo) {
             // Handle authentication
             const tag = encryptTool.getAuthTag();
             // Output encrypted components
-            return Promise.resolve({
+            return {
                 mode: "gcm",
                 iv: ivHex,
                 salt: keyDerivationInfo.salt,
                 rounds,
                 content: encryptedContent,
                 auth: tag.toString("hex")
-            });
+            };
         });
 }
 

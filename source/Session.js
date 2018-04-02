@@ -40,14 +40,24 @@ class Session extends Configuration {
      * @memberof Session
      */
     encrypt(text, password) {
-        const { method } = this.options;
+        const { generateIV, method } = this.options;
         const encryptMethod = this.options[`encryption_${method}`];
-        return this._deriveNewKey(password)
-            .then(keyDerivationInfo => encryptMethod(text, keyDerivationInfo))
+        return Promise
+            .all([
+                this._deriveNewKey(password),
+                generateIV()
+            ])
+            .then(([keyDerivationInfo, iv]) => encryptMethod(text, keyDerivationInfo, iv))
             .then(encryptedComponents => {
                 const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
                 return packEncryptedContent(content, iv, salt, auth, rounds, method);
             });
+        // return this._deriveNewKey(password)
+        //     .then(keyDerivationInfo => encryptMethod(text, keyDerivationInfo))
+        //     .then(encryptedComponents => {
+        //         const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
+        //         return packEncryptedContent(content, iv, salt, auth, rounds, method);
+        //     });
     }
 
     /**

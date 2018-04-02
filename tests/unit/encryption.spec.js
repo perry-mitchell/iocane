@@ -1,4 +1,4 @@
-const { decryptCBC, decryptGCM, encryptCBC, encryptGCM } = require("../../source/encryption.js");
+const { decryptCBC, decryptGCM, encryptCBC, encryptGCM, generateIV } = require("../../source/encryption.js");
 const { deriveFromPassword, pbkdf2 } = require("../../source/derivation.js");
 
 const ENCRYPTED_SAMPLE = "at5427PQdplGgZgcmIjy/Fv0xZaiKO+bzmY7NsnYj90=";
@@ -10,7 +10,10 @@ describe("encryption", function() {
             return deriveFromPassword(pbkdf2, "pass", "salt", 1000)
                 .then(keyDerivationInfo => {
                     this.keyDerivationInfo = keyDerivationInfo;
-                    return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo);
+                    return generateIV();
+                })
+                .then(iv => {
+                    return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, iv);
                 })
                 .then(encryptedComponents => {
                     this.encryptedComponents = encryptedComponents;
@@ -29,7 +32,10 @@ describe("encryption", function() {
             return deriveFromPassword(pbkdf2, "pass", "salt", 1000)
                 .then(keyDerivationInfo => {
                     this.keyDerivationInfo = keyDerivationInfo;
-                    return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo);
+                    return generateIV();
+                })
+                .then(iv => {
+                    return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, iv);
                 })
                 .then(encryptedComponents => {
                     this.encryptedComponents = encryptedComponents;
@@ -45,20 +51,25 @@ describe("encryption", function() {
 
     describe("encryptCBC", function() {
         beforeEach(function() {
-            return deriveFromPassword(pbkdf2, "pass", "salt", 1000).then(keyDerivationInfo => {
-                this.keyDerivationInfo = keyDerivationInfo;
-            });
+            return deriveFromPassword(pbkdf2, "pass", "salt", 1000)
+                .then(keyDerivationInfo => {
+                    this.keyDerivationInfo = keyDerivationInfo;
+                    return generateIV();
+                })
+                .then(iv => {
+                    this.iv = iv;
+                });
         });
 
         it("encrypts text", function() {
-            return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
+            return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, this.iv).then(encrypted => {
                 expect(encrypted).to.have.property("content").that.is.a("string");
                 expect(encrypted.content).to.not.contain(ENCRYPTED_SAMPLE_RAW);
             });
         });
 
         it("outputs expected components", function() {
-            return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
+            return encryptCBC(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, this.iv).then(encrypted => {
                 expect(encrypted).to.have.property("auth").that.matches(/^[a-f0-9]{64}$/);
                 expect(encrypted).to.have.property("rounds", 1000);
                 expect(encrypted).to.have.property("iv").that.matches(/^[a-f0-9]+$/);
@@ -70,20 +81,25 @@ describe("encryption", function() {
 
     describe("encryptGCM", function() {
         beforeEach(function() {
-            return deriveFromPassword(pbkdf2, "pass", "salt", 1000).then(keyDerivationInfo => {
-                this.keyDerivationInfo = keyDerivationInfo;
-            });
+            return deriveFromPassword(pbkdf2, "pass", "salt", 1000)
+                .then(keyDerivationInfo => {
+                    this.keyDerivationInfo = keyDerivationInfo;
+                    return generateIV();
+                })
+                .then(iv => {
+                    this.iv = iv;
+                });
         });
 
         it("encrypts text", function() {
-            return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
+            return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, this.iv).then(encrypted => {
                 expect(encrypted).to.have.property("content").that.is.a("string");
                 expect(encrypted.content).to.not.contain(ENCRYPTED_SAMPLE_RAW);
             });
         });
 
         it("outputs expected components", function() {
-            return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo).then(encrypted => {
+            return encryptGCM(ENCRYPTED_SAMPLE_RAW, this.keyDerivationInfo, this.iv).then(encrypted => {
                 expect(encrypted).to.have.property("auth").that.matches(/^[a-f0-9]+$/);
                 expect(encrypted).to.have.property("rounds", 1000);
                 expect(encrypted).to.have.property("iv").that.matches(/^[a-f0-9]+$/);
