@@ -69,6 +69,19 @@ createSession()
     .encrypt(/* ... */);
 ```
 
+Instead of overriding each method for every session, you can use the global configuration instance to override them once for all subsequent sessions:
+
+```javascript
+const { configure, createSession } = require("iocane");
+
+configure()
+    .use("gcm")
+    .overrideDecryption("gcm", gcmDecFn)
+    .overrideEncryption("gcm", gcmEncFn);
+
+createSession().encrypt(/* ... */); // Uses global settings
+```
+
 _Note that the default encryption mode is `"cbc"` (AES-CBC encryption)._
 
 You can check out the [API documentation](API.md) for more information.

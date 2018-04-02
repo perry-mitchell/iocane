@@ -45,12 +45,6 @@ class Session extends Configuration {
                 const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
                 return packEncryptedContent(content, iv, salt, auth, rounds, method);
             });
-        // return this._deriveNewKey(password)
-        //     .then(keyDerivationInfo => encryptMethod(text, keyDerivationInfo))
-        //     .then(encryptedComponents => {
-        //         const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
-        //         return packEncryptedContent(content, iv, salt, auth, rounds, method);
-        //     });
     }
 
     /**
