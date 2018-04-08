@@ -157,9 +157,9 @@ describe("encryption", function() {
             });
         });
 
-        it("generates hex", function() {
+        it("generates base64", function() {
             return generateSalt(31).then(salt => {
-                expect(salt).to.match(/^[a-f0-9]{31}$/);
+                expect(salt).to.match(/^[a-zA-Z0-9/=+]{31}$/);
             });
         });
     });

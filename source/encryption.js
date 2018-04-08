@@ -147,13 +147,14 @@ function generateIV() {
  * @returns {Promise.<String>} A promise that resolves with a salt (hex)
  */
 function generateSalt(length) {
-    const genLen = length % 2 ? length + 1 : length;
-    return Promise.resolve(
-        crypto
-            .randomBytes(genLen / 2)
-            .toString("hex")
-            .substring(0, length)
-    );
+    let output = "";
+    while (output.length < length) {
+        output += crypto.randomBytes(3).toString("base64");
+        if (output.length > length) {
+            output = output.substr(0, length);
+        }
+    }
+    return Promise.resolve(output);
 }
 
 module.exports = {
