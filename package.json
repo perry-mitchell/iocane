@@ -1,6 +1,6 @@
 {
   "name": "iocane",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-rc2",
   "description": "Textual encryption library",
   "main": "source/index.js",
   "scripts": {
