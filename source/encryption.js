@@ -145,8 +145,14 @@ function generateIV() {
  * Salt generator
  * @param {Number} length The length of the string to generate
  * @returns {Promise.<String>} A promise that resolves with a salt (hex)
+ * @throws {Error} Rejects if length is invalid
  */
 function generateSalt(length) {
+    if (length <= 0) {
+        return Promise.reject(
+            new Error(`Failed generating salt: Invalid length supplied: ${length}`)
+        );
+    }
     let output = "";
     while (output.length < length) {
         output += crypto.randomBytes(3).toString("base64");

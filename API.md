@@ -38,7 +38,7 @@
 <dd><p>Encrypt text using AES-GCM</p>
 </dd>
 <dt><a href="#generateIV">generateIV()</a> ⇒ <code>Promise.&lt;Buffer&gt;</code></dt>
-<dd><p>Default IV generator</p>
+<dd><p>IV generator</p>
 </dd>
 <dt><a href="#generateSalt">generateSalt(length)</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
 <dd><p>Salt generator</p>
@@ -547,7 +547,7 @@ Encrypt text using AES-GCM
 <a name="generateIV"></a>
 
 ## generateIV() ⇒ <code>Promise.&lt;Buffer&gt;</code>
-Default IV generator
+IV generator
 
 **Kind**: global function  
 **Returns**: <code>Promise.&lt;Buffer&gt;</code> - A promise that resolves with an IV  
@@ -558,6 +558,10 @@ Salt generator
 
 **Kind**: global function  
 **Returns**: <code>Promise.&lt;String&gt;</code> - A promise that resolves with a salt (hex)  
+**Throws**:
+
+- <code>Error</code> Rejects if length is invalid
+
 
 | Param | Type | Description |
 | --- | --- | --- |
