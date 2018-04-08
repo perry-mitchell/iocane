@@ -28,5 +28,23 @@ describe("derivation", function() {
                 expect(keyInfo.hmac).to.be.undefined;
             });
         });
+
+        it("rejects if the password is not provided", function() {
+            return expect(
+                deriveFromPassword(pbkdf2, "", "aaaa", 1001, false)
+            ).to.eventually.be.rejectedWith(/Password must be provided/i);
+        });
+
+        it("rejects if the salt is not provided", function() {
+            return expect(
+                deriveFromPassword(pbkdf2, "pass", "", 1001, false)
+            ).to.eventually.be.rejectedWith(/Salt must be provided/i);
+        });
+
+        it("rejects if the rounds are not valid", function() {
+            return expect(
+                deriveFromPassword(pbkdf2, "pass", "aaaa", null, false)
+            ).to.eventually.be.rejectedWith(/Rounds must be greater than 0/i);
+        });
     });
 });
