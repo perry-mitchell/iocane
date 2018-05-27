@@ -15,6 +15,23 @@ module.exports = {
         (done)();
     },
 
+    decryptWithPassword: {
+
+        decryptsVersion1Strings: function(test) {
+            var text = "or6EFckaa8ob364/NNe2PQ==$510cc5b246f36490d647389cff2b4e01$AjyDZ+n5ONYm$1f457e15c96b27e0831127ad3c58d6f55b5d594bbd860114f28fabb52a7da30b$250000$cbc";
+            lib.crypto
+                .decryptWithPassword(text, "test")
+                .then(function(decrypted) {
+                    test.strictEqual(decrypted, "test", "Decrypted string should be correct");
+                    test.done();
+                })
+                .catch(function(err) {
+                    console.error(err);
+                });
+        }
+
+    },
+
     encryptWithPassword: {
 
         decryptsEncryptedData: function(test) {

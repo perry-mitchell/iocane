@@ -40,8 +40,9 @@ var lib = module.exports = {
         var components = encryptedContent.split("$");
         // iocane was originally part of Buttercup's core package, and therefore has ties to its archive format.
         // There will be 4 components for pre 0.15.0 archives, and 5 in newer archives. The 5th component
-        // is the pbkdf2 round count, which is optional.
-        if (components.length < 4 || components.length > 5) {
+        // is the pbkdf2 round count, which is optional. We ignore more than the required number of components
+        // for future-proofing.
+        if (components.length < 4) {
             throw new Error("Decryption error - unexpected number of encrypted components");
         }
         var pbkdf2Rounds = (components.length > 4) ? parseInt(components[4], 10) : constants.PBKDF2_ROUND_DEFAULT;
