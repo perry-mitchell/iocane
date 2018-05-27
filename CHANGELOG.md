@@ -1,5 +1,10 @@
 # iocane changelog
 
+## 0.10.2
+_2018-05-27_
+
+ * Future-proof older iocane versions for variable number of components
+
 ## 0.10.1
 _2017-11-17_
 
