@@ -11,6 +11,11 @@ _2018-04-02_
  * Dropped features
    * Encryption using key files has been removed
 
+## 0.10.2
+_2018-05-27_
+
+ * Future proofing
+
 ## 0.10.1
 _2017-11-17_
 
