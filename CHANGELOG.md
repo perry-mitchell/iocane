@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v1.0.1
+_2018-09-11_
+
+ * Re-release to fix latest version
+
 ## **1.0.0** (1.0.0-rc1, 1.0.0-rc2)
 _2018-04-02_
 
