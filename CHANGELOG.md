@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v1.0.2
+_2018-10-09_
+
+ * Update dependencies (detected vulnerabilities)
+
 ## v1.0.1
 _2018-09-11_
 
