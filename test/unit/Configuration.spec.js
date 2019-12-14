@@ -1,4 +1,4 @@
-const Configuration = require("../../dist/Configuration.js");
+const { Configuration } = require("../../dist/Configuration.js");
 
 describe("Configuration", function() {
     it("instantiates without error", function() {

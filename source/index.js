@@ -1,4 +1,4 @@
-const Session = require("./Session.js");
+const { Session } = require("./Session.js");
 
 /**
  * Start new encryption/decryption session
