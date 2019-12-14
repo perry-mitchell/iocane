@@ -7,7 +7,7 @@ const {
     generateIV,
     generateSalt
 } = require("./encryption.js");
-const { ALGO_DEFAULT } = require("./shared.js");
+const { ALGO_DEFAULT } = require("./shared");
 
 const DERIVED_KEY_ITERATIONS = 250000;
 const METHODS = ["cbc", "gcm"];

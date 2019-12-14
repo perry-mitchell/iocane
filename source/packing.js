@@ -1,4 +1,4 @@
-const { ALGO_DEFAULT } = require("./shared.js");
+const { ALGO_DEFAULT } = require("./shared");
 
 const PBKDF2_ROUND_DEFAULT = 1000;
 

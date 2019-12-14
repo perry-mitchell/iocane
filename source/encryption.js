@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const { constantTimeCompare } = require("./timing.js");
+const { constantTimeCompare } = require("./timing");
 
 const ENC_ALGORITHM_CBC = "aes-256-cbc";
 const ENC_ALGORITHM_GCM = "aes-256-gcm";

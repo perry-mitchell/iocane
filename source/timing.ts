@@ -1,11 +1,11 @@
 /**
  * Compare 2 values using time-secure checks
- * @param {String} val1 A value
- * @param {String} val2 Another value
- * @returns {Boolean} True if the values match
+ * @param val1 A value
+ * @param val2 Another value
+ * @returns True if the values match
  */
-function constantTimeCompare(val1, val2) {
-    var sentinel;
+function constantTimeCompare(val1: string, val2: string): boolean {
+    let sentinel;
     if (val1.length !== val2.length) {
         return false;
     }
