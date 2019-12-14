@@ -6,11 +6,11 @@
   "scripts": {
     "build": "tsc",
     "docs": "jsdoc2md source/**/*.js > API.md",
-    "format": "prettier --write '{source,test}/**/*.js'",
+    "format": "prettier --write \"{source,test}/**/*.js\"",
     "precommit": "lint-staged",
     "test": "run-s build test:coverage test:format",
-    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 95 --functions 95",
-    "test:format": "prettier-check '{source,test}/**/*.js'",
+    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 50 --functions 50",
+    "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
     "test:unit:watch": "nodemon --exec 'npm run test:unit'"
