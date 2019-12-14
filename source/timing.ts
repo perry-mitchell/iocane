@@ -4,7 +4,7 @@
  * @param val2 Another value
  * @returns True if the values match
  */
-function constantTimeCompare(val1: string, val2: string): boolean {
+export function constantTimeCompare(val1: string, val2: string): boolean {
     let sentinel;
     if (val1.length !== val2.length) {
         return false;
@@ -14,7 +14,3 @@ function constantTimeCompare(val1: string, val2: string): boolean {
     }
     return sentinel === 0;
 }
-
-module.exports = {
-    constantTimeCompare
-};

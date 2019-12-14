@@ -90,7 +90,7 @@ describe("encryption", function() {
                         .to.have.property("iv")
                         .that.matches(/^[a-f0-9]+$/);
                     expect(encrypted).to.have.property("salt", "salt");
-                    expect(encrypted).to.have.property("mode", "cbc");
+                    expect(encrypted).to.have.property("method", "cbc");
                 }
             );
         });
@@ -130,7 +130,7 @@ describe("encryption", function() {
                         .to.have.property("iv")
                         .that.matches(/^[a-f0-9]+$/);
                     expect(encrypted).to.have.property("salt", "salt");
-                    expect(encrypted).to.have.property("mode", "gcm");
+                    expect(encrypted).to.have.property("method", "gcm");
                 }
             );
         });
