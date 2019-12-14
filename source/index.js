@@ -1,13 +1,4 @@
-const { getConfiguration } = require("./global.js");
 const Session = require("./Session.js");
-
-/**
- * Configure global values
- * @returns {Configuration} The global configuration instance
- */
-function configure() {
-    return getConfiguration();
-}
 
 /**
  * Start new encryption/decryption session
@@ -21,6 +12,5 @@ function createSession() {
  * @module iocane
  */
 module.exports = {
-    configure,
     createSession
 };

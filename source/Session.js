@@ -1,5 +1,4 @@
 const Configuration = require("./Configuration.js");
-const { getConfiguration } = require("./global.js");
 const { deriveFromPassword } = require("./derivation.js");
 const { packEncryptedContent, unpackEncryptedContent } = require("./packing.js");
 
@@ -8,12 +7,6 @@ const { packEncryptedContent, unpackEncryptedContent } = require("./packing.js")
  * @augments Configuration
  */
 class Session extends Configuration {
-    constructor() {
-        super();
-        // Get options from global
-        this._options = Object.assign({}, getConfiguration().options);
-    }
-
     /**
      * Decrypt some text
      * @param {String} text The text to decrypt

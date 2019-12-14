@@ -1,17 +1,17 @@
-const { configure } = require("../../source/index.js");
-const Configuration = require("../../source/Configuration.js");
+const { createSession } = require("../../source/index.js");
+const Session = require("../../source/Session.js");
 
 describe("index", function() {
-    describe("configure", function() {
-        it("returns a configuration instance", function() {
-            const config = configure();
-            expect(config).to.be.an.instanceof(Configuration);
+    describe("createSession", function() {
+        it("returns a Session instance", function() {
+            const session = createSession();
+            expect(session).to.be.an.instanceof(Session);
         });
 
-        it("returns the same instance", function() {
-            const config1 = configure();
-            const config2 = configure();
-            expect(config1).to.equal(config2);
+        it("returns a different instance", function() {
+            const session1 = createSession();
+            const session2 = createSession();
+            expect(session1).not.to.equal(session2);
         });
     });
 });
