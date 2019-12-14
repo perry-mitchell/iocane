@@ -1,5 +1,3 @@
-const ALGO_DEFAULT = "cbc";
+import { EncryptionType } from "./constructs";
 
-module.exports = {
-    ALGO_DEFAULT
-};
+export const ALGO_DEFAULT = EncryptionType.CBC;

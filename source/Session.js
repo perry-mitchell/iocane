@@ -34,10 +34,11 @@ class Session extends Configuration {
         const encryptMethod = this.options[`encryption_${method}`];
         return Promise.all([this._deriveNewKey(password), generateIV()])
             .then(([keyDerivationInfo, iv]) => encryptMethod(text, keyDerivationInfo, iv))
-            .then(encryptedComponents => {
-                const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
-                return packEncryptedContent(content, iv, salt, auth, rounds, method);
-            });
+            .then(encryptedComponents => packEncryptedContent(encryptedComponents));
+        // .then(encryptedComponents => {
+        //     const { content, iv, salt, rounds, mode, auth } = encryptedComponents;
+        //     return packEncryptedContent(content, iv, salt, auth, rounds, method);
+        // });
     }
 
     /**

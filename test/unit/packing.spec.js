@@ -3,14 +3,28 @@ const { packEncryptedContent, unpackEncryptedContent } = require("../../dist/pac
 describe("packing", function() {
     describe("packEncryptedContent", function() {
         it("packs everything into a string", function() {
-            const output = packEncryptedContent("ENC", "IV", "SALT", "AUTH", 1000, "gcm");
+            const output = packEncryptedContent({
+                content: "ENC",
+                iv: "IV",
+                salt: "SALT",
+                auth: "AUTH",
+                rounds: 1000,
+                method: "gcm"
+            });
             expect(output).to.equal("ENC$IV$SALT$AUTH$1000$gcm");
         });
     });
 
     describe("unpackEncryptedContent", function() {
         beforeEach(function() {
-            this.packed = packEncryptedContent("ENC", "IV", "SALT", "AUTH", 1000, "gcm");
+            this.packed = packEncryptedContent({
+                content: "ENC",
+                iv: "IV",
+                salt: "SALT",
+                auth: "AUTH",
+                rounds: 1000,
+                method: "gcm"
+            });
         });
 
         it("unpacks to correct properties", function() {
