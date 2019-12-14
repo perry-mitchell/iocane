@@ -4,10 +4,11 @@
   "description": "Textual encryption library",
   "main": "source/index.js",
   "scripts": {
+    "build": "tsc",
     "docs": "jsdoc2md source/**/*.js > API.md",
     "format": "prettier --write '{source,test}/**/*.js'",
     "precommit": "lint-staged",
-    "test": "run-s test:coverage test:format",
+    "test": "run-s build test:coverage test:format",
     "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 95 --functions 95",
     "test:format": "prettier-check '{source,test}/**/*.js'",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
@@ -50,7 +51,8 @@
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
     "prettier-check": "^2.0.0",
-    "sinon": "^7.5.0"
+    "sinon": "^7.5.0",
+    "typescript": "^3.7.3"
   },
   "dependencies": {
     "pbkdf2": "~3.0.17"

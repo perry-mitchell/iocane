@@ -1,5 +1,5 @@
-const { createSession } = require("../../source/index.js");
-const Session = require("../../source/Session.js");
+const { createSession } = require("../../dist/index.js");
+const Session = require("../../dist/Session.js");
 
 describe("index", function() {
     describe("createSession", function() {

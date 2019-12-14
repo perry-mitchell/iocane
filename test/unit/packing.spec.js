@@ -1,4 +1,4 @@
-const { packEncryptedContent, unpackEncryptedContent } = require("../../source/packing.js");
+const { packEncryptedContent, unpackEncryptedContent } = require("../../dist/packing.js");
 
 describe("packing", function() {
     describe("packEncryptedContent", function() {
