@@ -144,12 +144,3 @@ export async function generateSalt(length: number): Promise<String> {
     }
     return output;
 }
-
-module.exports = {
-    decryptCBC,
-    decryptGCM,
-    encryptCBC,
-    encryptGCM,
-    generateIV,
-    generateSalt
-};

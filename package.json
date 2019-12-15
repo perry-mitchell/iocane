@@ -2,7 +2,8 @@
   "name": "iocane",
   "version": "1.0.2",
   "description": "Textual encryption library",
-  "main": "source/index.js",
+  "main": "dist/index.js",
+  "types":"dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "docs": "jsdoc2md source/**/*.js > API.md",
