@@ -8,49 +8,56 @@ import {
     generateSalt
 } from "./encryption";
 import { ALGO_DEFAULT } from "./shared";
-import { DecryptionFunction, EncryptionFunction, EncryptionType, IVGenerationFunction, KeyDerivationFunction, SaltGenerationFunction } from "./constructs";
+import {
+    DecryptionFunction,
+    EncryptionFunction,
+    EncryptionType,
+    IVGenerationFunction,
+    KeyDerivationFunction,
+    SaltGenerationFunction
+} from "./constructs";
 
 interface ConfigurationOptions {
     /**
      * AES-CBC decryption function
      */
-    decryption_cbc: DecryptionFunction,
+    decryption_cbc: DecryptionFunction;
     /**
      * AES-GCM decryption function
      */
-    decryption_gcm: DecryptionFunction,
+    decryption_gcm: DecryptionFunction;
     /**
      * Default number of key derivation iterations
      */
-    derivationRounds: number,
+    derivationRounds: number;
     /**
      * Keys derivation function
      */
-    deriveKey: KeyDerivationFunction,
+    deriveKey: KeyDerivationFunction;
     /**
      * AES-CBC encryption function
      */
-    encryption_cbc: EncryptionFunction,
+    encryption_cbc: EncryptionFunction;
     /**
      * AES-GCM encryption function
      */
-    encryption_gcm: EncryptionFunction,
+    encryption_gcm: EncryptionFunction;
     /**
      * Random IV generation function
      */
-    generateIV: IVGenerationFunction,
+    generateIV: IVGenerationFunction;
     /**
      * Random salt generation function
      */
-    generateSalt: SaltGenerationFunction,
+    generateSalt: SaltGenerationFunction;
     /**
      * The encryption method - cbc/gcm
      */
-    method: EncryptionType,
+    method: EncryptionType;
     /**
      * Salt character length
      */
-    saltLength: number
+    saltLength: number;
 }
 
 const DERIVED_KEY_ITERATIONS = 250000;

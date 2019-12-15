@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
-    "format": "prettier --write \"{source,test}/**/*.js\"",
+    "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
     "test": "run-s build test:coverage test:format",
@@ -24,7 +24,7 @@
     "*.jpg"
   ],
   "lint-staged": {
-    "{source,test}/**/*.js": [
+    "{source,test}/**/*.{js,ts}": [
       "prettier --write",
       "git add"
     ]

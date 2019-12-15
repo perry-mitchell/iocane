@@ -12,7 +12,10 @@ const HMAC_ALGORITHM = "sha256";
  * @param keyDerivationInfo Key derivation information
  * @returns A promise that resolves with the decrypted string
  */
-export async function decryptCBC(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string> {
+export async function decryptCBC(
+    encryptedComponents: EncryptedComponents,
+    keyDerivationInfo: DerivedKeyInfo
+): Promise<string> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
@@ -41,7 +44,10 @@ export async function decryptCBC(encryptedComponents: EncryptedComponents, keyDe
  * @param keyDerivationInfo Key derivation information
  * @returns A promise that resolves with the decrypted string
  */
-export async function decryptGCM(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string> {
+export async function decryptGCM(
+    encryptedComponents: EncryptedComponents,
+    keyDerivationInfo: DerivedKeyInfo
+): Promise<string> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
@@ -64,7 +70,11 @@ export async function decryptGCM(encryptedComponents: EncryptedComponents, keyDe
  * @param iv A buffer containing the IV
  * @returns A promise that resolves with encrypted components
  */
-export async function encryptCBC(text: string, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<EncryptedComponents> {
+export async function encryptCBC(
+    text: string,
+    keyDerivationInfo: DerivedKeyInfo,
+    iv: Buffer
+): Promise<EncryptedComponents> {
     const ivHex = iv.toString("hex");
     const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
     const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
@@ -95,7 +105,11 @@ export async function encryptCBC(text: string, keyDerivationInfo: DerivedKeyInfo
  * @param iv A buffer containing the IV
  * @returns A promise that resolves with encrypted components
  */
-export async function encryptGCM(text: string, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<EncryptedComponents> {
+export async function encryptGCM(
+    text: string,
+    keyDerivationInfo: DerivedKeyInfo,
+    iv: Buffer
+): Promise<EncryptedComponents> {
     const ivHex = iv.toString("hex");
     const { rounds } = keyDerivationInfo;
     const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);

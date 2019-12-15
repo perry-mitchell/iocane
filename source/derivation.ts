@@ -26,7 +26,13 @@ const PASSWORD_KEY_SIZE = 32;
  * @throws {Error} Rejects if no rounds are provided
  * @returns A promise that resolves with derived key information
  */
-export async function deriveFromPassword(pbkdf2Gen: Function, password: string, salt: string, rounds: number, generateHMAC: boolean = true): Promise<DerivedKeyInfo> {
+export async function deriveFromPassword(
+    pbkdf2Gen: Function,
+    password: string,
+    salt: string,
+    rounds: number,
+    generateHMAC: boolean = true
+): Promise<DerivedKeyInfo> {
     if (!password) {
         throw new Error("Failed deriving key: Password must be provided");
     }
@@ -61,13 +67,25 @@ export async function deriveFromPassword(pbkdf2Gen: Function, password: string, 
  * @param bits The size of the key to generate, in bits
  * @returns A Promise that resolves with the hash
  */
-export function pbkdf2(password: string, salt: string, rounds: number, bits: number): Promise<Buffer> {
+export function pbkdf2(
+    password: string,
+    salt: string,
+    rounds: number,
+    bits: number
+): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-        deriveKey(password, salt, rounds, bits / 8, DERIVED_KEY_ALGORITHM, (err?: Error, key?: Buffer) => {
-            if (err) {
-                return reject(err);
+        deriveKey(
+            password,
+            salt,
+            rounds,
+            bits / 8,
+            DERIVED_KEY_ALGORITHM,
+            (err?: Error, key?: Buffer) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(key);
             }
-            return resolve(key);
-        });
+        );
     });
 }

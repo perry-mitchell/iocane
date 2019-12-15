@@ -3,23 +3,23 @@
  * data and returns a decrypted string asynchronously
  */
 export interface DecryptionFunction {
-    (encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string>
+    (encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string>;
 }
 
 export interface DerivedKeyInfo {
-    salt: string,
-    key: Buffer,
-    hmac: Buffer | null,
-    rounds: number
+    salt: string;
+    key: Buffer;
+    hmac: Buffer | null;
+    rounds: number;
 }
 
 export interface EncryptedComponents {
-    content: string,
-    iv: string,
-    salt: string,
-    auth: string,
-    rounds: number,
-    method: EncryptionType
+    content: string;
+    iv: string;
+    salt: string;
+    auth: string;
+    rounds: number;
+    method: EncryptionType;
 }
 
 /**
@@ -28,7 +28,7 @@ export interface EncryptedComponents {
  * packing.
  */
 export interface EncryptionFunction {
-    (text: string, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<EncryptedComponents>
+    (text: string, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<EncryptedComponents>;
 }
 
 /**
@@ -44,7 +44,7 @@ export enum EncryptionType {
  * Random IV generation function - returns an IV buffer aynchronously
  */
 export interface IVGenerationFunction {
-    (): Promise<Buffer>
+    (): Promise<Buffer>;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface IVGenerationFunction {
  * key to generate.
  */
 export interface KeyDerivationFunction {
-    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer>
+    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer>;
 }
 
 /**
@@ -68,5 +68,5 @@ export type PackedEncryptedContent = string;
  * and returns a random salt string asynchronously.
  */
 export interface SaltGenerationFunction {
-    (length: number): Promise<string>
+    (length: number): Promise<string>;
 }

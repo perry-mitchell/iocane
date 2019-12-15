@@ -32,7 +32,10 @@ export class Session extends Configuration {
     async encrypt(text: string, password: string): Promise<PackedEncryptedContent> {
         const { generateIV, method } = this.options;
         const encryptMethod = this.options[`encryption_${method}`];
-        const [keyDerivationInfo, iv] = await Promise.all([this._deriveNewKey(password), generateIV()]);
+        const [keyDerivationInfo, iv] = await Promise.all([
+            this._deriveNewKey(password),
+            generateIV()
+        ]);
         const encryptedComponents = await encryptMethod(text, keyDerivationInfo, iv);
         return packEncryptedContent(encryptedComponents);
     }
@@ -47,7 +50,12 @@ export class Session extends Configuration {
      * @protected
      * @memberof Session
      */
-    _deriveKey(password: string, salt: string, rounds?: number, encryptionMethod?: EncryptionType): Promise<DerivedKeyInfo> {
+    _deriveKey(
+        password: string,
+        salt: string,
+        rounds?: number,
+        encryptionMethod?: EncryptionType
+    ): Promise<DerivedKeyInfo> {
         const { derivationRounds, deriveKey, method: optionsMethod } = this.options;
         const method = encryptionMethod || optionsMethod;
         const deriveKeyCall =
