@@ -9,6 +9,7 @@
     "docs": "jsdoc2md source/**/*.js > API.md",
     "format": "prettier --write \"{source,test}/**/*.js\"",
     "precommit": "lint-staged",
+    "prepublishOnly": "npm run build",
     "test": "run-s build test:coverage test:format",
     "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 50 --functions 50",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
@@ -16,6 +17,12 @@
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
     "test:unit:watch": "nodemon --exec 'npm run test:unit'"
   },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "*.md",
+    "*.jpg"
+  ],
   "lint-staged": {
     "{source,test}/**/*.js": [
       "prettier --write",
