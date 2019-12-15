@@ -25,7 +25,7 @@ describe("derivation", function() {
         it("supports disabling HMAC", function() {
             return deriveFromPassword(pbkdf2, "pass", "aaaa", 1001, false).then(keyInfo => {
                 expect(keyInfo.key).to.have.lengthOf(32);
-                expect(keyInfo.hmac).to.be.undefined;
+                expect(keyInfo.hmac).to.be.null;
             });
         });
 

@@ -11,7 +11,7 @@
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
     "test": "run-s build test:coverage test:format",
-    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 50 --functions 50",
+    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
