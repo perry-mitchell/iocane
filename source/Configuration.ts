@@ -8,38 +8,54 @@ import {
     generateSalt
 } from "./encryption";
 import { ALGO_DEFAULT } from "./shared";
-import { EncryptionType } from "./constructs";
+import { DecryptionFunction, EncryptionFunction, EncryptionType, IVGenerationFunction, KeyDerivationFunction, SaltGenerationFunction } from "./constructs";
 
 interface ConfigurationOptions {
-    decryption_cbc: Function,
-    decryption_gcm: Function,
+    /**
+     * AES-CBC decryption function
+     */
+    decryption_cbc: DecryptionFunction,
+    /**
+     * AES-GCM decryption function
+     */
+    decryption_gcm: DecryptionFunction,
+    /**
+     * Default number of key derivation iterations
+     */
     derivationRounds: number,
-    deriveKey: Function,
-    encryption_cbc: Function,
-    encryption_gcm: Function,
-    generateIV: Function,
-    generateSalt: Function,
+    /**
+     * Keys derivation function
+     */
+    deriveKey: KeyDerivationFunction,
+    /**
+     * AES-CBC encryption function
+     */
+    encryption_cbc: EncryptionFunction,
+    /**
+     * AES-GCM encryption function
+     */
+    encryption_gcm: EncryptionFunction,
+    /**
+     * Random IV generation function
+     */
+    generateIV: IVGenerationFunction,
+    /**
+     * Random salt generation function
+     */
+    generateSalt: SaltGenerationFunction,
+    /**
+     * The encryption method - cbc/gcm
+     */
     method: EncryptionType,
+    /**
+     * Salt character length
+     */
     saltLength: number
 }
 
 const DERIVED_KEY_ITERATIONS = 250000;
 const METHODS = [EncryptionType.CBC, EncryptionType.GCM];
 const SALT_LENGTH = 12;
-
-// /**
-//  * @typedef {Object} ConfigurationOptions
-//  * @property {Function} decryption_cbc - The CBC decryption method
-//  * @property {Function} decryption_gcm - The GCM decryption method
-//  * @property {Number} derivationRounds - The number of key derivation iterations
-//  * @property {Function} deriveKey - The key derivation function (default: PBKDF2)
-//  * @property {Function} encryption_cbc - The CBC encryption method
-//  * @property {Function} encryption_gcm - The GCM encryption method
-//  * @property {Function} generateIV - The IV generation method
-//  * @property {Function} generateSalt - The salt generation method
-//  * @property {String} method - The encryption method (cbc/gcm)
-//  * @property {Number} saltLength - The length of the salt
-//  */
 
 /**
  * Get the default options
@@ -100,7 +116,7 @@ export class Configuration {
      *    // return Promise
      *  });
      */
-    overrideDecryption(method: EncryptionType, func?: Function): Configuration {
+    overrideDecryption(method: EncryptionType, func?: DecryptionFunction): Configuration {
         validateEncryptionMethod(method);
         this._options[`decryption_${method}`] = func || getDefaultOptions()[`decryption_${method}`];
         return this;
@@ -118,7 +134,7 @@ export class Configuration {
      *    // return Promise
      *  });
      */
-    overrideEncryption(method: EncryptionType, func?: Function): Configuration {
+    overrideEncryption(method: EncryptionType, func?: EncryptionFunction): Configuration {
         validateEncryptionMethod(method);
         this._options[`encryption_${method}`] = func || getDefaultOptions()[`encryption_${method}`];
         return this;
@@ -134,7 +150,7 @@ export class Configuration {
      *    return Promise.resolve(ivBuffer);
      *  });
      */
-    overrideIVGeneration(func?: Function): Configuration {
+    overrideIVGeneration(func?: IVGenerationFunction): Configuration {
         this._options.generateIV = func || getDefaultOptions().generateIV;
         return this;
     }
@@ -150,7 +166,7 @@ export class Configuration {
      *    return Promise.resolve(derivedKeyBuffer);
      *  });
      */
-    overrideKeyDerivation(func?: Function): Configuration {
+    overrideKeyDerivation(func?: KeyDerivationFunction): Configuration {
         this._options.deriveKey = func || getDefaultOptions().deriveKey;
         return this;
     }
@@ -165,7 +181,7 @@ export class Configuration {
      *    return Promise.resolve(saltText);
      *  });
      */
-    overrideSaltGeneration(func?: Function): Configuration {
+    overrideSaltGeneration(func?: SaltGenerationFunction): Configuration {
         this._options.generateSalt = func || getDefaultOptions().generateSalt;
         return this;
     }
@@ -185,6 +201,8 @@ export class Configuration {
      * @param rounds The new rounds to use (empty for reset)
      * @returns Returns self
      * @memberof Configuration
+     * @example
+     *  config.setDerivationRounds(250000);
      */
     setDerivationRounds(rounds?: number): Configuration {
         if (typeof rounds === "undefined") {
@@ -200,6 +218,8 @@ export class Configuration {
      * @param method The method to use (cbc/gcm)
      * @returns Returns self
      * @memberof Configuration
+     * @example
+     *  config.use("gcm");
      */
     use(method: EncryptionType): Configuration {
         validateEncryptionMethod(method);

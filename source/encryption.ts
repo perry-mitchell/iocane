@@ -12,7 +12,7 @@ const HMAC_ALGORITHM = "sha256";
  * @param keyDerivationInfo Key derivation information
  * @returns A promise that resolves with the decrypted string
  */
-export async function decryptCBC(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<String> {
+export async function decryptCBC(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
@@ -41,7 +41,7 @@ export async function decryptCBC(encryptedComponents: EncryptedComponents, keyDe
  * @param keyDerivationInfo Key derivation information
  * @returns A promise that resolves with the decrypted string
  */
-export async function decryptGCM(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<String> {
+export async function decryptGCM(encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
     const iv = new Buffer(encryptedComponents.iv, "hex");
@@ -131,7 +131,7 @@ export async function generateIV(): Promise<Buffer> {
  * @returns A promise that resolves with a salt (hex)
  * @throws {Error} Rejects if length is invalid
  */
-export async function generateSalt(length: number): Promise<String> {
+export async function generateSalt(length: number): Promise<string> {
     if (length <= 0) {
         throw new Error(`Failed generating salt: Invalid length supplied: ${length}`);
     }
