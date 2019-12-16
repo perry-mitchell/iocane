@@ -5,8 +5,8 @@ const {
     encryptGCM,
     generateIV,
     generateSalt
-} = require("../../source/encryption.js");
-const { deriveFromPassword, pbkdf2 } = require("../../source/derivation.js");
+} = require("../../dist/encryption.js");
+const { deriveFromPassword, pbkdf2 } = require("../../dist/derivation.js");
 
 const ENCRYPTED_SAMPLE = "at5427PQdplGgZgcmIjy/Fv0xZaiKO+bzmY7NsnYj90=";
 const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
@@ -90,7 +90,7 @@ describe("encryption", function() {
                         .to.have.property("iv")
                         .that.matches(/^[a-f0-9]+$/);
                     expect(encrypted).to.have.property("salt", "salt");
-                    expect(encrypted).to.have.property("mode", "cbc");
+                    expect(encrypted).to.have.property("method", "cbc");
                 }
             );
         });
@@ -130,7 +130,7 @@ describe("encryption", function() {
                         .to.have.property("iv")
                         .that.matches(/^[a-f0-9]+$/);
                     expect(encrypted).to.have.property("salt", "salt");
-                    expect(encrypted).to.have.property("mode", "gcm");
+                    expect(encrypted).to.have.property("method", "gcm");
                 }
             );
         });

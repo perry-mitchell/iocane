@@ -7,7 +7,7 @@ NodeJS textual encryption library
 ## About
 **iocane** makes text encryption and decryption easy by bundling all the complicated processes into one succinct library. Encrypt and decrypt strings easily by using iocane's encryption format - strings in, strings out.
 
-This library uses a global configuration that is inherited by _sessions_. A session describes one encryption/decryption action, and can also have options be further overridden at the time of execution. Check the examples below for a better idea of how this process works.
+This library _sessions_ for encryption and decryption. A session describes one encryption/decryption action, and can also have options be further overridden at the time of execution. Check the examples below for a better idea of how this process works.
 
 ### Features
 **iocane** by default boasts the following features:
@@ -69,29 +69,18 @@ createSession()
     .encrypt(/* ... */);
 ```
 
-Instead of overriding each method for every session, you can use the global configuration instance to override them once for all subsequent sessions:
-
-```javascript
-const { configure, createSession } = require("iocane");
-
-configure()
-    .use("gcm")
-    .overrideDecryption("gcm", gcmDecFn)
-    .overrideEncryption("gcm", gcmEncFn);
-
-createSession().encrypt(/* ... */); // Uses global settings
-```
-
 _Note that the default encryption mode is `"cbc"` (AES-CBC encryption)._
 
 You can check out the [API documentation](API.md) for more information.
 
 ## Supported environments
-**iocane** supports NodeJS version 6 and above. Versions prior to 6 were supported in `0.x` but are not anymore.
+**iocane** supports NodeJS version 8 and above. Versions prior to 8 were supported in `1.x` but are not anymore.
 
 **iocane** is used in the browser as well, but in very custom situations. Support for using iocane in the browser is not provided through this repository. Please see respositories like [`buttercup`](https://github.com/buttercup/buttercup-core) and [Buttercup browser extension](https://github.com/buttercup/buttercup-browser-extension) for web usage.
 
 _Note: when using iocane in the browser, at very least the key derivation process should be overridden. This is extremely slow if left to the internal derivation method._
+
+_Note: iocane is written in TypeScript, though versions before v2 where written in JavaScript._
 
 ## Buttercup
 **iocane** was originally part of the [Buttercup](https://github.com/buttercup) suite. Buttercup is a supported dependent of iocane and efforts are made to align iocane with Buttercup's target platforms and uses.

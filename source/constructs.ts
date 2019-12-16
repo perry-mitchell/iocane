@@ -1,0 +1,72 @@
+/**
+ * Decryption function that takes encrypted components and key derivation
+ * data and returns a decrypted string asynchronously
+ */
+export interface DecryptionFunction {
+    (encryptedComponents: EncryptedComponents, keyDerivationInfo: DerivedKeyInfo): Promise<string>;
+}
+
+export interface DerivedKeyInfo {
+    salt: string;
+    key: Buffer;
+    hmac: Buffer | null;
+    rounds: number;
+}
+
+export interface EncryptedComponents {
+    content: string;
+    iv: string;
+    salt: string;
+    auth: string;
+    rounds: number;
+    method: EncryptionType;
+}
+
+/**
+ * Encryption function that takes a raw string, key derivation data and
+ * an IV buffer. Returns an encrypted components payload, ready for
+ * packing.
+ */
+export interface EncryptionFunction {
+    (text: string, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<EncryptedComponents>;
+}
+
+/**
+ * Encryption type enumeration - sets the type of encryption to use and
+ * is calculated automatically for decryption.
+ */
+export enum EncryptionType {
+    CBC = "cbc",
+    GCM = "gcm"
+}
+
+/**
+ * Random IV generation function - returns an IV buffer aynchronously
+ */
+export interface IVGenerationFunction {
+    (): Promise<Buffer>;
+}
+
+/**
+ * Key derivation method - returns a buffer, asynchronously, that matches
+ * the specified number of bits (in hex form). Takes a raw password,
+ * random salt, number of derivation rounds/iterations and the bits of
+ * key to generate.
+ */
+export interface KeyDerivationFunction {
+    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer>;
+}
+
+/**
+ * An encrypted string payload, containing all necessary data for
+ * decryption to occur (besides the password).
+ */
+export type PackedEncryptedContent = string;
+
+/**
+ * Salt generation function - takes a string length as the only parameter
+ * and returns a random salt string asynchronously.
+ */
+export interface SaltGenerationFunction {
+    (length: number): Promise<string>;
+}

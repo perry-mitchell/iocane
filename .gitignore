@@ -1,11 +1,10 @@
-logs
 *.log
-npm-debug.log*
 node_modules
 .DS_Store
 .nyc_output
 .npm
 .node_repl_history
 .history
-.vscode
 source/test.js
+/dist
+/docs

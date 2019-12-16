@@ -2,20 +2,29 @@
   "name": "iocane",
   "version": "1.0.2",
   "description": "Textual encryption library",
-  "main": "source/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "docs": "jsdoc2md source/**/*.js > API.md",
-    "format": "prettier --write '{source,test}/**/*.js'",
+    "build": "tsc",
+    "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
+    "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
-    "test": "run-s test:coverage test:format",
-    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 95 --functions 95",
-    "test:format": "prettier-check '{source,test}/**/*.js'",
+    "prepublishOnly": "npm run build",
+    "test": "run-s build test:coverage test:format",
+    "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
+    "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
     "test:unit:watch": "nodemon --exec 'npm run test:unit'"
   },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "*.md",
+    "*.jpg"
+  ],
   "lint-staged": {
-    "{source,test}/**/*.js": [
+    "{source,test}/**/*.{js,ts}": [
       "prettier --write",
       "git add"
     ]
@@ -41,8 +50,8 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "concat-md": "^0.3.2",
     "husky": "^3.1.0",
-    "jsdoc-to-markdown": "^5.0.3",
     "lint-staged": "^9.5.0",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.2",
@@ -50,7 +59,11 @@
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
     "prettier-check": "^2.0.0",
-    "sinon": "^7.5.0"
+    "rimraf": "^3.0.0",
+    "sinon": "^7.5.0",
+    "typedoc": "^0.15.4",
+    "typedoc-plugin-markdown": "^2.2.14",
+    "typescript": "^3.7.3"
   },
   "dependencies": {
     "pbkdf2": "~3.0.17"
