@@ -1,5 +1,14 @@
 # iocane changelog
 
+## v2.0.0
+_2019-12-16_
+
+ * Migrate to TypeScript
+ * Drop support for Node v6
+ * Remove global `configure`
+ * **Bugfix**:
+   * Several payload parameters misnamed, such as `mode` instead of `method`
+
 ## v1.0.2
 _2018-10-09_
 

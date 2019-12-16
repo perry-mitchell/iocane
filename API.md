@@ -1,704 +1,1565 @@
-## Modules
 
-<dl>
-<dt><a href="#module_iocane">iocane</a></dt>
-<dd></dd>
-</dl>
+<a name="readmemd"></a>
 
-## Classes
+[iocane](#readmemd)
 
-<dl>
-<dt><a href="#Configuration">Configuration</a></dt>
-<dd><p>System configuration</p>
-</dd>
-<dt><a href="#Session">Session</a> ⇐ <code><a href="#Configuration">Configuration</a></code></dt>
-<dd><p>Encryption session</p>
-</dd>
-</dl>
+# iocane
+
+## Index
+
+### Enumerations
+
+* [EncryptionType](#enumsencryptiontypemd)
+
+### Classes
+
+* [Configuration](#classesconfigurationmd)
+* [Session](#classessessionmd)
+
+### Interfaces
+
+* [ConfigurationOptions](#interfacesconfigurationoptionsmd)
+* [DecryptionFunction](#interfacesdecryptionfunctionmd)
+* [DerivedKeyInfo](#interfacesderivedkeyinfomd)
+* [EncryptedComponents](#interfacesencryptedcomponentsmd)
+* [EncryptionFunction](#interfacesencryptionfunctionmd)
+* [IVGenerationFunction](#interfacesivgenerationfunctionmd)
+* [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)
+* [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)
+
+### Type aliases
+
+* [PackedEncryptedContent](#packedencryptedcontent)
+
+### Variables
+
+* [ALGO_DEFAULT](#const-algo_default)
+* [DERIVED_KEY_ALGORITHM](#const-derived_key_algorithm)
+* [DERIVED_KEY_ITERATIONS](#const-derived_key_iterations)
+* [ENC_ALGORITHM_CBC](#const-enc_algorithm_cbc)
+* [ENC_ALGORITHM_GCM](#const-enc_algorithm_gcm)
+* [HMAC_ALGORITHM](#const-hmac_algorithm)
+* [HMAC_KEY_SIZE](#const-hmac_key_size)
+* [METHODS](#const-methods)
+* [PASSWORD_KEY_SIZE](#const-password_key_size)
+* [PBKDF2_ROUND_DEFAULT](#const-pbkdf2_round_default)
+* [SALT_LENGTH](#const-salt_length)
+
+### Functions
+
+* [constantTimeCompare](#constanttimecompare)
+* [createSession](#createsession)
+* [decryptCBC](#decryptcbc)
+* [decryptGCM](#decryptgcm)
+* [deriveFromPassword](#derivefrompassword)
+* [encryptCBC](#encryptcbc)
+* [encryptGCM](#encryptgcm)
+* [generateIV](#generateiv)
+* [generateSalt](#generatesalt)
+* [getDefaultOptions](#getdefaultoptions)
+* [packEncryptedContent](#packencryptedcontent)
+* [pbkdf2](#pbkdf2)
+* [unpackEncryptedContent](#unpackencryptedcontent)
+* [validateEncryptionMethod](#validateencryptionmethod)
+
+## Type aliases
+
+###  PackedEncryptedContent
+
+Ƭ **PackedEncryptedContent**: *string*
+
+*Defined in [constructs.ts:64](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L64)*
+
+An encrypted string payload, containing all necessary data for
+decryption to occur (besides the password).
+
+## Variables
+
+### `Const` ALGO_DEFAULT
+
+• **ALGO_DEFAULT**: *[CBC](#cbc)* =  EncryptionType.CBC
+
+*Defined in [shared.ts:3](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/shared.ts#L3)*
+
+___
+
+### `Const` DERIVED_KEY_ALGORITHM
+
+• **DERIVED_KEY_ALGORITHM**: *"sha256"* = "sha256"
+
+*Defined in [derivation.ts:4](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L4)*
+
+___
+
+### `Const` DERIVED_KEY_ITERATIONS
+
+• **DERIVED_KEY_ITERATIONS**: *250000* = 250000
+
+*Defined in [Configuration.ts:63](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L63)*
+
+___
+
+### `Const` ENC_ALGORITHM_CBC
+
+• **ENC_ALGORITHM_CBC**: *"aes-256-cbc"* = "aes-256-cbc"
+
+*Defined in [encryption.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L5)*
+
+___
+
+### `Const` ENC_ALGORITHM_GCM
+
+• **ENC_ALGORITHM_GCM**: *"aes-256-gcm"* = "aes-256-gcm"
+
+*Defined in [encryption.ts:6](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L6)*
+
+___
+
+### `Const` HMAC_ALGORITHM
+
+• **HMAC_ALGORITHM**: *"sha256"* = "sha256"
+
+*Defined in [encryption.ts:7](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L7)*
+
+___
+
+### `Const` HMAC_KEY_SIZE
+
+• **HMAC_KEY_SIZE**: *32* = 32
+
+*Defined in [derivation.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L5)*
+
+___
+
+### `Const` METHODS
+
+• **METHODS**: *[EncryptionType](#enumsencryptiontypemd)[]* =  [EncryptionType.CBC, EncryptionType.GCM]
+
+*Defined in [Configuration.ts:64](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L64)*
+
+___
+
+### `Const` PASSWORD_KEY_SIZE
+
+• **PASSWORD_KEY_SIZE**: *32* = 32
+
+*Defined in [derivation.ts:6](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L6)*
+
+___
+
+### `Const` PBKDF2_ROUND_DEFAULT
+
+• **PBKDF2_ROUND_DEFAULT**: *1000* = 1000
+
+*Defined in [packing.ts:4](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L4)*
+
+___
+
+### `Const` SALT_LENGTH
+
+• **SALT_LENGTH**: *12* = 12
+
+*Defined in [Configuration.ts:65](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L65)*
 
 ## Functions
 
-<dl>
-<dt><a href="#deriveFromPassword">deriveFromPassword(pbkdf2Gen, password, salt, rounds, [generateHMAC])</a> ⇒ <code><a href="#DerivedKeyInfo">Promise.&lt;DerivedKeyInfo&gt;</a></code></dt>
-<dd><p>Derive a key from a password</p>
-</dd>
-<dt><a href="#pbkdf2">pbkdf2(password, salt, rounds, bits)</a> ⇒ <code>Promise.&lt;Buffer&gt;</code></dt>
-<dd><p>The default PBKDF2 function</p>
-</dd>
-<dt><a href="#decryptCBC">decryptCBC(encryptedComponents, keyDerivationInfo)</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
-<dd><p>Decrypt text using AES-CBC</p>
-</dd>
-<dt><a href="#decryptGCM">decryptGCM(encryptedComponents, keyDerivationInfo)</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
-<dd><p>Decrypt text using AES-GCM</p>
-</dd>
-<dt><a href="#encryptCBC">encryptCBC(text, keyDerivationInfo, iv)</a> ⇒ <code><a href="#EncryptedComponents">Promise.&lt;EncryptedComponents&gt;</a></code></dt>
-<dd><p>Encrypt text using AES-CBC</p>
-</dd>
-<dt><a href="#encryptGCM">encryptGCM(text, keyDerivationInfo, iv)</a> ⇒ <code><a href="#EncryptedComponents">Promise.&lt;EncryptedComponents&gt;</a></code></dt>
-<dd><p>Encrypt text using AES-GCM</p>
-</dd>
-<dt><a href="#generateIV">generateIV()</a> ⇒ <code>Promise.&lt;Buffer&gt;</code></dt>
-<dd><p>IV generator</p>
-</dd>
-<dt><a href="#generateSalt">generateSalt(length)</a> ⇒ <code>Promise.&lt;String&gt;</code></dt>
-<dd><p>Salt generator</p>
-</dd>
-<dt><a href="#getConfiguration">getConfiguration()</a> ⇒ <code><a href="#Configuration">Configuration</a></code></dt>
-<dd><p>Get the global configuration instance</p>
-</dd>
-<dt><a href="#configure">configure()</a> ⇒ <code><a href="#Configuration">Configuration</a></code></dt>
-<dd><p>Configure global values</p>
-</dd>
-<dt><a href="#createSession">createSession()</a> ⇒ <code><a href="#Session">Session</a></code></dt>
-<dd><p>Start new encryption/decryption session</p>
-</dd>
-<dt><a href="#packEncryptedContent">packEncryptedContent(encryptedContent, iv, salt, auth, rounds, method)</a> ⇒ <code>String</code></dt>
-<dd><p>Pack encrypted content components into the final encrypted form</p>
-</dd>
-<dt><a href="#unpackEncryptedContent">unpackEncryptedContent(encryptedContent)</a> ⇒ <code><a href="#EncryptedComponents">EncryptedComponents</a></code></dt>
-<dd><p>Unpack encrypted content components from an encrypted string</p>
-</dd>
-<dt><a href="#constantTimeCompare">constantTimeCompare(val1, val2)</a> ⇒ <code>Boolean</code></dt>
-<dd><p>Compare 2 values using time-secure checks</p>
-</dd>
-</dl>
+###  constantTimeCompare
 
-## Typedefs
+▸ **constantTimeCompare**(`val1`: string, `val2`: string): *boolean*
 
-<dl>
-<dt><a href="#ConfigurationOptions">ConfigurationOptions</a> : <code>Object</code></dt>
-<dd></dd>
-<dt><a href="#DerivedKeyInfo">DerivedKeyInfo</a></dt>
-<dd><p>Derived key info</p>
-</dd>
-<dt><a href="#EncryptedComponents">EncryptedComponents</a> : <code>Object</code></dt>
-<dd><p>Encrypted content components</p>
-</dd>
-<dt><a href="#EncryptedComponents">EncryptedComponents</a> : <code>Object</code></dt>
-<dd><p>Encrypted content components</p>
-</dd>
-</dl>
+*Defined in [timing.ts:7](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/timing.ts#L7)*
 
-<a name="module_iocane"></a>
-
-## iocane
-<a name="Configuration"></a>
-
-## Configuration
-System configuration
-
-**Kind**: global class  
-
-* [Configuration](#Configuration)
-    * _instance_
-        * [.options](#Configuration+options) : [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-        * [.overrideDecryption(method, [func])](#Configuration+overrideDecryption) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.overrideEncryption(method, [func])](#Configuration+overrideEncryption) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.overrideIVGeneration([func])](#Configuration+overrideIVGeneration) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.overrideKeyDerivation([func])](#Configuration+overrideKeyDerivation) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.overrideSaltGeneration([func])](#Configuration+overrideSaltGeneration) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.reset()](#Configuration+reset) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.setDerivationRounds([rounds])](#Configuration+setDerivationRounds) ⇒ [<code>Configuration</code>](#Configuration)
-        * [.use(method)](#Configuration+use) ⇒ [<code>Configuration</code>](#Configuration)
-    * _static_
-        * [.getDefaultOptions()](#Configuration.getDefaultOptions) ⇒ [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-
-<a name="Configuration+options"></a>
-
-### configuration.options : [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-Configuration options
-
-**Kind**: instance property of [<code>Configuration</code>](#Configuration)  
-**Read only**: true  
-<a name="Configuration+overrideDecryption"></a>
-
-### configuration.overrideDecryption(method, [func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the decryption method
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | Which encryption type to override (cbc/gcm) |
-| [func] | <code>function</code> | A decryption function that should resemble that in the example |
-
-**Example**  
-```js
-config.overrideDecryption("cbc", (encryptedComponents, keyDerivationInfo) => {
-   // handle decryption
-   // return Promise
- });
-```
-<a name="Configuration+overrideEncryption"></a>
-
-### configuration.overrideEncryption(method, [func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the encryption method
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | Which encryption type to override (cbc/gcm) |
-| [func] | <code>function</code> | A encryption function that should resemble that in the example |
-
-**Example**  
-```js
-config.overrideEncryption("cbc", (text, keyDerivationInfo, ivBuffer) => {
-   // handle encryption
-   // return Promise
- });
-```
-<a name="Configuration+overrideIVGeneration"></a>
-
-### configuration.overrideIVGeneration([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the IV generator
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The override function |
-
-**Example**  
-```js
-config.overrideIVGeneration(() => {
-   return Promise.resolve(ivBuffer);
- });
-```
-<a name="Configuration+overrideKeyDerivation"></a>
-
-### configuration.overrideKeyDerivation([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override key derivation
-Derive the key according to the `pbkdf2` function in derivation.js
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The new key derivation function |
-
-**Example**  
-```js
-config.overrideKeyDerivation((password, salt, rounds, bits) => {
-   return Promise.resolve(derivedKeyBuffer);
- });
-```
-<a name="Configuration+overrideSaltGeneration"></a>
-
-### configuration.overrideSaltGeneration([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override salt generation
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The function to use for salt generation |
-
-**Example**  
-```js
-config.overrideSaltGeneration(length => {
-   return Promise.resolve(saltText);
- });
-```
-<a name="Configuration+reset"></a>
-
-### configuration.reset() ⇒ [<code>Configuration</code>](#Configuration)
-Reset the configuration options
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-<a name="Configuration+setDerivationRounds"></a>
-
-### configuration.setDerivationRounds([rounds]) ⇒ [<code>Configuration</code>](#Configuration)
-Set the derivation rounds to use
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [rounds] | <code>Number</code> | The new rounds to use (empty for reset) |
-
-<a name="Configuration+use"></a>
-
-### configuration.use(method) ⇒ [<code>Configuration</code>](#Configuration)
-Set the encryption method to use
-
-**Kind**: instance method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | The method to use (cbc/gcm) |
-
-<a name="Configuration.getDefaultOptions"></a>
-
-### Configuration.getDefaultOptions() ⇒ [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-Get the default options
-
-**Kind**: static method of [<code>Configuration</code>](#Configuration)  
-**Returns**: [<code>ConfigurationOptions</code>](#ConfigurationOptions) - Default configuration options  
-<a name="Session"></a>
-
-## Session ⇐ [<code>Configuration</code>](#Configuration)
-Encryption session
-
-**Kind**: global class  
-**Extends**: [<code>Configuration</code>](#Configuration)  
-
-* [Session](#Session) ⇐ [<code>Configuration</code>](#Configuration)
-    * [.options](#Configuration+options) : [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-    * [.decrypt(text, password)](#Session+decrypt)
-    * [.encrypt(text, password)](#Session+encrypt) ⇒ <code>Promise.&lt;String&gt;</code>
-    * [._deriveKey(password, salt, [rounds], [encryptionMethod])](#Session+_deriveKey) ⇒ [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo)
-    * [._deriveNewKey(password)](#Session+_deriveNewKey) ⇒ [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo)
-    * [.overrideDecryption(method, [func])](#Configuration+overrideDecryption) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.overrideEncryption(method, [func])](#Configuration+overrideEncryption) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.overrideIVGeneration([func])](#Configuration+overrideIVGeneration) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.overrideKeyDerivation([func])](#Configuration+overrideKeyDerivation) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.overrideSaltGeneration([func])](#Configuration+overrideSaltGeneration) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.reset()](#Configuration+reset) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.setDerivationRounds([rounds])](#Configuration+setDerivationRounds) ⇒ [<code>Configuration</code>](#Configuration)
-    * [.use(method)](#Configuration+use) ⇒ [<code>Configuration</code>](#Configuration)
-
-<a name="Configuration+options"></a>
-
-### session.options : [<code>ConfigurationOptions</code>](#ConfigurationOptions)
-Configuration options
-
-**Kind**: instance property of [<code>Session</code>](#Session)  
-**Read only**: true  
-<a name="Session+decrypt"></a>
-
-### session.decrypt(text, password)
-Decrypt some text
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| text | <code>String</code> | The text to decrypt |
-| password | <code>String</code> | The password to use for decryption |
-
-<a name="Session+encrypt"></a>
-
-### session.encrypt(text, password) ⇒ <code>Promise.&lt;String&gt;</code>
-Encrypt some text
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: <code>Promise.&lt;String&gt;</code> - A promise that resolves with encrypted text  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| text | <code>String</code> | The text to encrypt |
-| password | <code>String</code> | The password to use for encryption |
-
-<a name="Session+_deriveKey"></a>
-
-### session._deriveKey(password, salt, [rounds], [encryptionMethod]) ⇒ [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo)
-Derive a key using the current configuration
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo) - Derived key information  
-**Access**: protected  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| password | <code>String</code> | The password |
-| salt | <code>String</code> | The salt |
-| [rounds] | <code>Number</code> | Key derivation rounds |
-| [encryptionMethod] | <code>String</code> | Encryption method |
-
-<a name="Session+_deriveNewKey"></a>
-
-### session._deriveNewKey(password) ⇒ [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo)
-Derive a new key using the current configuration
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo) - Derived key information  
-**Access**: protected  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| password | <code>String</code> | The password |
-
-<a name="Configuration+overrideDecryption"></a>
-
-### session.overrideDecryption(method, [func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the decryption method
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | Which encryption type to override (cbc/gcm) |
-| [func] | <code>function</code> | A decryption function that should resemble that in the example |
-
-**Example**  
-```js
-config.overrideDecryption("cbc", (encryptedComponents, keyDerivationInfo) => {
-   // handle decryption
-   // return Promise
- });
-```
-<a name="Configuration+overrideEncryption"></a>
-
-### session.overrideEncryption(method, [func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the encryption method
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | Which encryption type to override (cbc/gcm) |
-| [func] | <code>function</code> | A encryption function that should resemble that in the example |
-
-**Example**  
-```js
-config.overrideEncryption("cbc", (text, keyDerivationInfo, ivBuffer) => {
-   // handle encryption
-   // return Promise
- });
-```
-<a name="Configuration+overrideIVGeneration"></a>
-
-### session.overrideIVGeneration([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override the IV generator
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The override function |
-
-**Example**  
-```js
-config.overrideIVGeneration(() => {
-   return Promise.resolve(ivBuffer);
- });
-```
-<a name="Configuration+overrideKeyDerivation"></a>
-
-### session.overrideKeyDerivation([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override key derivation
-Derive the key according to the `pbkdf2` function in derivation.js
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The new key derivation function |
-
-**Example**  
-```js
-config.overrideKeyDerivation((password, salt, rounds, bits) => {
-   return Promise.resolve(derivedKeyBuffer);
- });
-```
-<a name="Configuration+overrideSaltGeneration"></a>
-
-### session.overrideSaltGeneration([func]) ⇒ [<code>Configuration</code>](#Configuration)
-Override salt generation
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [func] | <code>function</code> | The function to use for salt generation |
-
-**Example**  
-```js
-config.overrideSaltGeneration(length => {
-   return Promise.resolve(saltText);
- });
-```
-<a name="Configuration+reset"></a>
-
-### session.reset() ⇒ [<code>Configuration</code>](#Configuration)
-Reset the configuration options
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-<a name="Configuration+setDerivationRounds"></a>
-
-### session.setDerivationRounds([rounds]) ⇒ [<code>Configuration</code>](#Configuration)
-Set the derivation rounds to use
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [rounds] | <code>Number</code> | The new rounds to use (empty for reset) |
-
-<a name="Configuration+use"></a>
-
-### session.use(method) ⇒ [<code>Configuration</code>](#Configuration)
-Set the encryption method to use
-
-**Kind**: instance method of [<code>Session</code>](#Session)  
-**Returns**: [<code>Configuration</code>](#Configuration) - Returns self  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| method | <code>String</code> | The method to use (cbc/gcm) |
-
-<a name="deriveFromPassword"></a>
-
-## deriveFromPassword(pbkdf2Gen, password, salt, rounds, [generateHMAC]) ⇒ [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo)
-Derive a key from a password
-
-**Kind**: global function  
-**Returns**: [<code>Promise.&lt;DerivedKeyInfo&gt;</code>](#DerivedKeyInfo) - A promise that resolves with an object (DerivedKeyInfo)  
-**Throws**:
-
-- <code>Error</code> Rejects if no password is provided
-- <code>Error</code> Rejects if no salt is provided
-- <code>Error</code> Rejects if no rounds are provided
-
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| pbkdf2Gen | <code>function</code> |  | The generator method |
-| password | <code>String</code> |  | The password to derive from |
-| salt | <code>String</code> |  | The salt (Optional) |
-| rounds | <code>Number</code> |  | The number of iterations |
-| [generateHMAC] | <code>Boolean</code> | <code>true</code> | Enable HMAC key generation |
-
-<a name="pbkdf2"></a>
-
-## pbkdf2(password, salt, rounds, bits) ⇒ <code>Promise.&lt;Buffer&gt;</code>
-The default PBKDF2 function
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;Buffer&gt;</code> - A Promise that resolves with the hash  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| password | <code>String</code> | The password to use |
-| salt | <code>String</code> | The salt to use |
-| rounds | <code>Number</code> | The number of iterations |
-| bits | <code>Number</code> | The size of the key to generate, in bits |
-
-<a name="decryptCBC"></a>
-
-## decryptCBC(encryptedComponents, keyDerivationInfo) ⇒ <code>Promise.&lt;String&gt;</code>
-Decrypt text using AES-CBC
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;String&gt;</code> - A promise that resolves with the decrypted string  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| encryptedComponents | [<code>EncryptedComponents</code>](#EncryptedComponents) | Encrypted components |
-| keyDerivationInfo | [<code>DerivedKeyInfo</code>](#DerivedKeyInfo) | Key derivation information |
-
-<a name="decryptGCM"></a>
-
-## decryptGCM(encryptedComponents, keyDerivationInfo) ⇒ <code>Promise.&lt;String&gt;</code>
-Decrypt text using AES-GCM
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;String&gt;</code> - A promise that resolves with the decrypted string  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| encryptedComponents | [<code>EncryptedComponents</code>](#EncryptedComponents) | Encrypted components |
-| keyDerivationInfo | [<code>DerivedKeyInfo</code>](#DerivedKeyInfo) | Key derivation information |
-
-<a name="encryptCBC"></a>
-
-## encryptCBC(text, keyDerivationInfo, iv) ⇒ [<code>Promise.&lt;EncryptedComponents&gt;</code>](#EncryptedComponents)
-Encrypt text using AES-CBC
-
-**Kind**: global function  
-**Returns**: [<code>Promise.&lt;EncryptedComponents&gt;</code>](#EncryptedComponents) - A promise that resolves with encrypted components  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| text | <code>String</code> | The text to encrypt |
-| keyDerivationInfo | [<code>DerivedKeyInfo</code>](#DerivedKeyInfo) | Key derivation information |
-| iv | <code>Buffer</code> | A buffer containing the IV |
-
-<a name="encryptGCM"></a>
-
-## encryptGCM(text, keyDerivationInfo, iv) ⇒ [<code>Promise.&lt;EncryptedComponents&gt;</code>](#EncryptedComponents)
-Encrypt text using AES-GCM
-
-**Kind**: global function  
-**Returns**: [<code>Promise.&lt;EncryptedComponents&gt;</code>](#EncryptedComponents) - A promise that resolves with encrypted components  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| text | <code>String</code> | The text to encrypt |
-| keyDerivationInfo | [<code>DerivedKeyInfo</code>](#DerivedKeyInfo) | Key derivation information |
-| iv | <code>Buffer</code> | A buffer containing the IV |
-
-<a name="generateIV"></a>
-
-## generateIV() ⇒ <code>Promise.&lt;Buffer&gt;</code>
-IV generator
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;Buffer&gt;</code> - A promise that resolves with an IV  
-<a name="generateSalt"></a>
-
-## generateSalt(length) ⇒ <code>Promise.&lt;String&gt;</code>
-Salt generator
-
-**Kind**: global function  
-**Returns**: <code>Promise.&lt;String&gt;</code> - A promise that resolves with a salt (hex)  
-**Throws**:
-
-- <code>Error</code> Rejects if length is invalid
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| length | <code>Number</code> | The length of the string to generate |
-
-<a name="getConfiguration"></a>
-
-## getConfiguration() ⇒ [<code>Configuration</code>](#Configuration)
-Get the global configuration instance
-
-**Kind**: global function  
-**Returns**: [<code>Configuration</code>](#Configuration) - The shared, global configuration instance  
-<a name="configure"></a>
-
-## configure() ⇒ [<code>Configuration</code>](#Configuration)
-Configure global values
-
-**Kind**: global function  
-**Returns**: [<code>Configuration</code>](#Configuration) - The global configuration instance  
-<a name="createSession"></a>
-
-## createSession() ⇒ [<code>Session</code>](#Session)
-Start new encryption/decryption session
-
-**Kind**: global function  
-**Returns**: [<code>Session</code>](#Session) - New crypto session  
-<a name="packEncryptedContent"></a>
-
-## packEncryptedContent(encryptedContent, iv, salt, auth, rounds, method) ⇒ <code>String</code>
-Pack encrypted content components into the final encrypted form
-
-**Kind**: global function  
-**Returns**: <code>String</code> - The final encrypted form  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| encryptedContent | <code>String</code> | The encrypted text |
-| iv | <code>String</code> | The IV in hex form |
-| salt | <code>String</code> | The salt |
-| auth | <code>String</code> | The HMAC for CBC mode, or the authentication tag for GCM mode |
-| rounds | <code>Number</code> | The PBKDF2 round count |
-| method | <code>String</code> | The encryption method (cbc/gcm) |
-
-<a name="unpackEncryptedContent"></a>
-
-## unpackEncryptedContent(encryptedContent) ⇒ [<code>EncryptedComponents</code>](#EncryptedComponents)
-Unpack encrypted content components from an encrypted string
-
-**Kind**: global function  
-**Returns**: [<code>EncryptedComponents</code>](#EncryptedComponents) - The extracted components  
-**Throws**:
-
-- <code>Error</code> Throws if the number of components is incorrect
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| encryptedContent | <code>String</code> | The encrypted string |
-
-<a name="constantTimeCompare"></a>
-
-## constantTimeCompare(val1, val2) ⇒ <code>Boolean</code>
 Compare 2 values using time-secure checks
 
-**Kind**: global function  
-**Returns**: <code>Boolean</code> - True if the values match  
+**Parameters:**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| val1 | <code>String</code> | A value |
-| val2 | <code>String</code> | Another value |
+Name | Type | Description |
+------ | ------ | ------ |
+`val1` | string | A value |
+`val2` | string | Another value |
 
-<a name="ConfigurationOptions"></a>
+**Returns:** *boolean*
 
-## ConfigurationOptions : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
+True if the values match
 
-| Name | Type | Description |
-| --- | --- | --- |
-| decryption_cbc | <code>function</code> | The CBC decryption method |
-| decryption_gcm | <code>function</code> | The GCM decryption method |
-| derivationRounds | <code>Number</code> | The number of key derivation iterations |
-| deriveKey | <code>function</code> | The key derivation function (default: PBKDF2) |
-| encryption_cbc | <code>function</code> | The CBC encryption method |
-| encryption_gcm | <code>function</code> | The GCM encryption method |
-| generateIV | <code>function</code> | The IV generation method |
-| generateSalt | <code>function</code> | The salt generation method |
-| method | <code>String</code> | The encryption method (cbc/gcm) |
-| saltLength | <code>Number</code> | The length of the salt |
+___
 
-<a name="DerivedKeyInfo"></a>
+###  createSession
 
-## DerivedKeyInfo
-Derived key info
+▸ **createSession**(): *[Session](#classessessionmd)*
 
-**Kind**: global typedef  
-**Properties**
+*Defined in [index.ts:12](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/index.ts#L12)*
 
-| Name | Type | Description |
-| --- | --- | --- |
-| salt | <code>String</code> | The salt used |
-| key | <code>Buffer</code> | The derived key |
-| hmac | <code>Buffer</code> | The HMAC |
-| rounds | <code>Number</code> | The number of rounds used |
+Start new encryption/decryption session
 
-<a name="EncryptedComponents"></a>
+**`memberof`** module:iocane
 
-## EncryptedComponents : <code>Object</code>
-Encrypted content components
+**Returns:** *[Session](#classessessionmd)*
 
-**Kind**: global typedef  
-**Properties**
+New crypto session
 
-| Name | Type | Description |
-| --- | --- | --- |
-| content | <code>String</code> | The encrypted string |
-| iv | <code>String</code> | The IV in hex form |
-| salt | <code>String</code> | The salt |
-| auth | <code>String</code> | The HMAC in hex form for CBC, or tag in hex form for GCM |
-| rounds | <code>Number</code> | The PBKDF2 rounds |
-| method | <code>String</code> | The encryption method (gcm/cbc) |
+___
 
-<a name="EncryptedComponents"></a>
+###  decryptCBC
 
-## EncryptedComponents : <code>Object</code>
-Encrypted content components
+▸ **decryptCBC**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
 
-**Kind**: global typedef  
-**Properties**
+*Defined in [encryption.ts:15](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L15)*
 
-| Name | Type | Description |
-| --- | --- | --- |
-| content | <code>String</code> | The encrypted string |
-| iv | <code>String</code> | The IV in hex form |
-| salt | <code>String</code> | The salt |
-| hmac | <code>String</code> | The HMAC in hex form |
-| rounds | <code>Number</code> | The PBKDF2 rounds |
-| method | <code>String</code> | The encryption method (cbc/gcm) |
+Decrypt text using AES-CBC
 
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`encryptedComponents` | [EncryptedComponents](#interfacesencryptedcomponentsmd) | Encrypted components |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) | Key derivation information |
+
+**Returns:** *Promise‹string›*
+
+A promise that resolves with the decrypted string
+
+___
+
+###  decryptGCM
+
+▸ **decryptGCM**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
+
+*Defined in [encryption.ts:47](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L47)*
+
+Decrypt text using AES-GCM
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`encryptedComponents` | [EncryptedComponents](#interfacesencryptedcomponentsmd) | Encrypted components |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) | Key derivation information |
+
+**Returns:** *Promise‹string›*
+
+A promise that resolves with the decrypted string
+
+___
+
+###  deriveFromPassword
+
+▸ **deriveFromPassword**(`pbkdf2Gen`: Function, `password`: string, `salt`: string, `rounds`: number, `generateHMAC`: boolean): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+*Defined in [derivation.ts:29](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L29)*
+
+Derive a key from a password
+
+**`throws`** {Error} Rejects if no password is provided
+
+**`throws`** {Error} Rejects if no salt is provided
+
+**`throws`** {Error} Rejects if no rounds are provided
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`pbkdf2Gen` | Function | - | The generator method |
+`password` | string | - | The password to derive from |
+`salt` | string | - | The salt |
+`rounds` | number | - | The number of iterations |
+`generateHMAC` | boolean | true | Enable HMAC key generation |
+
+**Returns:** *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+A promise that resolves with derived key information
+
+___
+
+###  encryptCBC
+
+▸ **encryptCBC**(`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+*Defined in [encryption.ts:73](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L73)*
+
+Encrypt text using AES-CBC
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`text` | string | The text to encrypt |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) | Key derivation information |
+`iv` | Buffer | A buffer containing the IV |
+
+**Returns:** *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+A promise that resolves with encrypted components
+
+___
+
+###  encryptGCM
+
+▸ **encryptGCM**(`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+*Defined in [encryption.ts:108](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L108)*
+
+Encrypt text using AES-GCM
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`text` | string | The text to encrypt |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) | Key derivation information |
+`iv` | Buffer | A buffer containing the IV |
+
+**Returns:** *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+A promise that resolves with encrypted components
+
+___
+
+###  generateIV
+
+▸ **generateIV**(): *Promise‹Buffer›*
+
+*Defined in [encryption.ts:138](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L138)*
+
+IV generator
+
+**Returns:** *Promise‹Buffer›*
+
+A newly generated IV
+
+___
+
+###  generateSalt
+
+▸ **generateSalt**(`length`: number): *Promise‹string›*
+
+*Defined in [encryption.ts:148](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L148)*
+
+Generate a random salt
+
+**`throws`** {Error} Rejects if length is invalid
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`length` | number | The length of the string to generate |
+
+**Returns:** *Promise‹string›*
+
+A promise that resolves with a salt (hex)
+
+___
+
+###  getDefaultOptions
+
+▸ **getDefaultOptions**(): *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+*Defined in [Configuration.ts:71](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L71)*
+
+Get the default options
+
+**Returns:** *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+Default configuration options
+
+___
+
+###  packEncryptedContent
+
+▸ **packEncryptedContent**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd)): *[PackedEncryptedContent](#packedencryptedcontent)*
+
+*Defined in [packing.ts:11](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L11)*
+
+Pack encrypted content components into the final encrypted form
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`encryptedComponents` | [EncryptedComponents](#interfacesencryptedcomponentsmd) | The encrypted components payload |
+
+**Returns:** *[PackedEncryptedContent](#packedencryptedcontent)*
+
+The final encrypted form
+
+___
+
+###  pbkdf2
+
+▸ **pbkdf2**(`password`: string, `salt`: string, `rounds`: number, `bits`: number): *Promise‹Buffer›*
+
+*Defined in [derivation.ts:70](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L70)*
+
+The default PBKDF2 function
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`password` | string | The password to use |
+`salt` | string | The salt to use |
+`rounds` | number | The number of iterations |
+`bits` | number | The size of the key to generate, in bits |
+
+**Returns:** *Promise‹Buffer›*
+
+A Promise that resolves with the hash
+
+___
+
+###  unpackEncryptedContent
+
+▸ **unpackEncryptedContent**(`encryptedContent`: [PackedEncryptedContent](#packedencryptedcontent)): *[EncryptedComponents](#interfacesencryptedcomponentsmd)*
+
+*Defined in [packing.ts:24](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L24)*
+
+Unpack encrypted content components from an encrypted string
+
+**`throws`** {Error} Throws if the number of components is incorrect
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`encryptedContent` | [PackedEncryptedContent](#packedencryptedcontent) | The encrypted string |
+
+**Returns:** *[EncryptedComponents](#interfacesencryptedcomponentsmd)*
+
+The extracted components
+
+___
+
+###  validateEncryptionMethod
+
+▸ **validateEncryptionMethod**(`method`: [EncryptionType](#enumsencryptiontypemd)): *void*
+
+*Defined in [Configuration.ts:91](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L91)*
+
+Validate an encryption method specification
+
+**`throws`** {Error} Throws if the method is not valid
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | The method to validate |
+
+**Returns:** *void*
+
+# Classes
+
+
+<a name="classesconfigurationmd"></a>
+
+[iocane](#readmemd) › [Configuration](#classesconfigurationmd)
+
+## Class: Configuration
+
+System configuration
+
+### Hierarchy
+
+* **Configuration**
+
+  ↳ [Session](#classessessionmd)
+
+### Index
+
+#### Properties
+
+* [_options](#_options)
+* [getDefaultOptions](#static-getdefaultoptions)
+
+#### Accessors
+
+* [options](#options)
+
+#### Methods
+
+* [overrideDecryption](#overridedecryption)
+* [overrideEncryption](#overrideencryption)
+* [overrideIVGeneration](#overrideivgeneration)
+* [overrideKeyDerivation](#overridekeyderivation)
+* [overrideSaltGeneration](#overridesaltgeneration)
+* [reset](#reset)
+* [setDerivationRounds](#setderivationrounds)
+* [use](#use)
+
+### Properties
+
+####  _options
+
+• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)* =  getDefaultOptions()
+
+*Defined in [Configuration.ts:103](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L103)*
+
+___
+
+#### `Static` getDefaultOptions
+
+▪ **getDefaultOptions**: *[getDefaultOptions](#getdefaultoptions)* =  getDefaultOptions
+
+*Defined in [Configuration.ts:101](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L101)*
+
+### Accessors
+
+####  options
+
+• **get options**(): *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+*Defined in [Configuration.ts:110](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L110)*
+
+Configuration options
+
+**`memberof`** Configuration
+
+**`readonly`** 
+
+**Returns:** *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+### Methods
+
+####  overrideDecryption
+
+▸ **overrideDecryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [DecryptionFunction](#interfacesdecryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:126](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L126)*
+
+Override the decryption method
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideDecryption("cbc", (encryptedComponents, keyDerivationInfo) => {
+   // handle decryption
+   // return Promise
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | Which encryption type to override (cbc/gcm) |
+`func?` | [DecryptionFunction](#interfacesdecryptionfunctionmd) | A decryption function that should resemble that in the example |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideEncryption
+
+▸ **overrideEncryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [EncryptionFunction](#interfacesencryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:144](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L144)*
+
+Override the encryption method
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideEncryption("cbc", (text, keyDerivationInfo, ivBuffer) => {
+   // handle encryption
+   // return Promise
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | Which encryption type to override (cbc/gcm) |
+`func?` | [EncryptionFunction](#interfacesencryptionfunctionmd) | A encryption function that should resemble that in the example |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideIVGeneration
+
+▸ **overrideIVGeneration**(`func?`: [IVGenerationFunction](#interfacesivgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:160](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L160)*
+
+Override the IV generator
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideIVGeneration(() => {
+   return Promise.resolve(ivBuffer);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [IVGenerationFunction](#interfacesivgenerationfunctionmd) | The override function |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideKeyDerivation
+
+▸ **overrideKeyDerivation**(`func?`: [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:176](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L176)*
+
+Override key derivation
+Derive the key according to the `pbkdf2` function in derivation.js
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideKeyDerivation((password, salt, rounds, bits) => {
+   return Promise.resolve(derivedKeyBuffer);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [KeyDerivationFunction](#interfaceskeyderivationfunctionmd) | The new key derivation function |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideSaltGeneration
+
+▸ **overrideSaltGeneration**(`func?`: [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:191](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L191)*
+
+Override salt generation
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideSaltGeneration(length => {
+   return Promise.resolve(saltText);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [SaltGenerationFunction](#interfacessaltgenerationfunctionmd) | The function to use for salt generation |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  reset
+
+▸ **reset**(): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:201](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L201)*
+
+Reset the configuration options
+
+**`memberof`** Configuration
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  setDerivationRounds
+
+▸ **setDerivationRounds**(`rounds?`: number): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:214](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L214)*
+
+Set the derivation rounds to use
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.setDerivationRounds(250000);
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`rounds?` | number | The new rounds to use (empty for reset) |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  use
+
+▸ **use**(`method`: [EncryptionType](#enumsencryptiontypemd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [Configuration.ts:231](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L231)*
+
+Set the encryption method to use
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.use("gcm");
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | The method to use (cbc/gcm) |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+
+<a name="classessessionmd"></a>
+
+[iocane](#readmemd) › [Session](#classessessionmd)
+
+## Class: Session
+
+Encryption session
+
+### Hierarchy
+
+* [Configuration](#classesconfigurationmd)
+
+  ↳ **Session**
+
+### Index
+
+#### Properties
+
+* [_options](#_options)
+* [getDefaultOptions](#static-getdefaultoptions)
+
+#### Accessors
+
+* [options](#options)
+
+#### Methods
+
+* [_deriveKey](#protected-_derivekey)
+* [_deriveNewKey](#protected-_derivenewkey)
+* [decrypt](#decrypt)
+* [encrypt](#encrypt)
+* [overrideDecryption](#overridedecryption)
+* [overrideEncryption](#overrideencryption)
+* [overrideIVGeneration](#overrideivgeneration)
+* [overrideKeyDerivation](#overridekeyderivation)
+* [overrideSaltGeneration](#overridesaltgeneration)
+* [reset](#reset)
+* [setDerivationRounds](#setderivationrounds)
+* [use](#use)
+
+### Properties
+
+####  _options
+
+• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)* =  getDefaultOptions()
+
+*Inherited from [Configuration](#classesconfigurationmd).[_options](#_options)*
+
+*Defined in [Configuration.ts:103](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L103)*
+
+___
+
+#### `Static` getDefaultOptions
+
+▪ **getDefaultOptions**: *[getDefaultOptions](#getdefaultoptions)* =  getDefaultOptions
+
+*Inherited from [Configuration](#classesconfigurationmd).[getDefaultOptions](#static-getdefaultoptions)*
+
+*Defined in [Configuration.ts:101](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L101)*
+
+### Accessors
+
+####  options
+
+• **get options**(): *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[options](#options)*
+
+*Defined in [Configuration.ts:110](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L110)*
+
+Configuration options
+
+**`memberof`** Configuration
+
+**`readonly`** 
+
+**Returns:** *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
+
+### Methods
+
+#### `Protected` _deriveKey
+
+▸ **_deriveKey**(`password`: string, `salt`: string, `rounds?`: number, `encryptionMethod?`: [EncryptionType](#enumsencryptiontypemd)): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+*Defined in [Session.ts:53](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L53)*
+
+Derive a key using the current configuration
+
+**`memberof`** Session
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`password` | string | The password |
+`salt` | string | The salt |
+`rounds?` | number | Key derivation rounds |
+`encryptionMethod?` | [EncryptionType](#enumsencryptiontypemd) | Encryption method |
+
+**Returns:** *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+Derived key information
+
+___
+
+#### `Protected` _deriveNewKey
+
+▸ **_deriveNewKey**(`password`: string): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+*Defined in [Session.ts:82](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L82)*
+
+Derive a new key using the current configuration
+
+**`memberof`** Session
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`password` | string | The password |
+
+**Returns:** *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+Derived key information
+
+___
+
+####  decrypt
+
+▸ **decrypt**(`text`: string, `password`: string): *Promise‹string›*
+
+*Defined in [Session.ts:17](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L17)*
+
+Decrypt some text
+
+**`memberof`** Session
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`text` | string | The text to decrypt |
+`password` | string | The password to use for decryption |
+
+**Returns:** *Promise‹string›*
+
+Decrypted text
+
+___
+
+####  encrypt
+
+▸ **encrypt**(`text`: string, `password`: string): *Promise‹[PackedEncryptedContent](#packedencryptedcontent)›*
+
+*Defined in [Session.ts:32](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L32)*
+
+Encrypt some text
+
+**`memberof`** Session
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`text` | string | The text to encrypt |
+`password` | string | The password to use for encryption |
+
+**Returns:** *Promise‹[PackedEncryptedContent](#packedencryptedcontent)›*
+
+A promise that resolves with encrypted text
+
+___
+
+####  overrideDecryption
+
+▸ **overrideDecryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [DecryptionFunction](#interfacesdecryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[overrideDecryption](#overridedecryption)*
+
+*Defined in [Configuration.ts:126](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L126)*
+
+Override the decryption method
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideDecryption("cbc", (encryptedComponents, keyDerivationInfo) => {
+   // handle decryption
+   // return Promise
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | Which encryption type to override (cbc/gcm) |
+`func?` | [DecryptionFunction](#interfacesdecryptionfunctionmd) | A decryption function that should resemble that in the example |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideEncryption
+
+▸ **overrideEncryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [EncryptionFunction](#interfacesencryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[overrideEncryption](#overrideencryption)*
+
+*Defined in [Configuration.ts:144](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L144)*
+
+Override the encryption method
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideEncryption("cbc", (text, keyDerivationInfo, ivBuffer) => {
+   // handle encryption
+   // return Promise
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | Which encryption type to override (cbc/gcm) |
+`func?` | [EncryptionFunction](#interfacesencryptionfunctionmd) | A encryption function that should resemble that in the example |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideIVGeneration
+
+▸ **overrideIVGeneration**(`func?`: [IVGenerationFunction](#interfacesivgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[overrideIVGeneration](#overrideivgeneration)*
+
+*Defined in [Configuration.ts:160](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L160)*
+
+Override the IV generator
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideIVGeneration(() => {
+   return Promise.resolve(ivBuffer);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [IVGenerationFunction](#interfacesivgenerationfunctionmd) | The override function |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideKeyDerivation
+
+▸ **overrideKeyDerivation**(`func?`: [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[overrideKeyDerivation](#overridekeyderivation)*
+
+*Defined in [Configuration.ts:176](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L176)*
+
+Override key derivation
+Derive the key according to the `pbkdf2` function in derivation.js
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideKeyDerivation((password, salt, rounds, bits) => {
+   return Promise.resolve(derivedKeyBuffer);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [KeyDerivationFunction](#interfaceskeyderivationfunctionmd) | The new key derivation function |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  overrideSaltGeneration
+
+▸ **overrideSaltGeneration**(`func?`: [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[overrideSaltGeneration](#overridesaltgeneration)*
+
+*Defined in [Configuration.ts:191](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L191)*
+
+Override salt generation
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.overrideSaltGeneration(length => {
+   return Promise.resolve(saltText);
+ });
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`func?` | [SaltGenerationFunction](#interfacessaltgenerationfunctionmd) | The function to use for salt generation |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  reset
+
+▸ **reset**(): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[reset](#reset)*
+
+*Defined in [Configuration.ts:201](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L201)*
+
+Reset the configuration options
+
+**`memberof`** Configuration
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  setDerivationRounds
+
+▸ **setDerivationRounds**(`rounds?`: number): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[setDerivationRounds](#setderivationrounds)*
+
+*Defined in [Configuration.ts:214](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L214)*
+
+Set the derivation rounds to use
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.setDerivationRounds(250000);
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`rounds?` | number | The new rounds to use (empty for reset) |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+___
+
+####  use
+
+▸ **use**(`method`: [EncryptionType](#enumsencryptiontypemd)): *[Configuration](#classesconfigurationmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[use](#use)*
+
+*Defined in [Configuration.ts:231](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L231)*
+
+Set the encryption method to use
+
+**`memberof`** Configuration
+
+**`example`** 
+ config.use("gcm");
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`method` | [EncryptionType](#enumsencryptiontypemd) | The method to use (cbc/gcm) |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
+Returns self
+
+# Enums
+
+
+<a name="enumsencryptiontypemd"></a>
+
+[iocane](#readmemd) › [EncryptionType](#enumsencryptiontypemd)
+
+## Enumeration: EncryptionType
+
+Encryption type enumeration - sets the type of encryption to use and
+is calculated automatically for decryption.
+
+### Index
+
+#### Enumeration members
+
+* [CBC](#cbc)
+* [GCM](#gcm)
+
+### Enumeration members
+
+####  CBC
+
+• **CBC**: = "cbc"
+
+*Defined in [constructs.ts:39](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L39)*
+
+___
+
+####  GCM
+
+• **GCM**: = "gcm"
+
+*Defined in [constructs.ts:40](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L40)*
+
+# Interfaces
+
+
+<a name="interfacesconfigurationoptionsmd"></a>
+
+[iocane](#readmemd) › [ConfigurationOptions](#interfacesconfigurationoptionsmd)
+
+## Interface: ConfigurationOptions
+
+### Hierarchy
+
+* **ConfigurationOptions**
+
+### Index
+
+#### Properties
+
+* [decryption_cbc](#decryption_cbc)
+* [decryption_gcm](#decryption_gcm)
+* [derivationRounds](#derivationrounds)
+* [deriveKey](#derivekey)
+* [encryption_cbc](#encryption_cbc)
+* [encryption_gcm](#encryption_gcm)
+* [generateIV](#generateiv)
+* [generateSalt](#generatesalt)
+* [method](#method)
+* [saltLength](#saltlength)
+
+### Properties
+
+####  decryption_cbc
+
+• **decryption_cbc**: *[DecryptionFunction](#interfacesdecryptionfunctionmd)*
+
+*Defined in [Configuration.ts:24](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L24)*
+
+AES-CBC decryption function
+
+___
+
+####  decryption_gcm
+
+• **decryption_gcm**: *[DecryptionFunction](#interfacesdecryptionfunctionmd)*
+
+*Defined in [Configuration.ts:28](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L28)*
+
+AES-GCM decryption function
+
+___
+
+####  derivationRounds
+
+• **derivationRounds**: *number*
+
+*Defined in [Configuration.ts:32](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L32)*
+
+Default number of key derivation iterations
+
+___
+
+####  deriveKey
+
+• **deriveKey**: *[KeyDerivationFunction](#interfaceskeyderivationfunctionmd)*
+
+*Defined in [Configuration.ts:36](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L36)*
+
+Keys derivation function
+
+___
+
+####  encryption_cbc
+
+• **encryption_cbc**: *[EncryptionFunction](#interfacesencryptionfunctionmd)*
+
+*Defined in [Configuration.ts:40](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L40)*
+
+AES-CBC encryption function
+
+___
+
+####  encryption_gcm
+
+• **encryption_gcm**: *[EncryptionFunction](#interfacesencryptionfunctionmd)*
+
+*Defined in [Configuration.ts:44](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L44)*
+
+AES-GCM encryption function
+
+___
+
+####  generateIV
+
+• **generateIV**: *[IVGenerationFunction](#interfacesivgenerationfunctionmd)*
+
+*Defined in [Configuration.ts:48](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L48)*
+
+Random IV generation function
+
+___
+
+####  generateSalt
+
+• **generateSalt**: *[SaltGenerationFunction](#interfacessaltgenerationfunctionmd)*
+
+*Defined in [Configuration.ts:52](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L52)*
+
+Random salt generation function
+
+___
+
+####  method
+
+• **method**: *[EncryptionType](#enumsencryptiontypemd)*
+
+*Defined in [Configuration.ts:56](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L56)*
+
+The encryption method - cbc/gcm
+
+___
+
+####  saltLength
+
+• **saltLength**: *number*
+
+*Defined in [Configuration.ts:60](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L60)*
+
+Salt character length
+
+
+<a name="interfacesdecryptionfunctionmd"></a>
+
+[iocane](#readmemd) › [DecryptionFunction](#interfacesdecryptionfunctionmd)
+
+## Interface: DecryptionFunction
+
+Decryption function that takes encrypted components and key derivation
+data and returns a decrypted string asynchronously
+
+### Hierarchy
+
+* **DecryptionFunction**
+
+### Callable
+
+▸ (`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
+
+*Defined in [constructs.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L5)*
+
+Decryption function that takes encrypted components and key derivation
+data and returns a decrypted string asynchronously
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`encryptedComponents` | [EncryptedComponents](#interfacesencryptedcomponentsmd) |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) |
+
+**Returns:** *Promise‹string›*
+
+
+<a name="interfacesderivedkeyinfomd"></a>
+
+[iocane](#readmemd) › [DerivedKeyInfo](#interfacesderivedkeyinfomd)
+
+## Interface: DerivedKeyInfo
+
+### Hierarchy
+
+* **DerivedKeyInfo**
+
+### Index
+
+#### Properties
+
+* [hmac](#hmac)
+* [key](#key)
+* [rounds](#rounds)
+* [salt](#salt)
+
+### Properties
+
+####  hmac
+
+• **hmac**: *Buffer | null*
+
+*Defined in [constructs.ts:12](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L12)*
+
+___
+
+####  key
+
+• **key**: *Buffer*
+
+*Defined in [constructs.ts:11](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L11)*
+
+___
+
+####  rounds
+
+• **rounds**: *number*
+
+*Defined in [constructs.ts:13](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L13)*
+
+___
+
+####  salt
+
+• **salt**: *string*
+
+*Defined in [constructs.ts:10](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L10)*
+
+
+<a name="interfacesencryptedcomponentsmd"></a>
+
+[iocane](#readmemd) › [EncryptedComponents](#interfacesencryptedcomponentsmd)
+
+## Interface: EncryptedComponents
+
+### Hierarchy
+
+* **EncryptedComponents**
+
+### Index
+
+#### Properties
+
+* [auth](#auth)
+* [content](#content)
+* [iv](#iv)
+* [method](#method)
+* [rounds](#rounds)
+* [salt](#salt)
+
+### Properties
+
+####  auth
+
+• **auth**: *string*
+
+*Defined in [constructs.ts:20](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L20)*
+
+___
+
+####  content
+
+• **content**: *string*
+
+*Defined in [constructs.ts:17](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L17)*
+
+___
+
+####  iv
+
+• **iv**: *string*
+
+*Defined in [constructs.ts:18](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L18)*
+
+___
+
+####  method
+
+• **method**: *[EncryptionType](#enumsencryptiontypemd)*
+
+*Defined in [constructs.ts:22](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L22)*
+
+___
+
+####  rounds
+
+• **rounds**: *number*
+
+*Defined in [constructs.ts:21](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L21)*
+
+___
+
+####  salt
+
+• **salt**: *string*
+
+*Defined in [constructs.ts:19](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L19)*
+
+
+<a name="interfacesencryptionfunctionmd"></a>
+
+[iocane](#readmemd) › [EncryptionFunction](#interfacesencryptionfunctionmd)
+
+## Interface: EncryptionFunction
+
+Encryption function that takes a raw string, key derivation data and
+an IV buffer. Returns an encrypted components payload, ready for
+packing.
+
+### Hierarchy
+
+* **EncryptionFunction**
+
+### Callable
+
+▸ (`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+*Defined in [constructs.ts:30](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L30)*
+
+Encryption function that takes a raw string, key derivation data and
+an IV buffer. Returns an encrypted components payload, ready for
+packing.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`text` | string |
+`keyDerivationInfo` | [DerivedKeyInfo](#interfacesderivedkeyinfomd) |
+`iv` | Buffer |
+
+**Returns:** *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
+
+
+<a name="interfacesivgenerationfunctionmd"></a>
+
+[iocane](#readmemd) › [IVGenerationFunction](#interfacesivgenerationfunctionmd)
+
+## Interface: IVGenerationFunction
+
+Random IV generation function - returns an IV buffer aynchronously
+
+### Hierarchy
+
+* **IVGenerationFunction**
+
+### Callable
+
+▸ (): *Promise‹Buffer›*
+
+*Defined in [constructs.ts:46](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L46)*
+
+Random IV generation function - returns an IV buffer aynchronously
+
+**Returns:** *Promise‹Buffer›*
+
+
+<a name="interfaceskeyderivationfunctionmd"></a>
+
+[iocane](#readmemd) › [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)
+
+## Interface: KeyDerivationFunction
+
+Key derivation method - returns a buffer, asynchronously, that matches
+the specified number of bits (in hex form). Takes a raw password,
+random salt, number of derivation rounds/iterations and the bits of
+key to generate.
+
+### Hierarchy
+
+* **KeyDerivationFunction**
+
+### Callable
+
+▸ (`password`: string, `salt`: string, `rounds`: number, `bits`: number): *Promise‹Buffer›*
+
+*Defined in [constructs.ts:56](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L56)*
+
+Key derivation method - returns a buffer, asynchronously, that matches
+the specified number of bits (in hex form). Takes a raw password,
+random salt, number of derivation rounds/iterations and the bits of
+key to generate.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`password` | string |
+`salt` | string |
+`rounds` | number |
+`bits` | number |
+
+**Returns:** *Promise‹Buffer›*
+
+
+<a name="interfacessaltgenerationfunctionmd"></a>
+
+[iocane](#readmemd) › [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)
+
+## Interface: SaltGenerationFunction
+
+Salt generation function - takes a string length as the only parameter
+and returns a random salt string asynchronously.
+
+### Hierarchy
+
+* **SaltGenerationFunction**
+
+### Callable
+
+▸ (`length`: number): *Promise‹string›*
+
+*Defined in [constructs.ts:70](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L70)*
+
+Salt generation function - takes a string length as the only parameter
+and returns a random salt string asynchronously.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`length` | number |
+
+**Returns:** *Promise‹string›*
