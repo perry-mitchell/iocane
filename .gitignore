@@ -5,6 +5,6 @@ node_modules
 .npm
 .node_repl_history
 .history
-source/test.js
 /dist
+/web
 /docs
