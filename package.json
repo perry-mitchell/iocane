@@ -2,8 +2,8 @@
   "name": "iocane",
   "version": "2.0.0",
   "description": "Textual encryption library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.node.js",
+  "types": "dist/index.node.d.ts",
   "scripts": {
     "build": "tsc",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",

@@ -1,4 +1,4 @@
-const { createSession } = require("../../dist/index.js");
+const { createSession } = require("../../dist/index.node.js");
 
 describe("encryption", function() {
     it("can encrypt and decrypt in CBC mode", function() {

@@ -1,3 +1,46 @@
+export interface ConfigurationOptions {
+    /**
+     * AES-CBC decryption function
+     */
+    decryption_cbc: DecryptionFunction;
+    /**
+     * AES-GCM decryption function
+     */
+    decryption_gcm: DecryptionFunction;
+    /**
+     * Default number of key derivation iterations
+     */
+    derivationRounds: number;
+    /**
+     * Keys derivation function
+     */
+    deriveKey: KeyDerivationFunction;
+    /**
+     * AES-CBC encryption function
+     */
+    encryption_cbc: EncryptionFunction;
+    /**
+     * AES-GCM encryption function
+     */
+    encryption_gcm: EncryptionFunction;
+    /**
+     * Random IV generation function
+     */
+    generateIV: IVGenerationFunction;
+    /**
+     * Random salt generation function
+     */
+    generateSalt: SaltGenerationFunction;
+    /**
+     * The encryption method - cbc/gcm
+     */
+    method: EncryptionType;
+    /**
+     * Salt character length
+     */
+    saltLength: number;
+}
+
 /**
  * Decryption function that takes encrypted components and key derivation
  * data and returns a decrypted string asynchronously

@@ -1,20 +1,21 @@
-const { Configuration } = require("../../dist/Configuration.js");
+const { Configuration } = require("../../dist/base/Configuration.js");
+const { getDefaultOptions } = require("../../dist/node/defaults.js");
 
 describe("Configuration", function() {
     it("instantiates without error", function() {
         expect(() => {
-            new Configuration();
+            new Configuration(getDefaultOptions());
         }).to.not.throw();
     });
 
     it("uses 'cbc' mode by default", function() {
-        this.configuration = new Configuration();
+        this.configuration = new Configuration(getDefaultOptions());
         expect(this.configuration.options.method).to.equal("cbc");
     });
 
     describe("get:options", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("returns an object", function() {
@@ -24,7 +25,7 @@ describe("Configuration", function() {
 
     describe("overrideDecryption", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("overrides the decryption method", function() {
@@ -48,7 +49,7 @@ describe("Configuration", function() {
 
     describe("overrideEncryption", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("overrides the encryption method", function() {
@@ -72,7 +73,7 @@ describe("Configuration", function() {
 
     describe("overrideIVGeneration", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("overrides the IV generation method", function() {
@@ -96,7 +97,7 @@ describe("Configuration", function() {
 
     describe("overrideKeyDerivation", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("overrides the key derivation method", function() {
@@ -120,7 +121,7 @@ describe("Configuration", function() {
 
     describe("overrideSaltGeneration", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("overrides the salt generation method", function() {
@@ -144,7 +145,7 @@ describe("Configuration", function() {
 
     describe("reset", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("resets options", function() {
@@ -152,7 +153,7 @@ describe("Configuration", function() {
             expect(this.configuration.options.derivationRounds).to.equal(1234);
             this.configuration.reset();
             expect(this.configuration.options.derivationRounds).to.equal(
-                Configuration.getDefaultOptions().derivationRounds
+                getDefaultOptions().derivationRounds
             );
         });
 
@@ -163,7 +164,7 @@ describe("Configuration", function() {
 
     describe("setDerivationRounds", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("sets the rounds", function() {
@@ -174,15 +175,15 @@ describe("Configuration", function() {
         it("does not set rounds if invalid", function() {
             this.configuration.setDerivationRounds("abc");
             expect(this.configuration.options.derivationRounds).to.equal(
-                Configuration.getDefaultOptions().derivationRounds
+                getDefaultOptions().derivationRounds
             );
             this.configuration.setDerivationRounds(true);
             expect(this.configuration.options.derivationRounds).to.equal(
-                Configuration.getDefaultOptions().derivationRounds
+                getDefaultOptions().derivationRounds
             );
             this.configuration.setDerivationRounds(null);
             expect(this.configuration.options.derivationRounds).to.equal(
-                Configuration.getDefaultOptions().derivationRounds
+                getDefaultOptions().derivationRounds
             );
         });
 
@@ -193,7 +194,7 @@ describe("Configuration", function() {
 
     describe("use", function() {
         beforeEach(function() {
-            this.configuration = new Configuration();
+            this.configuration = new Configuration(getDefaultOptions());
         });
 
         it("supports setting 'cbc' mode", function() {

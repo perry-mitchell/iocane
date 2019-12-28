@@ -1,18 +1,7 @@
-import { pbkdf2 as deriveKey } from "pbkdf2";
-import { DerivedKeyInfo } from "./constructs";
+import { DerivedKeyInfo } from "../base/constructs";
 
-const DERIVED_KEY_ALGORITHM = "sha256";
 const HMAC_KEY_SIZE = 32;
 const PASSWORD_KEY_SIZE = 32;
-
-/**
- * Derived key info
- * @typedef DerivedKeyInfo
- * @property {String} salt - The salt used
- * @property {Buffer} key - The derived key
- * @property {Buffer} hmac - The HMAC
- * @property {Number} rounds - The number of rounds used
- */
 
 /**
  * Derive a key from a password
@@ -57,35 +46,4 @@ export async function deriveFromPassword(
             ? new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex")
             : null
     };
-}
-
-/**
- * The default PBKDF2 function
- * @param password The password to use
- * @param salt The salt to use
- * @param rounds The number of iterations
- * @param bits The size of the key to generate, in bits
- * @returns A Promise that resolves with the hash
- */
-export function pbkdf2(
-    password: string,
-    salt: string,
-    rounds: number,
-    bits: number
-): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-        deriveKey(
-            password,
-            salt,
-            rounds,
-            bits / 8,
-            DERIVED_KEY_ALGORITHM,
-            (err?: Error, key?: Buffer) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(key);
-            }
-        );
-    });
 }

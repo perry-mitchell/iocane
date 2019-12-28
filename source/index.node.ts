@@ -1,4 +1,5 @@
-import { Session } from "./Session";
+import { Session } from "./base/Session";
+import { getDefaultOptions } from "./node/defaults";
 
 /**
  * @module iocane
@@ -10,5 +11,5 @@ import { Session } from "./Session";
  * @memberof module:iocane
  */
 export function createSession(): Session {
-    return new Session();
+    return new Session(getDefaultOptions());
 }

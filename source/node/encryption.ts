@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
-import { constantTimeCompare } from "./timing";
-import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "./constructs";
+import { constantTimeCompare } from "../base/timing";
+import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/constructs";
 
 const ENC_ALGORITHM_CBC = "aes-256-cbc";
 const ENC_ALGORITHM_GCM = "aes-256-gcm";

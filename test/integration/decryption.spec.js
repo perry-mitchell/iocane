@@ -1,4 +1,4 @@
-const { createSession } = require("../../dist/index.js");
+const { createSession } = require("../../dist/index.node.js");
 
 describe("decryption", function() {
     it("decrypts content from version 0.*", function() {
