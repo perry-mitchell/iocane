@@ -5,7 +5,7 @@
  * @returns True if the values match
  */
 export function constantTimeCompare(val1: string, val2: string): boolean {
-    let sentinel;
+    let sentinel: number;
     if (val1.length !== val2.length) {
         return false;
     }

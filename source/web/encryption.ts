@@ -1,6 +1,12 @@
 // import * as crypto from "crypto";
-import { constantTimeCompare } from "../base/timing";
-import { arrayBufferToHexString, stringToArrayBuffer } from "./shared";
+// import { constantTimeCompare } from "../base/timing";
+import {
+    arrayBufferToHexString,
+    arrayBufferToString,
+    base64ToArrayBuffer,
+    hexStringToArrayBuffer,
+    stringToArrayBuffer
+} from "./shared";
 import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/constructs";
 
 const ENC_ALGORITHM_CBC = "AES-CBC";
@@ -8,37 +14,65 @@ const ENC_ALGORITHM_GCM = "AES-GCM";
 const GCM_AUTH_TAG_LENGTH = 128;
 const SIGN_ALGORITHM = "HMAC";
 
-// /**
-//  * Decrypt text using AES-CBC
-//  * @param encryptedComponents Encrypted components
-//  * @param keyDerivationInfo Key derivation information
-//  * @returns A promise that resolves with the decrypted string
-//  */
-// export async function decryptCBC(
-//     encryptedComponents: EncryptedComponents,
-//     keyDerivationInfo: DerivedKeyInfo
-// ): Promise<string> {
-//     // Extract the components
-//     const encryptedContent = encryptedComponents.content;
-//     const iv = new Buffer(encryptedComponents.iv, "hex");
-//     const salt = encryptedComponents.salt;
-//     const hmacData = encryptedComponents.auth;
-//     // Get HMAC tool
-//     const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
-//     // Generate the HMAC
-//     hmacTool.update(encryptedContent);
-//     hmacTool.update(encryptedComponents.iv);
-//     hmacTool.update(salt);
-//     const newHmaxHex = hmacTool.digest("hex");
-//     // Check hmac for tampering
-//     if (constantTimeCompare(hmacData, newHmaxHex) !== true) {
-//         throw new Error("Authentication failed while decrypting content");
-//     }
-//     // Decrypt
-//     const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
-//     const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
-//     return `${decryptedText}${decryptTool.final("utf8")}`;
-// }
+/**
+ * Decrypt text using AES-CBC
+ * @param encryptedComponents Encrypted components
+ * @param keyDerivationInfo Key derivation information
+ * @returns A promise that resolves with the decrypted string
+ */
+export async function decryptCBC(
+    encryptedComponents: EncryptedComponents,
+    keyDerivationInfo: DerivedKeyInfo
+): Promise<string> {
+    const crypto = getCrypto();
+    // Extract the components
+    const {
+        auth: hmacDataRaw,
+        content: encryptedContentRaw,
+        iv: ivStr,
+        salt
+    } = encryptedComponents;
+    const iv = hexStringToArrayBuffer(ivStr);
+    const hmacData = hexStringToArrayBuffer(hmacDataRaw);
+    const encryptedContent = base64ToArrayBuffer(encryptedContentRaw);
+    // Import keys (primary & HMAC signing)
+    // @ts-ignore
+    const importedKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.key,
+        { name: ENC_ALGORITHM_CBC },
+        /* not extractable: */ false,
+        ["encrypt"]
+    );
+    // @ts-ignore
+    const importedHMACKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.hmac,
+        { name: ENC_ALGORITHM_CBC },
+        /* not extractable: */ false,
+        ["verify"]
+    );
+    // Verify authentication
+    const hmacMatches = await crypto.subtle.verify(
+        SIGN_ALGORITHM,
+        importedHMACKey,
+        hmacData,
+        encryptedContent
+    );
+    if (!hmacMatches) {
+        throw new Error("Authentication failed while decrypting content");
+    }
+    // Decrypt
+    const decrypted = await crypto.subtle.decrypt(
+        {
+            name: ENC_ALGORITHM_CBC,
+            iv
+        },
+        importedKey,
+        encryptedContent
+    );
+    return arrayBufferToString(decrypted);
+}
 
 // /**
 //  * Decrypt text using AES-GCM
