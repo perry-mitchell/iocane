@@ -1,27 +1,4 @@
-function arrayBufferToHexString(arrayBuffer: ArrayBuffer): string {
-    const byteArray = new Uint8Array(arrayBuffer);
-    let hexString = "",
-        nextHexByte: string;
-    for (let i = 0; i < byteArray.byteLength; i += 1) {
-        nextHexByte = byteArray[i].toString(16);
-        if (nextHexByte.length < 2) {
-            nextHexByte = "0" + nextHexByte;
-        }
-        hexString += nextHexByte;
-    }
-    return hexString;
-}
-
-function addHexSupportToArrayBuffer(arrayBuffer: ArrayBuffer): ArrayBuffer {
-    const _toString = arrayBuffer.toString || function NOOP() {};
-    arrayBuffer.toString = function(mode?: string): string {
-        if (mode === "hex") {
-            return arrayBufferToHexString(arrayBuffer);
-        }
-        return _toString.call(arrayBuffer, mode);
-    };
-    return arrayBuffer;
-}
+import { addHexSupportToArrayBuffer, stringToArrayBuffer } from "./shared";
 
 function checkBrowserSupport() {
     if (!window.TextEncoder || !window.TextDecoder) {
@@ -84,9 +61,4 @@ function joinBuffers(buffer1: ArrayBuffer, buffer2: ArrayBuffer): ArrayBuffer {
     tmp.set(new Uint8Array(buffer1), 0);
     tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
     return tmp.buffer;
-}
-
-function stringToArrayBuffer(string: string): ArrayBuffer {
-    const encoder = new TextEncoder();
-    return encoder.encode(string);
 }

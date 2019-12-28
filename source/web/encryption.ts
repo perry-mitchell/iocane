@@ -1,10 +1,11 @@
 // import * as crypto from "crypto";
 import { constantTimeCompare } from "../base/timing";
+import { arrayBufferToHexString, stringToArrayBuffer } from "./shared";
 import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/constructs";
 
-const ENC_ALGORITHM_CBC = "aes-256-cbc";
-const ENC_ALGORITHM_GCM = "aes-256-gcm";
-const HMAC_ALGORITHM = "sha256";
+const ENC_ALGORITHM_CBC = "AES-CBC";
+const ENC_ALGORITHM_GCM = "AES-GCM";
+const SIGN_ALGORITHM = "HMAC";
 
 // /**
 //  * Decrypt text using AES-CBC
@@ -73,20 +74,53 @@ const HMAC_ALGORITHM = "sha256";
 export async function encryptCBC(
     text: string,
     keyDerivationInfo: DerivedKeyInfo,
-    iv: Buffer
+    iv: ArrayBuffer
 ): Promise<EncryptedComponents> {
-    const ivHex = iv.toString("hex");
-    const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
+    const crypto = getCrypto();
     const { rounds } = keyDerivationInfo;
-    // Perform encryption
-    let encryptedContent = encryptTool.update(text, "utf8", "base64");
-    encryptedContent += encryptTool.final("base64");
-    // Generate hmac
-    hmacTool.update(encryptedContent);
-    hmacTool.update(ivHex);
-    hmacTool.update(keyDerivationInfo.salt);
-    const hmacHex = hmacTool.digest("hex");
+    const ivArr = new Uint8Array(iv);
+    const ivHex = arrayBufferToHexString(iv);
+    const preparedContent = stringToArrayBuffer(text);
+    // Import keys (primary & HMAC signing)
+    // @ts-ignore
+    const importedKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.key,
+        { name: ENC_ALGORITHM_CBC },
+        /* not extractable: */ false,
+        ["encrypt"]
+    );
+    // @ts-ignore
+    const importedHMACKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.hmac,
+        { name: ENC_ALGORITHM_CBC },
+        /* not extractable: */ false,
+        ["sign"]
+    );
+    // Encrypt content
+    const cipherBuffer = await crypto.subtle.encrypt(
+        {
+            name: ENC_ALGORITHM_CBC,
+            iv: ivArr
+        },
+        importedKey,
+        preparedContent
+    );
+    // Sign content
+    const signatureBuffer = await window.crypto.subtle.sign(
+        SIGN_ALGORITHM,
+        importedHMACKey,
+        cipherBuffer
+    );
+    const hmacHex = arrayBufferToHexString(signatureBuffer);
+    // Convert encrypted content to base64
+    const cipherArr = new Uint8Array(cipherBuffer);
+    const rawOutput = cipherArr.reduce((progress, byte) => {
+        return progress + String.fromCharCode(byte);
+    }, "");
+    const encryptedContent = btoa(rawOutput);
+
     // Output encrypted components
     return {
         method: EncryptionType.CBC,
