@@ -5,12 +5,14 @@
   "main": "dist/index.node.js",
   "types": "dist/index.node.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "run-s build:node build:web",
+    "build:node": "tsc",
+    "build:web": "webpack --config webpack.config.js --mode=production",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
     "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
-    "test": "run-s build test:coverage test:format",
+    "test": "run-s build:node test:coverage test:format",
     "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
@@ -20,6 +22,7 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
+    "web/*.js",
     "*.md",
     "*.jpg"
   ],
@@ -32,6 +35,19 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/perry-mitchell/iocane.git"
+  },
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", {
+        "targets": {
+          "chrome": 60,
+          "firefox": 60,
+          "edge": 12,
+          "safari": 11
+        }
+      }],
+      "@babel/preset-typescript"
+    ]
   },
   "keywords": [
     "crypto",
@@ -48,6 +64,10 @@
   },
   "homepage": "https://github.com/perry-mitchell/iocane#readme",
   "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-typescript": "^7.7.7",
+    "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "concat-md": "^0.3.2",
@@ -63,7 +83,9 @@
     "sinon": "^7.5.0",
     "typedoc": "^0.15.4",
     "typedoc-plugin-markdown": "^2.2.14",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "pbkdf2": "~3.0.17"
