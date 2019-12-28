@@ -5,6 +5,7 @@ import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/con
 
 const ENC_ALGORITHM_CBC = "AES-CBC";
 const ENC_ALGORITHM_GCM = "AES-GCM";
+const GCM_AUTH_TAG_LENGTH = 128;
 const SIGN_ALGORITHM = "HMAC";
 
 // /**
@@ -120,7 +121,6 @@ export async function encryptCBC(
         return progress + String.fromCharCode(byte);
     }, "");
     const encryptedContent = btoa(rawOutput);
-
     // Output encrypted components
     return {
         method: EncryptionType.CBC,
@@ -132,38 +132,68 @@ export async function encryptCBC(
     };
 }
 
-// /**
-//  * Encrypt text using AES-GCM
-//  * @param text The text to encrypt
-//  * @param keyDerivationInfo Key derivation information
-//  * @param iv A buffer containing the IV
-//  * @returns A promise that resolves with encrypted components
-//  */
-// export async function encryptGCM(
-//     text: string,
-//     keyDerivationInfo: DerivedKeyInfo,
-//     iv: Buffer
-// ): Promise<EncryptedComponents> {
-//     const ivHex = iv.toString("hex");
-//     const { rounds } = keyDerivationInfo;
-//     const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
-//     // Add additional auth data
-//     encryptTool.setAAD(new Buffer(`${ivHex}${keyDerivationInfo.salt}`, "utf8"));
-//     // Perform encryption
-//     let encryptedContent = encryptTool.update(text, "utf8", "base64");
-//     encryptedContent += encryptTool.final("base64");
-//     // Handle authentication
-//     const tag = encryptTool.getAuthTag();
-//     // Output encrypted components
-//     return {
-//         method: EncryptionType.GCM,
-//         iv: ivHex,
-//         salt: keyDerivationInfo.salt,
-//         rounds,
-//         content: encryptedContent,
-//         auth: tag.toString("hex")
-//     };
-// }
+/**
+ * Encrypt text using AES-GCM
+ * @param text The text to encrypt
+ * @param keyDerivationInfo Key derivation information
+ * @param iv A buffer containing the IV
+ * @returns A promise that resolves with encrypted components
+ */
+export async function encryptGCM(
+    text: string,
+    keyDerivationInfo: DerivedKeyInfo,
+    iv: ArrayBuffer
+): Promise<EncryptedComponents> {
+    const crypto = getCrypto();
+    const { rounds } = keyDerivationInfo;
+    const ivArr = new Uint8Array(iv);
+    const ivHex = arrayBufferToHexString(iv);
+    const preparedContent = stringToArrayBuffer(text);
+    // Import keys (only primary)
+    // @ts-ignore
+    const importedKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.key,
+        { name: ENC_ALGORITHM_GCM },
+        /* not extractable: */ false,
+        ["encrypt"]
+    );
+    // Encrypt content
+    const cipherBufferRaw = await crypto.subtle.encrypt(
+        {
+            name: ENC_ALGORITHM_GCM,
+            iv: ivArr,
+            additionalData: stringToArrayBuffer(`${ivHex}${keyDerivationInfo.salt}`)
+        },
+        importedKey,
+        preparedContent
+    );
+    // Extract auth tag
+    const tagLengthBytes = GCM_AUTH_TAG_LENGTH / 8;
+    const [cipherBuffer, tagBuffer] = extractAuthTag(cipherBufferRaw, tagLengthBytes);
+    const tag = arrayBufferToHexString(tagBuffer);
+    // Convert encrypted content to base64
+    const cipherArr = new Uint8Array(cipherBuffer);
+    const rawOutput = cipherArr.reduce((progress, byte) => {
+        return progress + String.fromCharCode(byte);
+    }, "");
+    const encryptedContent = btoa(rawOutput);
+    // Output encrypted components
+    return {
+        method: EncryptionType.GCM,
+        iv: ivHex,
+        salt: keyDerivationInfo.salt,
+        rounds,
+        content: encryptedContent,
+        auth: tag
+    };
+}
+
+function extractAuthTag(encryptedBuffer: ArrayBuffer, tagBytes: number): ArrayBuffer[] {
+    const shortedEnc = encryptedBuffer.slice(0, encryptedBuffer.byteLength - tagBytes);
+    const tagBuff = encryptedBuffer.slice(encryptedBuffer.byteLength - tagBytes);
+    return [shortedEnc, tagBuff];
+}
 
 /**
  * IV generator
