@@ -1,10 +1,9 @@
-// import * as crypto from "crypto";
-// import { constantTimeCompare } from "../base/timing";
 import {
     arrayBufferToHexString,
     arrayBufferToString,
     base64ToArrayBuffer,
     hexStringToArrayBuffer,
+    joinBuffers,
     stringToArrayBuffer
 } from "./shared";
 import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/constructs";
@@ -74,30 +73,48 @@ export async function decryptCBC(
     return arrayBufferToString(decrypted);
 }
 
-// /**
-//  * Decrypt text using AES-GCM
-//  * @param encryptedComponents Encrypted components
-//  * @param keyDerivationInfo Key derivation information
-//  * @returns A promise that resolves with the decrypted string
-//  */
-// export async function decryptGCM(
-//     encryptedComponents: EncryptedComponents,
-//     keyDerivationInfo: DerivedKeyInfo
-// ): Promise<string> {
-//     // Extract the components
-//     const encryptedContent = encryptedComponents.content;
-//     const iv = new Buffer(encryptedComponents.iv, "hex");
-//     const { auth: tagHex } = encryptedComponents;
-//     // Prepare tool
-//     const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
-//     // Add additional auth data
-//     decryptTool.setAAD(new Buffer(`${encryptedComponents.iv}${keyDerivationInfo.salt}`, "utf8"));
-//     // Set auth tag
-//     decryptTool.setAuthTag(new Buffer(tagHex, "hex"));
-//     // Perform decryption
-//     const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
-//     return `${decryptedText}${decryptTool.final("utf8")}`;
-// }
+/**
+ * Decrypt text using AES-GCM
+ * @param encryptedComponents Encrypted components
+ * @param keyDerivationInfo Key derivation information
+ * @returns A promise that resolves with the decrypted string
+ */
+export async function decryptGCM(
+    encryptedComponents: EncryptedComponents,
+    keyDerivationInfo: DerivedKeyInfo
+): Promise<string> {
+    const crypto = getCrypto();
+    // Extract the components
+    const {
+        auth: hmacDataRaw,
+        content: encryptedContentRaw,
+        iv: ivHex,
+        salt
+    } = encryptedComponents;
+    const iv = hexStringToArrayBuffer(ivHex);
+    const hmacData = hexStringToArrayBuffer(hmacDataRaw);
+    const encryptedContent = joinBuffers(base64ToArrayBuffer(encryptedContentRaw), hmacData);
+    // Import key
+    // @ts-ignore
+    const importedKey = await crypto.subtle.importKey(
+        "raw",
+        keyDerivationInfo.key,
+        { name: ENC_ALGORITHM_GCM },
+        /* not extractable: */ false,
+        ["encrypt"]
+    );
+    // Decrypt
+    const decrypted = await crypto.subtle.decrypt(
+        {
+            name: ENC_ALGORITHM_GCM,
+            iv,
+            additionalData: stringToArrayBuffer(`${ivHex}${salt}`)
+        },
+        importedKey,
+        encryptedContent
+    );
+    return arrayBufferToString(decrypted);
+}
 
 /**
  * Encrypt text using AES-CBC
