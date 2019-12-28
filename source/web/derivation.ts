@@ -37,7 +37,7 @@ function checkBrowserSupport() {
  * @param bits The size of the key to generate, in bits
  * @returns A Promise that resolves with the hash
  */
-export function pbkdf2(
+export async function pbkdf2(
     password: string,
     salt: string,
     rounds: number,
@@ -54,38 +54,29 @@ export function pbkdf2(
     const bytes = bits / 8;
     const keysLen = bytes / 2;
     // @ts-ignore // `importKey` is not entirely working as what's described in TS
-    return subtleCrypto
-        .importKey(
-            "raw",
-            stringToArrayBuffer(password),
-            { name: "PBKDF2" },
-            false, // not extractable
-            ["deriveBits"]
-        )
-        .then((keyData: CryptoKey) => subtleCrypto.deriveBits(params, keyData, bits))
-        .then((derivedData: ArrayBuffer) =>
-            Promise.all([
-                subtleCrypto.importKey("raw", derivedData.slice(0, keysLen), "AES-CBC", true, [
-                    "encrypt",
-                    "decrypt"
-                ]),
-                subtleCrypto.importKey(
-                    "raw",
-                    derivedData.slice(keysLen, keysLen * 2),
-                    "AES-CBC",
-                    true,
-                    ["encrypt", "decrypt"]
-                )
-            ])
-        )
-        .then((aesKeys: CryptoKey[]) =>
-            Promise.all([
-                subtleCrypto.exportKey("raw", aesKeys[0]),
-                subtleCrypto.exportKey("raw", aesKeys[1])
-            ])
-        )
-        .then((rawKeys: ArrayBuffer[]) => joinBuffers(rawKeys[0], rawKeys[1]))
-        .then((arrBuff: ArrayBuffer) => addHexSupportToArrayBuffer(arrBuff)); // HAXOR
+    const keyData = await subtleCrypto.importKey(
+        "raw",
+        stringToArrayBuffer(password),
+        { name: "PBKDF2" },
+        /* not extractable: */ false,
+        ["deriveBits"]
+    );
+    const derivedData = await subtleCrypto.deriveBits(params, keyData, bits);
+    const [key1, key2] = await Promise.all([
+        subtleCrypto.importKey("raw", derivedData.slice(0, keysLen), "AES-CBC", true, [
+            "encrypt",
+            "decrypt"
+        ]),
+        subtleCrypto.importKey("raw", derivedData.slice(keysLen, keysLen * 2), "AES-CBC", true, [
+            "encrypt",
+            "decrypt"
+        ])
+    ]);
+    const [rawKey1, rawKey2] = await Promise.all([
+        subtleCrypto.exportKey("raw", key1),
+        subtleCrypto.exportKey("raw", key2)
+    ]);
+    return addHexSupportToArrayBuffer(joinBuffers(rawKey1, rawKey2));
 }
 
 function joinBuffers(buffer1: ArrayBuffer, buffer2: ArrayBuffer): ArrayBuffer {
