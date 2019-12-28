@@ -97,7 +97,7 @@ export interface IVGenerationFunction {
  * key to generate.
  */
 export interface KeyDerivationFunction {
-    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer>;
+    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer | ArrayBuffer>;
 }
 
 /**
