@@ -11,6 +11,7 @@ import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/con
 const ENC_ALGORITHM_CBC = "AES-CBC";
 const ENC_ALGORITHM_GCM = "AES-GCM";
 const GCM_AUTH_TAG_LENGTH = 128;
+const HMAC_ALGORITHM = "SHA-256";
 const SIGN_ALGORITHM = "HMAC";
 
 /**
@@ -139,15 +140,18 @@ export async function encryptCBC(
         "raw",
         keyDerivationInfo.key,
         { name: ENC_ALGORITHM_CBC },
-        /* not extractable: */ false,
+        /* extractable: */ false,
         ["encrypt"]
     );
     // @ts-ignore
     const importedHMACKey = await crypto.subtle.importKey(
         "raw",
         keyDerivationInfo.hmac,
-        { name: ENC_ALGORITHM_CBC },
-        /* not extractable: */ false,
+        {
+            name: SIGN_ALGORITHM,
+            hash: HMAC_ALGORITHM
+        },
+        /* extractable: */ false,
         ["sign"]
     );
     // Encrypt content
