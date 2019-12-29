@@ -174,10 +174,8 @@ export async function encryptCBC(
     );
     const hmacHex = arrayBufferToHexString(signatureBuffer);
     // Convert encrypted content to base64
-    const cipherArr = new Uint8Array(cipherBuffer);
-    const rawOutput = cipherArr.reduce((progress, byte) => {
-        return progress + String.fromCharCode(byte);
-    }, "");
+    const cipherArr = Array.from(new Uint8Array(cipherBuffer));
+    const rawOutput = cipherArr.map(byte => String.fromCharCode(byte)).join("");
     const encryptedContent = btoa(rawOutput);
     // Output encrypted components
     return {

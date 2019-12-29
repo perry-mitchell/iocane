@@ -24,7 +24,8 @@ export function arrayBufferToHexString(arrayBuffer: ArrayBuffer): string {
 }
 
 export function arrayBufferToString(arrayBuffer: ArrayBuffer): string {
-    return String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+    const decoder = new TextDecoder();
+    return decoder.decode(arrayBuffer);
 }
 
 export function base64ToArrayBuffer(b64Str: string): ArrayBuffer {
