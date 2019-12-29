@@ -6,8 +6,7 @@ const {
     generateIV,
     generateSalt
 } = require("../../dist/node/encryption.js");
-const { deriveFromPassword } = require("../../dist/base/derivation.js");
-const { pbkdf2 } = require("../../dist/node/derivation.js");
+const { deriveFromPassword, pbkdf2 } = require("../../dist/node/derivation.js");
 
 const ENCRYPTED_SAMPLE = "at5427PQdplGgZgcmIjy/Fv0xZaiKO+bzmY7NsnYj90=";
 const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
