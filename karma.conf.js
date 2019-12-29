@@ -8,6 +8,7 @@ module.exports = config => {
         captureTimeout: 15000,
         files: [
             "web/index.js",
+            "test/web/node-sample.js",
             "test/web/**/*.spec.js"
         ],
         frameworks: ["mocha", "chai", "sinon"]
