@@ -1,5 +1,7 @@
 const path = require("path");
 
+const isTesting = process.env.NODE_ENV === "testing";
+
 module.exports = {
     entry: path.resolve(__dirname, "./source/index.web.ts"),
 
@@ -19,7 +21,9 @@ module.exports = {
 
     output: {
         filename: "index.js",
-        path: path.resolve(__dirname, "./web")
+        path: path.resolve(__dirname, "./web"),
+        library: "iocane",
+        libraryTarget: isTesting ? "umd" : "commonjs"
     },
 
     resolve: {

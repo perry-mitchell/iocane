@@ -7,17 +7,19 @@
   "scripts": {
     "build": "run-s build:node build:web",
     "build:node": "tsc",
+    "build:test": "NODE_ENV=testing npm run build",
     "build:web": "webpack --config webpack.config.js --mode=production",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
     "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
-    "test": "run-s build:node test:coverage test:format",
+    "test": "run-s build:test test:coverage test:web test:format",
     "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
     "test:unit": "mocha -r test/index.js 'test/unit/**/*.spec.js'",
-    "test:unit:watch": "nodemon --exec 'npm run test:unit'"
+    "test:unit:watch": "nodemon --exec 'npm run test:unit'",
+    "test:web": "karma start --single-run"
   },
   "files": [
     "dist/**/*.js",
@@ -50,6 +52,15 @@
         }
       ],
       "@babel/preset-typescript"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "corejs": false,
+          "regenerator": true
+        }
+      ]
     ]
   },
   "keywords": [
@@ -68,13 +79,20 @@
   "homepage": "https://github.com/perry-mitchell/iocane#readme",
   "devDependencies": {
     "@babel/core": "^7.7.7",
+    "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-typescript": "^7.7.7",
+    "@babel/runtime": "^7.7.7",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "concat-md": "^0.3.2",
     "husky": "^3.1.0",
+    "karma": "^4.4.1",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-mocha": "^1.3.0",
+    "karma-sinon": "^1.0.5",
     "lint-staged": "^9.5.0",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.2",
