@@ -105,7 +105,7 @@ export async function decryptGCM(
         keyDerivationInfo.key,
         { name: ENC_ALGORITHM_GCM },
         /* not extractable: */ false,
-        ["encrypt"]
+        ["decrypt"]
     );
     // Decrypt
     const decrypted = await crypto.subtle.decrypt(
