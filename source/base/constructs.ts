@@ -55,8 +55,8 @@ export interface DecryptionFunction {
 
 export interface DerivedKeyInfo {
     salt: string;
-    key: Buffer;
-    hmac: Buffer | null;
+    key: Buffer | ArrayBuffer;
+    hmac: Buffer | ArrayBuffer | null;
     rounds: number;
 }
 
@@ -91,7 +91,7 @@ export enum EncryptionType {
  * Random IV generation function - returns an IV buffer aynchronously
  */
 export interface IVGenerationFunction {
-    (): Promise<Buffer>;
+    (): Promise<Buffer | ArrayBuffer>;
 }
 
 /**

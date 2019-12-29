@@ -6,7 +6,7 @@ import {
     encryptGCM,
     generateIV,
     generateSalt
-} from "../node/encryption";
+} from "./encryption";
 import { ALGO_DEFAULT, DERIVED_KEY_ITERATIONS } from "../base/shared";
 import { ConfigurationOptions } from "../base/constructs";
 
