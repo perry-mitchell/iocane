@@ -12,7 +12,7 @@ export interface ConfigurationOptions {
      */
     derivationRounds: number;
     /**
-     * Keys derivation function
+     * Key derivation helper/wrapper function
      */
     deriveKey: KeyDerivationFunction;
     /**
@@ -35,6 +35,10 @@ export interface ConfigurationOptions {
      * The encryption method - cbc/gcm
      */
     method: EncryptionType;
+    /**
+     * PBKDF2 derivation function
+     */
+    pbkdf2: PBKDF2Function;
     /**
      * Salt character length
      */
@@ -91,12 +95,26 @@ export interface IVGenerationFunction {
 }
 
 /**
+ * Key derivation helper - wraps a key derivation method and produces
+ * derived-key information that can be provided to several functions.
+ */
+export interface KeyDerivationFunction {
+    (
+        deriveKey: PBKDF2Function,
+        password: string,
+        salt: string,
+        rounds: number,
+        generateHMAC?: boolean
+    ): Promise<DerivedKeyInfo>;
+}
+
+/**
  * Key derivation method - returns a buffer, asynchronously, that matches
  * the specified number of bits (in hex form). Takes a raw password,
  * random salt, number of derivation rounds/iterations and the bits of
  * key to generate.
  */
-export interface KeyDerivationFunction {
+export interface PBKDF2Function {
     (password: string, salt: string, rounds: number, bits: number): Promise<Buffer | ArrayBuffer>;
 }
 

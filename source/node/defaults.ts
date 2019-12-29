@@ -1,4 +1,4 @@
-import { pbkdf2 } from "./derivation";
+import { deriveFromPassword, pbkdf2 } from "./derivation";
 import {
     decryptCBC,
     decryptGCM,
@@ -21,12 +21,13 @@ export function getDefaultOptions(): ConfigurationOptions {
         decryption_cbc: decryptCBC,
         decryption_gcm: decryptGCM,
         derivationRounds: DERIVED_KEY_ITERATIONS,
-        deriveKey: pbkdf2,
+        deriveKey: deriveFromPassword,
         encryption_cbc: encryptCBC,
         encryption_gcm: encryptGCM,
         generateIV,
         generateSalt,
         method: ALGO_DEFAULT,
+        pbkdf2,
         saltLength: SALT_LENGTH
     };
 }

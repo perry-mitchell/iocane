@@ -1,5 +1,4 @@
 import { Configuration } from "./Configuration";
-import { deriveFromPassword } from "./derivation";
 import { packEncryptedContent, unpackEncryptedContent } from "./packing";
 import { DerivedKeyInfo, EncryptionType, PackedEncryptedContent } from "./constructs";
 
@@ -56,19 +55,20 @@ export class Session extends Configuration {
         rounds?: number,
         encryptionMethod?: EncryptionType
     ): Promise<DerivedKeyInfo> {
-        const { derivationRounds, deriveKey, method: optionsMethod } = this.options;
+        const { derivationRounds, method: optionsMethod, pbkdf2 } = this.options;
         const method = encryptionMethod || optionsMethod;
+        const deriveFromPassword = this.options.deriveKey;
         const deriveKeyCall =
             method === EncryptionType.GCM
                 ? () =>
                       deriveFromPassword(
-                          deriveKey,
+                          pbkdf2,
                           password,
                           salt,
                           rounds || derivationRounds,
                           /* HMAC: */ false
                       )
-                : () => deriveFromPassword(deriveKey, password, salt, rounds || derivationRounds);
+                : () => deriveFromPassword(pbkdf2, password, salt, rounds || derivationRounds);
         return deriveKeyCall();
     }
 

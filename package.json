@@ -54,13 +54,7 @@
       "@babel/preset-typescript"
     ],
     "plugins": [
-      [
-        "@babel/plugin-transform-runtime",
-        {
-          "corejs": false,
-          "regenerator": true
-        }
-      ]
+      ["babel-plugin-transform-async-to-promises"]
     ]
   },
   "keywords": [
@@ -79,11 +73,10 @@
   "homepage": "https://github.com/perry-mitchell/iocane#readme",
   "devDependencies": {
     "@babel/core": "^7.7.7",
-    "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-typescript": "^7.7.7",
-    "@babel/runtime": "^7.7.7",
     "babel-loader": "^8.0.6",
+    "babel-plugin-transform-async-to-promises": "^0.8.15",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "concat-md": "^0.3.2",
