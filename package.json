@@ -38,14 +38,17 @@
   },
   "babel": {
     "presets": [
-      ["@babel/preset-env", {
-        "targets": {
-          "chrome": 60,
-          "firefox": 60,
-          "edge": 12,
-          "safari": 11
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "chrome": 60,
+            "firefox": 60,
+            "edge": 12,
+            "safari": 11
+          }
         }
-      }],
+      ],
       "@babel/preset-typescript"
     ]
   },
