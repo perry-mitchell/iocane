@@ -42,13 +42,16 @@ export async function decryptCBC(
         keyDerivationInfo.key,
         { name: ENC_ALGORITHM_CBC },
         /* not extractable: */ false,
-        ["encrypt"]
+        ["decrypt"]
     );
     // @ts-ignore
     const importedHMACKey = await crypto.subtle.importKey(
         "raw",
         keyDerivationInfo.hmac,
-        { name: ENC_ALGORITHM_CBC },
+        {
+            name: SIGN_ALGORITHM,
+            hash: HMAC_ALGORITHM
+        },
         /* not extractable: */ false,
         ["verify"]
     );
