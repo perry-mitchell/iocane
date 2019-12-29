@@ -1,4 +1,5 @@
 import {
+    arrayBufferToBase64,
     arrayBufferToHexString,
     arrayBufferToString,
     base64ToArrayBuffer,
@@ -56,11 +57,12 @@ export async function decryptCBC(
         ["verify"]
     );
     // Verify authentication
+    const signTargetStr = `${encryptedContentRaw}${ivStr}${salt}`;
     const hmacMatches = await crypto.subtle.verify(
         SIGN_ALGORITHM,
         importedHMACKey,
         hmacData,
-        encryptedContent
+        stringToArrayBuffer(signTargetStr)
     );
     if (!hmacMatches) {
         throw new Error("Authentication failed while decrypting content");
@@ -133,7 +135,7 @@ export async function encryptCBC(
     iv: ArrayBuffer
 ): Promise<EncryptedComponents> {
     const crypto = getCrypto();
-    const { rounds } = keyDerivationInfo;
+    const { rounds, salt } = keyDerivationInfo;
     const ivArr = new Uint8Array(iv);
     const ivHex = arrayBufferToHexString(iv);
     const preparedContent = stringToArrayBuffer(text);
@@ -166,23 +168,22 @@ export async function encryptCBC(
         importedKey,
         preparedContent
     );
+    // Convert encrypted content to base64
+    const encryptedContent = arrayBufferToBase64(cipherBuffer);
     // Sign content
+    const signTargetStr = `${encryptedContent}${ivHex}${salt}`;
     const signatureBuffer = await window.crypto.subtle.sign(
         SIGN_ALGORITHM,
         importedHMACKey,
-        cipherBuffer
+        stringToArrayBuffer(signTargetStr)
     );
     const hmacHex = arrayBufferToHexString(signatureBuffer);
-    // Convert encrypted content to base64
-    const cipherArr = Array.from(new Uint8Array(cipherBuffer));
-    const rawOutput = cipherArr.map(byte => String.fromCharCode(byte)).join("");
-    const encryptedContent = btoa(rawOutput);
     // Output encrypted components
     return {
         method: EncryptionType.CBC,
         auth: hmacHex,
         iv: ivHex,
-        salt: keyDerivationInfo.salt,
+        salt,
         rounds,
         content: encryptedContent
     };

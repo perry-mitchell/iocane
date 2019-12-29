@@ -9,6 +9,12 @@ export function addHexSupportToArrayBuffer(arrayBuffer: ArrayBuffer): ArrayBuffe
     return arrayBuffer;
 }
 
+export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
+    const dataArr = Array.from(new Uint8Array(arrayBuffer));
+    const rawOutput = dataArr.map(byte => String.fromCharCode(byte)).join("");
+    return btoa(rawOutput);
+}
+
 export function arrayBufferToHexString(arrayBuffer: ArrayBuffer): string {
     const byteArray = new Uint8Array(arrayBuffer);
     let hexString = "",
