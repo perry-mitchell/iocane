@@ -9,11 +9,12 @@
     "build:node": "tsc",
     "build:test": "NODE_ENV=testing npm run build",
     "build:web": "webpack --config webpack.config.js --mode=production",
+    "clean": "rimraf ./dist && rimraf ./web",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
     "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
-    "test": "run-s build:test test:coverage test:web test:format",
+    "test": "run-s clean build:test test:coverage test:web test:format",
     "test:coverage": "nyc --reporter=text mocha -r test/index.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
     "test:integration": "mocha -r test/index.js 'test/integration/**/*.spec.js'",
@@ -54,7 +55,9 @@
       "@babel/preset-typescript"
     ],
     "plugins": [
-      ["babel-plugin-transform-async-to-promises"]
+      [
+        "babel-plugin-transform-async-to-promises"
+      ]
     ]
   },
   "keywords": [
