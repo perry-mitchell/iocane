@@ -9,10 +9,7 @@ const sandboxURL = `file://${path.resolve(__dirname, "./sandbox.html")}`;
 const nightmare = Nightmare({
     executionTimeout: 15000,
     loadTimeout: 5000,
-    show: true
-    // webPreferences: {
-    //     preload: path.resolve(__dirname, "../../web/index.js")
-    // }
+    show: false
 });
 
 describe("environment consistency", function() {
@@ -54,6 +51,34 @@ describe("environment consistency", function() {
                     .catch(done);
             }, encrypted);
             expect(result).to.equal(TEXT);
+        });
+    });
+
+    describe("from web to node", function() {
+        it("decrypts AES-CBC from web", async function() {
+            const encrypted = await nightmare.evaluate(function(raw, done) {
+                const { createSession } = window.iocane;
+                createSession()
+                    .use("cbc")
+                    .encrypt(raw, "sample-pass")
+                    .then(output => done(null, output))
+                    .catch(done);
+            }, TEXT);
+            const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+            expect(decrypted).to.equal(TEXT);
+        });
+
+        it("decrypts AES-GCM from web", async function() {
+            const encrypted = await nightmare.evaluate(function(raw, done) {
+                const { createSession } = window.iocane;
+                createSession()
+                    .use("gcm")
+                    .encrypt(raw, "sample-pass")
+                    .then(output => done(null, output))
+                    .catch(done);
+            }, TEXT);
+            const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+            expect(decrypted).to.equal(TEXT);
         });
     });
 });
