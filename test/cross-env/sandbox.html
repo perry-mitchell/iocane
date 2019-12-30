@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Iocane sandbox</title>
+    </head>
+    <body>
+        <code id="code">
+            <pre>Test</pre>
+        </code>
+        <script type="text/javascript">
+            (function() {
+                const codeEl = document.getElementById("code");
+                const oldConsoleLog = console.log.bind(console);
+                console.log = function() {
+                    const pre = document.createElement("pre");
+                    pre.innerHTML = arguments.join(" ");
+                    codeEl.appendChild(pre);
+                    oldConsoleLog.apply(null, [...arguments]);
+                };
+                console.log("Started.");
+            })();
+        </script>
+    </body>
+</html>
