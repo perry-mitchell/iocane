@@ -1,5 +1,5 @@
 import { pbkdf2 as deriveKey } from "pbkdf2";
-import { DerivedKeyInfo } from "../base/constructs";
+import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
 
 const DERIVED_KEY_ALGORITHM = "sha256";
 const HMAC_KEY_SIZE = 32;
@@ -18,7 +18,7 @@ const PASSWORD_KEY_SIZE = 32;
  * @returns A promise that resolves with derived key information
  */
 export async function deriveFromPassword(
-    pbkdf2Gen: Function,
+    pbkdf2Gen: PBKDF2Function,
     password: string,
     salt: string,
     rounds: number,

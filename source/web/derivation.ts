@@ -1,5 +1,5 @@
 import { addHexSupportToArrayBuffer, joinBuffers, stringToArrayBuffer } from "./shared";
-import { DerivedKeyInfo } from "../base/constructs";
+import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
 
 const HMAC_KEY_SIZE = 32;
 const PASSWORD_KEY_SIZE = 32;
@@ -23,7 +23,7 @@ function checkBrowserSupport() {
  * @returns A promise that resolves with derived key information
  */
 export async function deriveFromPassword(
-    pbkdf2Gen: Function,
+    pbkdf2Gen: PBKDF2Function,
     password: string,
     salt: string,
     rounds: number,
