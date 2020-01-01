@@ -15,6 +15,8 @@
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
     "test": "run-s clean build:test test:coverage test:web test:cross-env test:format",
+    "test:ci": "run-s clean build:test test:coverage test:web test:format",
+    "test:ci:all": "npm test",
     "test:coverage": "nyc --reporter=text mocha -r test/setup-node.js 'test/{unit,integration}/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:cross-env": "mocha --timeout 20000 -r test/setup-node.js 'test/cross-env/**/*.spec.js'",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
