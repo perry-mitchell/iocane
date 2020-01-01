@@ -2,8 +2,12 @@ language: node_js
 jobs:
   include:
     - node_js: "stable"
+      name: "Test-All"
       addons:
         chrome: stable
+      dist: xenial
+      services:
+        - xvfb
       script: "npm run test:ci:all"
     - node_js: "10"
       script: "npm run test:ci"
