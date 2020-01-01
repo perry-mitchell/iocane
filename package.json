@@ -9,6 +9,8 @@
     "build:node": "tsc",
     "build:web": "webpack --config webpack.config.js --mode=production",
     "clean": "rimraf ./dist && rimraf ./web",
+    "dev": "webpack --config webpack.config.js --mode=development --watch --progress",
+    "dev:analyse": "ANALYSE=bundle npm run dev",
     "docs": "rimraf docs && typedoc --plugin typedoc-plugin-markdown --readme none --mode file --out ./docs && concat-md --decrease-title-levels --dir-name-as-title ./docs > API.md",
     "format": "prettier --write \"{source,test}/**/*.{js,ts}\"",
     "precommit": "lint-staged",
@@ -105,6 +107,7 @@
     "typedoc-plugin-markdown": "^2.2.14",
     "typescript": "^3.7.3",
     "webpack": "^4.41.5",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {

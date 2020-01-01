@@ -1,4 +1,9 @@
-import { addHexSupportToArrayBuffer, joinBuffers, stringToArrayBuffer } from "./shared";
+import {
+    addHexSupportToArrayBuffer,
+    hexStringToArrayBuffer,
+    joinBuffers,
+    stringToArrayBuffer
+} from "./shared";
 import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
 
 const HMAC_KEY_SIZE = 32;
@@ -43,14 +48,14 @@ export async function deriveFromPassword(
     const derivedKeyHex = derivedKeyData.toString("hex");
     const dkhLength = derivedKeyHex.length;
     const keyBuffer = generateHMAC
-        ? new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex")
-        : new Buffer(derivedKeyHex, "hex");
+        ? hexStringToArrayBuffer(derivedKeyHex.substr(0, dkhLength / 2))
+        : hexStringToArrayBuffer(derivedKeyHex);
     return {
         salt: salt,
         key: keyBuffer,
         rounds: rounds,
         hmac: generateHMAC
-            ? new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex")
+            ? hexStringToArrayBuffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2))
             : null
     };
 }

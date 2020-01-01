@@ -1,4 +1,10 @@
 const path = require("path");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+
+const plugins = [];
+if (process.env.ANALYSE === "bundle") {
+    plugins.push(new BundleAnalyzerPlugin());
+}
 
 module.exports = {
     entry: path.resolve(__dirname, "./source/index.web.ts"),
@@ -23,6 +29,8 @@ module.exports = {
         library: "iocane",
         libraryTarget: "umd"
     },
+
+    plugins,
 
     resolve: {
         extensions: [".ts", ".js", ".json"]
