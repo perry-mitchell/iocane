@@ -4,6 +4,11 @@ module.exports = config => {
         basePath: __dirname,
         browsers: ["ChromeHeadless"],
         captureTimeout: 15000,
+        client: {
+            mocha: {
+                timeout: "10000"
+            }
+        },
         files: [
             "web/index.js",
             "test/web/node-sample.js",

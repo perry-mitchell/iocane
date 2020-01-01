@@ -20,6 +20,20 @@ describe("encryption", function() {
                     expect(decrypted).to.equal(TEXT);
                 });
         });
+
+        it("can encrypt and decrypt large amounts of text", function() {
+            const txt = "Sample text. ".repeat(1000000);
+            return createSession()
+                .use("cbc")
+                .setDerivationRounds(1000)
+                .encrypt(txt, "passw0rd")
+                .then(encrypted => {
+                    return createSession().decrypt(encrypted, "passw0rd");
+                })
+                .then(decrypted => {
+                    expect(decrypted).to.equal(txt);
+                });
+        });
     });
 
     describe("using AES-GCM", function() {
@@ -39,6 +53,20 @@ describe("encryption", function() {
                 .then(encrypted => session.decrypt(encrypted, "passw0rd"))
                 .then(decrypted => {
                     expect(decrypted).to.equal(TEXT);
+                });
+        });
+
+        it("can encrypt and decrypt large amounts of text", function() {
+            const txt = "Sample text. ".repeat(1000000);
+            return createSession()
+                .use("gcm")
+                .setDerivationRounds(1000)
+                .encrypt(txt, "passw0rd")
+                .then(encrypted => {
+                    return createSession().decrypt(encrypted, "passw0rd");
+                })
+                .then(decrypted => {
+                    expect(decrypted).to.equal(txt);
                 });
         });
     });
