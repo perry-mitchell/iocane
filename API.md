@@ -25,6 +25,7 @@
 * [EncryptionFunction](#interfacesencryptionfunctionmd)
 * [IVGenerationFunction](#interfacesivgenerationfunctionmd)
 * [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)
+* [PBKDF2Function](#interfacespbkdf2functionmd)
 * [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)
 
 ### Type aliases
@@ -68,7 +69,7 @@
 
 Ƭ **PackedEncryptedContent**: *string*
 
-*Defined in [constructs.ts:64](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L64)*
+*Defined in [base/constructs.ts:125](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L125)*
 
 An encrypted string payload, containing all necessary data for
 decryption to occur (besides the password).
@@ -79,7 +80,7 @@ decryption to occur (besides the password).
 
 • **ALGO_DEFAULT**: *[CBC](#cbc)* =  EncryptionType.CBC
 
-*Defined in [shared.ts:3](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/shared.ts#L3)*
+*Defined in [base/shared.ts:3](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/shared.ts#L3)*
 
 ___
 
@@ -87,7 +88,7 @@ ___
 
 • **DERIVED_KEY_ALGORITHM**: *"sha256"* = "sha256"
 
-*Defined in [derivation.ts:4](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L4)*
+*Defined in [node/derivation.ts:4](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/derivation.ts#L4)*
 
 ___
 
@@ -95,7 +96,7 @@ ___
 
 • **DERIVED_KEY_ITERATIONS**: *250000* = 250000
 
-*Defined in [Configuration.ts:63](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L63)*
+*Defined in [base/shared.ts:4](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/shared.ts#L4)*
 
 ___
 
@@ -103,7 +104,7 @@ ___
 
 • **ENC_ALGORITHM_CBC**: *"aes-256-cbc"* = "aes-256-cbc"
 
-*Defined in [encryption.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L5)*
+*Defined in [node/encryption.ts:5](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L5)*
 
 ___
 
@@ -111,7 +112,7 @@ ___
 
 • **ENC_ALGORITHM_GCM**: *"aes-256-gcm"* = "aes-256-gcm"
 
-*Defined in [encryption.ts:6](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L6)*
+*Defined in [node/encryption.ts:6](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L6)*
 
 ___
 
@@ -119,7 +120,7 @@ ___
 
 • **HMAC_ALGORITHM**: *"sha256"* = "sha256"
 
-*Defined in [encryption.ts:7](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L7)*
+*Defined in [node/encryption.ts:7](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L7)*
 
 ___
 
@@ -127,7 +128,7 @@ ___
 
 • **HMAC_KEY_SIZE**: *32* = 32
 
-*Defined in [derivation.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L5)*
+*Defined in [node/derivation.ts:5](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/derivation.ts#L5)*
 
 ___
 
@@ -135,7 +136,7 @@ ___
 
 • **METHODS**: *[EncryptionType](#enumsencryptiontypemd)[]* =  [EncryptionType.CBC, EncryptionType.GCM]
 
-*Defined in [Configuration.ts:64](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L64)*
+*Defined in [base/Configuration.ts:12](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L12)*
 
 ___
 
@@ -143,7 +144,7 @@ ___
 
 • **PASSWORD_KEY_SIZE**: *32* = 32
 
-*Defined in [derivation.ts:6](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L6)*
+*Defined in [node/derivation.ts:6](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/derivation.ts#L6)*
 
 ___
 
@@ -151,7 +152,7 @@ ___
 
 • **PBKDF2_ROUND_DEFAULT**: *1000* = 1000
 
-*Defined in [packing.ts:4](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L4)*
+*Defined in [base/packing.ts:4](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/packing.ts#L4)*
 
 ___
 
@@ -159,7 +160,7 @@ ___
 
 • **SALT_LENGTH**: *12* = 12
 
-*Defined in [Configuration.ts:65](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L65)*
+*Defined in [node/defaults.ts:13](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/defaults.ts#L13)*
 
 ## Functions
 
@@ -167,7 +168,7 @@ ___
 
 ▸ **constantTimeCompare**(`val1`: string, `val2`: string): *boolean*
 
-*Defined in [timing.ts:7](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/timing.ts#L7)*
+*Defined in [base/timing.ts:7](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/timing.ts#L7)*
 
 Compare 2 values using time-secure checks
 
@@ -188,7 +189,7 @@ ___
 
 ▸ **createSession**(): *[Session](#classessessionmd)*
 
-*Defined in [index.ts:12](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/index.ts#L12)*
+*Defined in [index.node.ts:13](https://github.com/perry-mitchell/iocane/blob/6058545/source/index.node.ts#L13)*
 
 Start new encryption/decryption session
 
@@ -204,7 +205,7 @@ ___
 
 ▸ **decryptCBC**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
 
-*Defined in [encryption.ts:15](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L15)*
+*Defined in [node/encryption.ts:15](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L15)*
 
 Decrypt text using AES-CBC
 
@@ -225,7 +226,7 @@ ___
 
 ▸ **decryptGCM**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
 
-*Defined in [encryption.ts:47](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L47)*
+*Defined in [node/encryption.ts:51](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L51)*
 
 Decrypt text using AES-GCM
 
@@ -244,9 +245,9 @@ ___
 
 ###  deriveFromPassword
 
-▸ **deriveFromPassword**(`pbkdf2Gen`: Function, `password`: string, `salt`: string, `rounds`: number, `generateHMAC`: boolean): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+▸ **deriveFromPassword**(`pbkdf2Gen`: [PBKDF2Function](#interfacespbkdf2functionmd), `password`: string, `salt`: string, `rounds`: number, `generateHMAC`: boolean): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
 
-*Defined in [derivation.ts:29](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L29)*
+*Defined in [node/derivation.ts:20](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/derivation.ts#L20)*
 
 Derive a key from a password
 
@@ -260,7 +261,7 @@ Derive a key from a password
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`pbkdf2Gen` | Function | - | The generator method |
+`pbkdf2Gen` | [PBKDF2Function](#interfacespbkdf2functionmd) | - | The generator method |
 `password` | string | - | The password to derive from |
 `salt` | string | - | The salt |
 `rounds` | number | - | The number of iterations |
@@ -276,7 +277,7 @@ ___
 
 ▸ **encryptCBC**(`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
 
-*Defined in [encryption.ts:73](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L73)*
+*Defined in [node/encryption.ts:81](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L81)*
 
 Encrypt text using AES-CBC
 
@@ -298,7 +299,7 @@ ___
 
 ▸ **encryptGCM**(`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
 
-*Defined in [encryption.ts:108](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L108)*
+*Defined in [node/encryption.ts:120](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L120)*
 
 Encrypt text using AES-GCM
 
@@ -320,7 +321,7 @@ ___
 
 ▸ **generateIV**(): *Promise‹Buffer›*
 
-*Defined in [encryption.ts:138](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L138)*
+*Defined in [node/encryption.ts:154](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L154)*
 
 IV generator
 
@@ -334,7 +335,7 @@ ___
 
 ▸ **generateSalt**(`length`: number): *Promise‹string›*
 
-*Defined in [encryption.ts:148](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/encryption.ts#L148)*
+*Defined in [node/encryption.ts:164](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/encryption.ts#L164)*
 
 Generate a random salt
 
@@ -356,7 +357,7 @@ ___
 
 ▸ **getDefaultOptions**(): *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Defined in [Configuration.ts:71](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L71)*
+*Defined in [node/defaults.ts:19](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/defaults.ts#L19)*
 
 Get the default options
 
@@ -370,7 +371,7 @@ ___
 
 ▸ **packEncryptedContent**(`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd)): *[PackedEncryptedContent](#packedencryptedcontent)*
 
-*Defined in [packing.ts:11](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L11)*
+*Defined in [base/packing.ts:11](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/packing.ts#L11)*
 
 Pack encrypted content components into the final encrypted form
 
@@ -390,7 +391,7 @@ ___
 
 ▸ **pbkdf2**(`password`: string, `salt`: string, `rounds`: number, `bits`: number): *Promise‹Buffer›*
 
-*Defined in [derivation.ts:70](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/derivation.ts#L70)*
+*Defined in [node/derivation.ts:61](https://github.com/perry-mitchell/iocane/blob/6058545/source/node/derivation.ts#L61)*
 
 The default PBKDF2 function
 
@@ -413,7 +414,7 @@ ___
 
 ▸ **unpackEncryptedContent**(`encryptedContent`: [PackedEncryptedContent](#packedencryptedcontent)): *[EncryptedComponents](#interfacesencryptedcomponentsmd)*
 
-*Defined in [packing.ts:24](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/packing.ts#L24)*
+*Defined in [base/packing.ts:24](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/packing.ts#L24)*
 
 Unpack encrypted content components from an encrypted string
 
@@ -435,7 +436,7 @@ ___
 
 ▸ **validateEncryptionMethod**(`method`: [EncryptionType](#enumsencryptiontypemd)): *void*
 
-*Defined in [Configuration.ts:91](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L91)*
+*Defined in [base/Configuration.ts:19](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L19)*
 
 Validate an encryption method specification
 
@@ -468,10 +469,14 @@ System configuration
 
 ### Index
 
+#### Constructors
+
+* [constructor](#constructor)
+
 #### Properties
 
+* [_baseOptions](#_baseoptions)
 * [_options](#_options)
-* [getDefaultOptions](#static-getdefaultoptions)
 
 #### Accessors
 
@@ -488,21 +493,37 @@ System configuration
 * [setDerivationRounds](#setderivationrounds)
 * [use](#use)
 
+### Constructors
+
+####  constructor
+
+\+ **new Configuration**(`options`: [ConfigurationOptions](#interfacesconfigurationoptionsmd)): *[Configuration](#classesconfigurationmd)*
+
+*Defined in [base/Configuration.ts:28](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L28)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`options` | [ConfigurationOptions](#interfacesconfigurationoptionsmd) |
+
+**Returns:** *[Configuration](#classesconfigurationmd)*
+
 ### Properties
 
-####  _options
+####  _baseOptions
 
-• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)* =  getDefaultOptions()
+• **_baseOptions**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Defined in [Configuration.ts:103](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L103)*
+*Defined in [base/Configuration.ts:34](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L34)*
 
 ___
 
-#### `Static` getDefaultOptions
+####  _options
 
-▪ **getDefaultOptions**: *[getDefaultOptions](#getdefaultoptions)* =  getDefaultOptions
+• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Defined in [Configuration.ts:101](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L101)*
+*Defined in [base/Configuration.ts:35](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L35)*
 
 ### Accessors
 
@@ -510,7 +531,7 @@ ___
 
 • **get options**(): *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Defined in [Configuration.ts:110](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L110)*
+*Defined in [base/Configuration.ts:42](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L42)*
 
 Configuration options
 
@@ -526,7 +547,7 @@ Configuration options
 
 ▸ **overrideDecryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [DecryptionFunction](#interfacesdecryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:126](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L126)*
+*Defined in [base/Configuration.ts:58](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L58)*
 
 Override the decryption method
 
@@ -555,7 +576,7 @@ ___
 
 ▸ **overrideEncryption**(`method`: [EncryptionType](#enumsencryptiontypemd), `func?`: [EncryptionFunction](#interfacesencryptionfunctionmd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:144](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L144)*
+*Defined in [base/Configuration.ts:76](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L76)*
 
 Override the encryption method
 
@@ -584,7 +605,7 @@ ___
 
 ▸ **overrideIVGeneration**(`func?`: [IVGenerationFunction](#interfacesivgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:160](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L160)*
+*Defined in [base/Configuration.ts:92](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L92)*
 
 Override the IV generator
 
@@ -611,7 +632,7 @@ ___
 
 ▸ **overrideKeyDerivation**(`func?`: [KeyDerivationFunction](#interfaceskeyderivationfunctionmd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:176](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L176)*
+*Defined in [base/Configuration.ts:108](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L108)*
 
 Override key derivation
 Derive the key according to the `pbkdf2` function in derivation.js
@@ -639,7 +660,7 @@ ___
 
 ▸ **overrideSaltGeneration**(`func?`: [SaltGenerationFunction](#interfacessaltgenerationfunctionmd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:191](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L191)*
+*Defined in [base/Configuration.ts:123](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L123)*
 
 Override salt generation
 
@@ -666,7 +687,7 @@ ___
 
 ▸ **reset**(): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:201](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L201)*
+*Defined in [base/Configuration.ts:133](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L133)*
 
 Reset the configuration options
 
@@ -682,7 +703,7 @@ ___
 
 ▸ **setDerivationRounds**(`rounds?`: number): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:214](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L214)*
+*Defined in [base/Configuration.ts:146](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L146)*
 
 Set the derivation rounds to use
 
@@ -707,7 +728,7 @@ ___
 
 ▸ **use**(`method`: [EncryptionType](#enumsencryptiontypemd)): *[Configuration](#classesconfigurationmd)*
 
-*Defined in [Configuration.ts:231](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L231)*
+*Defined in [base/Configuration.ts:163](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L163)*
 
 Set the encryption method to use
 
@@ -743,10 +764,14 @@ Encryption session
 
 ### Index
 
+#### Constructors
+
+* [constructor](#constructor)
+
 #### Properties
 
+* [_baseOptions](#_baseoptions)
 * [_options](#_options)
-* [getDefaultOptions](#static-getdefaultoptions)
 
 #### Accessors
 
@@ -767,25 +792,43 @@ Encryption session
 * [setDerivationRounds](#setderivationrounds)
 * [use](#use)
 
+### Constructors
+
+####  constructor
+
+\+ **new Session**(`options`: [ConfigurationOptions](#interfacesconfigurationoptionsmd)): *[Session](#classessessionmd)*
+
+*Inherited from [Configuration](#classesconfigurationmd).[constructor](#constructor)*
+
+*Defined in [base/Configuration.ts:28](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L28)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`options` | [ConfigurationOptions](#interfacesconfigurationoptionsmd) |
+
+**Returns:** *[Session](#classessessionmd)*
+
 ### Properties
 
-####  _options
+####  _baseOptions
 
-• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)* =  getDefaultOptions()
+• **_baseOptions**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Inherited from [Configuration](#classesconfigurationmd).[_options](#_options)*
+*Inherited from [Configuration](#classesconfigurationmd).[_baseOptions](#_baseoptions)*
 
-*Defined in [Configuration.ts:103](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L103)*
+*Defined in [base/Configuration.ts:34](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L34)*
 
 ___
 
-#### `Static` getDefaultOptions
+####  _options
 
-▪ **getDefaultOptions**: *[getDefaultOptions](#getdefaultoptions)* =  getDefaultOptions
+• **_options**: *[ConfigurationOptions](#interfacesconfigurationoptionsmd)*
 
-*Inherited from [Configuration](#classesconfigurationmd).[getDefaultOptions](#static-getdefaultoptions)*
+*Inherited from [Configuration](#classesconfigurationmd).[_options](#_options)*
 
-*Defined in [Configuration.ts:101](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L101)*
+*Defined in [base/Configuration.ts:35](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L35)*
 
 ### Accessors
 
@@ -795,7 +838,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[options](#options)*
 
-*Defined in [Configuration.ts:110](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L110)*
+*Defined in [base/Configuration.ts:42](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L42)*
 
 Configuration options
 
@@ -811,7 +854,7 @@ Configuration options
 
 ▸ **_deriveKey**(`password`: string, `salt`: string, `rounds?`: number, `encryptionMethod?`: [EncryptionType](#enumsencryptiontypemd)): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
 
-*Defined in [Session.ts:53](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L53)*
+*Defined in [base/Session.ts:52](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Session.ts#L52)*
 
 Derive a key using the current configuration
 
@@ -836,7 +879,7 @@ ___
 
 ▸ **_deriveNewKey**(`password`: string): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
 
-*Defined in [Session.ts:82](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L82)*
+*Defined in [base/Session.ts:82](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Session.ts#L82)*
 
 Derive a new key using the current configuration
 
@@ -858,7 +901,7 @@ ___
 
 ▸ **decrypt**(`text`: string, `password`: string): *Promise‹string›*
 
-*Defined in [Session.ts:17](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L17)*
+*Defined in [base/Session.ts:16](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Session.ts#L16)*
 
 Decrypt some text
 
@@ -881,7 +924,7 @@ ___
 
 ▸ **encrypt**(`text`: string, `password`: string): *Promise‹[PackedEncryptedContent](#packedencryptedcontent)›*
 
-*Defined in [Session.ts:32](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Session.ts#L32)*
+*Defined in [base/Session.ts:31](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Session.ts#L31)*
 
 Encrypt some text
 
@@ -906,7 +949,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[overrideDecryption](#overridedecryption)*
 
-*Defined in [Configuration.ts:126](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L126)*
+*Defined in [base/Configuration.ts:58](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L58)*
 
 Override the decryption method
 
@@ -937,7 +980,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[overrideEncryption](#overrideencryption)*
 
-*Defined in [Configuration.ts:144](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L144)*
+*Defined in [base/Configuration.ts:76](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L76)*
 
 Override the encryption method
 
@@ -968,7 +1011,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[overrideIVGeneration](#overrideivgeneration)*
 
-*Defined in [Configuration.ts:160](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L160)*
+*Defined in [base/Configuration.ts:92](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L92)*
 
 Override the IV generator
 
@@ -997,7 +1040,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[overrideKeyDerivation](#overridekeyderivation)*
 
-*Defined in [Configuration.ts:176](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L176)*
+*Defined in [base/Configuration.ts:108](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L108)*
 
 Override key derivation
 Derive the key according to the `pbkdf2` function in derivation.js
@@ -1027,7 +1070,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[overrideSaltGeneration](#overridesaltgeneration)*
 
-*Defined in [Configuration.ts:191](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L191)*
+*Defined in [base/Configuration.ts:123](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L123)*
 
 Override salt generation
 
@@ -1056,7 +1099,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[reset](#reset)*
 
-*Defined in [Configuration.ts:201](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L201)*
+*Defined in [base/Configuration.ts:133](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L133)*
 
 Reset the configuration options
 
@@ -1074,7 +1117,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[setDerivationRounds](#setderivationrounds)*
 
-*Defined in [Configuration.ts:214](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L214)*
+*Defined in [base/Configuration.ts:146](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L146)*
 
 Set the derivation rounds to use
 
@@ -1101,7 +1144,7 @@ ___
 
 *Inherited from [Configuration](#classesconfigurationmd).[use](#use)*
 
-*Defined in [Configuration.ts:231](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L231)*
+*Defined in [base/Configuration.ts:163](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/Configuration.ts#L163)*
 
 Set the encryption method to use
 
@@ -1145,7 +1188,7 @@ is calculated automatically for decryption.
 
 • **CBC**: = "cbc"
 
-*Defined in [constructs.ts:39](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L39)*
+*Defined in [base/constructs.ts:86](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L86)*
 
 ___
 
@@ -1153,7 +1196,7 @@ ___
 
 • **GCM**: = "gcm"
 
-*Defined in [constructs.ts:40](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L40)*
+*Defined in [base/constructs.ts:87](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L87)*
 
 # Interfaces
 
@@ -1181,6 +1224,7 @@ ___
 * [generateIV](#generateiv)
 * [generateSalt](#generatesalt)
 * [method](#method)
+* [pbkdf2](#pbkdf2)
 * [saltLength](#saltlength)
 
 ### Properties
@@ -1189,7 +1233,7 @@ ___
 
 • **decryption_cbc**: *[DecryptionFunction](#interfacesdecryptionfunctionmd)*
 
-*Defined in [Configuration.ts:24](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L24)*
+*Defined in [base/constructs.ts:5](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L5)*
 
 AES-CBC decryption function
 
@@ -1199,7 +1243,7 @@ ___
 
 • **decryption_gcm**: *[DecryptionFunction](#interfacesdecryptionfunctionmd)*
 
-*Defined in [Configuration.ts:28](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L28)*
+*Defined in [base/constructs.ts:9](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L9)*
 
 AES-GCM decryption function
 
@@ -1209,7 +1253,7 @@ ___
 
 • **derivationRounds**: *number*
 
-*Defined in [Configuration.ts:32](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L32)*
+*Defined in [base/constructs.ts:13](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L13)*
 
 Default number of key derivation iterations
 
@@ -1219,9 +1263,9 @@ ___
 
 • **deriveKey**: *[KeyDerivationFunction](#interfaceskeyderivationfunctionmd)*
 
-*Defined in [Configuration.ts:36](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L36)*
+*Defined in [base/constructs.ts:17](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L17)*
 
-Keys derivation function
+Key derivation helper/wrapper function
 
 ___
 
@@ -1229,7 +1273,7 @@ ___
 
 • **encryption_cbc**: *[EncryptionFunction](#interfacesencryptionfunctionmd)*
 
-*Defined in [Configuration.ts:40](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L40)*
+*Defined in [base/constructs.ts:21](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L21)*
 
 AES-CBC encryption function
 
@@ -1239,7 +1283,7 @@ ___
 
 • **encryption_gcm**: *[EncryptionFunction](#interfacesencryptionfunctionmd)*
 
-*Defined in [Configuration.ts:44](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L44)*
+*Defined in [base/constructs.ts:25](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L25)*
 
 AES-GCM encryption function
 
@@ -1249,7 +1293,7 @@ ___
 
 • **generateIV**: *[IVGenerationFunction](#interfacesivgenerationfunctionmd)*
 
-*Defined in [Configuration.ts:48](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L48)*
+*Defined in [base/constructs.ts:29](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L29)*
 
 Random IV generation function
 
@@ -1259,7 +1303,7 @@ ___
 
 • **generateSalt**: *[SaltGenerationFunction](#interfacessaltgenerationfunctionmd)*
 
-*Defined in [Configuration.ts:52](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L52)*
+*Defined in [base/constructs.ts:33](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L33)*
 
 Random salt generation function
 
@@ -1269,9 +1313,19 @@ ___
 
 • **method**: *[EncryptionType](#enumsencryptiontypemd)*
 
-*Defined in [Configuration.ts:56](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L56)*
+*Defined in [base/constructs.ts:37](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L37)*
 
 The encryption method - cbc/gcm
+
+___
+
+####  pbkdf2
+
+• **pbkdf2**: *[PBKDF2Function](#interfacespbkdf2functionmd)*
+
+*Defined in [base/constructs.ts:41](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L41)*
+
+PBKDF2 derivation function
 
 ___
 
@@ -1279,7 +1333,7 @@ ___
 
 • **saltLength**: *number*
 
-*Defined in [Configuration.ts:60](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/Configuration.ts#L60)*
+*Defined in [base/constructs.ts:45](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L45)*
 
 Salt character length
 
@@ -1301,7 +1355,7 @@ data and returns a decrypted string asynchronously
 
 ▸ (`encryptedComponents`: [EncryptedComponents](#interfacesencryptedcomponentsmd), `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd)): *Promise‹string›*
 
-*Defined in [constructs.ts:5](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L5)*
+*Defined in [base/constructs.ts:52](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L52)*
 
 Decryption function that takes encrypted components and key derivation
 data and returns a decrypted string asynchronously
@@ -1339,17 +1393,17 @@ Name | Type |
 
 ####  hmac
 
-• **hmac**: *Buffer | null*
+• **hmac**: *Buffer | ArrayBuffer | null*
 
-*Defined in [constructs.ts:12](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L12)*
+*Defined in [base/constructs.ts:59](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L59)*
 
 ___
 
 ####  key
 
-• **key**: *Buffer*
+• **key**: *Buffer | ArrayBuffer*
 
-*Defined in [constructs.ts:11](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L11)*
+*Defined in [base/constructs.ts:58](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L58)*
 
 ___
 
@@ -1357,7 +1411,7 @@ ___
 
 • **rounds**: *number*
 
-*Defined in [constructs.ts:13](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L13)*
+*Defined in [base/constructs.ts:60](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L60)*
 
 ___
 
@@ -1365,7 +1419,7 @@ ___
 
 • **salt**: *string*
 
-*Defined in [constructs.ts:10](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L10)*
+*Defined in [base/constructs.ts:57](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L57)*
 
 
 <a name="interfacesencryptedcomponentsmd"></a>
@@ -1395,7 +1449,7 @@ ___
 
 • **auth**: *string*
 
-*Defined in [constructs.ts:20](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L20)*
+*Defined in [base/constructs.ts:67](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L67)*
 
 ___
 
@@ -1403,7 +1457,7 @@ ___
 
 • **content**: *string*
 
-*Defined in [constructs.ts:17](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L17)*
+*Defined in [base/constructs.ts:64](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L64)*
 
 ___
 
@@ -1411,7 +1465,7 @@ ___
 
 • **iv**: *string*
 
-*Defined in [constructs.ts:18](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L18)*
+*Defined in [base/constructs.ts:65](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L65)*
 
 ___
 
@@ -1419,7 +1473,7 @@ ___
 
 • **method**: *[EncryptionType](#enumsencryptiontypemd)*
 
-*Defined in [constructs.ts:22](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L22)*
+*Defined in [base/constructs.ts:69](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L69)*
 
 ___
 
@@ -1427,7 +1481,7 @@ ___
 
 • **rounds**: *number*
 
-*Defined in [constructs.ts:21](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L21)*
+*Defined in [base/constructs.ts:68](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L68)*
 
 ___
 
@@ -1435,7 +1489,7 @@ ___
 
 • **salt**: *string*
 
-*Defined in [constructs.ts:19](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L19)*
+*Defined in [base/constructs.ts:66](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L66)*
 
 
 <a name="interfacesencryptionfunctionmd"></a>
@@ -1456,7 +1510,7 @@ packing.
 
 ▸ (`text`: string, `keyDerivationInfo`: [DerivedKeyInfo](#interfacesderivedkeyinfomd), `iv`: Buffer): *Promise‹[EncryptedComponents](#interfacesencryptedcomponentsmd)›*
 
-*Defined in [constructs.ts:30](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L30)*
+*Defined in [base/constructs.ts:77](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L77)*
 
 Encryption function that takes a raw string, key derivation data and
 an IV buffer. Returns an encrypted components payload, ready for
@@ -1487,13 +1541,13 @@ Random IV generation function - returns an IV buffer aynchronously
 
 ### Callable
 
-▸ (): *Promise‹Buffer›*
+▸ (): *Promise‹Buffer | ArrayBuffer›*
 
-*Defined in [constructs.ts:46](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L46)*
+*Defined in [base/constructs.ts:93](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L93)*
 
 Random IV generation function - returns an IV buffer aynchronously
 
-**Returns:** *Promise‹Buffer›*
+**Returns:** *Promise‹Buffer | ArrayBuffer›*
 
 
 <a name="interfaceskeyderivationfunctionmd"></a>
@@ -1502,10 +1556,8 @@ Random IV generation function - returns an IV buffer aynchronously
 
 ## Interface: KeyDerivationFunction
 
-Key derivation method - returns a buffer, asynchronously, that matches
-the specified number of bits (in hex form). Takes a raw password,
-random salt, number of derivation rounds/iterations and the bits of
-key to generate.
+Key derivation helper - wraps a key derivation method and produces
+derived-key information that can be provided to several functions.
 
 ### Hierarchy
 
@@ -1513,9 +1565,46 @@ key to generate.
 
 ### Callable
 
-▸ (`password`: string, `salt`: string, `rounds`: number, `bits`: number): *Promise‹Buffer›*
+▸ (`deriveKey`: [PBKDF2Function](#interfacespbkdf2functionmd), `password`: string, `salt`: string, `rounds`: number, `generateHMAC?`: boolean): *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
 
-*Defined in [constructs.ts:56](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L56)*
+*Defined in [base/constructs.ts:101](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L101)*
+
+Key derivation helper - wraps a key derivation method and produces
+derived-key information that can be provided to several functions.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`deriveKey` | [PBKDF2Function](#interfacespbkdf2functionmd) |
+`password` | string |
+`salt` | string |
+`rounds` | number |
+`generateHMAC?` | boolean |
+
+**Returns:** *Promise‹[DerivedKeyInfo](#interfacesderivedkeyinfomd)›*
+
+
+<a name="interfacespbkdf2functionmd"></a>
+
+[iocane](#readmemd) › [PBKDF2Function](#interfacespbkdf2functionmd)
+
+## Interface: PBKDF2Function
+
+Key derivation method - returns a buffer, asynchronously, that matches
+the specified number of bits (in hex form). Takes a raw password,
+random salt, number of derivation rounds/iterations and the bits of
+key to generate.
+
+### Hierarchy
+
+* **PBKDF2Function**
+
+### Callable
+
+▸ (`password`: string, `salt`: string, `rounds`: number, `bits`: number): *Promise‹Buffer | ArrayBuffer›*
+
+*Defined in [base/constructs.ts:117](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L117)*
 
 Key derivation method - returns a buffer, asynchronously, that matches
 the specified number of bits (in hex form). Takes a raw password,
@@ -1531,7 +1620,7 @@ Name | Type |
 `rounds` | number |
 `bits` | number |
 
-**Returns:** *Promise‹Buffer›*
+**Returns:** *Promise‹Buffer | ArrayBuffer›*
 
 
 <a name="interfacessaltgenerationfunctionmd"></a>
@@ -1551,7 +1640,7 @@ and returns a random salt string asynchronously.
 
 ▸ (`length`: number): *Promise‹string›*
 
-*Defined in [constructs.ts:70](https://github.com/perry-mitchell/iocane/blob/ed4afc7/source/constructs.ts#L70)*
+*Defined in [base/constructs.ts:131](https://github.com/perry-mitchell/iocane/blob/6058545/source/base/constructs.ts#L131)*
 
 Salt generation function - takes a string length as the only parameter
 and returns a random salt string asynchronously.

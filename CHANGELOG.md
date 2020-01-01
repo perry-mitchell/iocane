@@ -1,5 +1,11 @@
 # iocane changelog
 
+## v3.0.0
+_2020-01-01_
+
+ * First-party **web version**
+ * `deriveKey` override split into `deriveKey` (wrapper) and `pbkdf2`
+
 ## v2.0.0
 _2019-12-16_
 
