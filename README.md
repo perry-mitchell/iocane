@@ -7,14 +7,25 @@ NodeJS textual encryption library
 ## About
 **iocane** makes text encryption and decryption easy by bundling all the complicated processes into one succinct library. Encrypt and decrypt strings easily by using iocane's encryption format - strings in, strings out.
 
-This library _sessions_ for encryption and decryption. A session describes one encryption/decryption action, and can also have options be further overridden at the time of execution. Check the examples below for a better idea of how this process works.
+This library uses "sessions" for encryption and decryption. A session describes one encryption/decryption action, and can also have options be further overridden at the time of execution. Check the examples below for a better idea of how this process works.
+
+**iocane** works in the browser, too. Both a **node version** and a **web version** are available:
+
+```javascript
+const iocane = require("iocane"); // node
+```
+
+```javascript
+import * as iocane from "iocane/web" // web
+```
 
 ### Features
 **iocane** by default boasts the following features:
 
- * AES-CBC or AES-GCM encryption
+ * AES-CBC / AES-GCM encryption
  * 256bit keys
  * PBKDF2 key derivation (with 250k iterations)
+ * ~11kb minified web version
 
 ## Installation
 Install `iocane` as a dependency using `npm`:
@@ -73,12 +84,16 @@ _Note that the default encryption mode is `"cbc"` (AES-CBC encryption)._
 
 You can check out the [API documentation](API.md) for more information.
 
+### Web usage
+
+When building a project for the web, make sure to use the web-based version of iocane. Bundling the node version will create super-large bundles and result in slow encryption and decryption. iocane for the web uses UMD so it can be imported or simply loaded straight in the browser as a `<script>`.
+
+If you load iocane directly in the browser, it will create a global namespace at `window.iocane` (eg. `window.iocane.createSession`).
+
 ## Supported environments
 **iocane** supports NodeJS version 8 and above. Versions prior to 8 were supported in `1.x` but are not anymore.
 
-**iocane** is used in the browser as well, but in very custom situations. Support for using iocane in the browser is not provided through this repository. Please see respositories like [`buttercup`](https://github.com/buttercup/buttercup-core) and [Buttercup browser extension](https://github.com/buttercup/buttercup-browser-extension) for web usage.
-
-_Note: when using iocane in the browser, at very least the key derivation process should be overridden. This is extremely slow if left to the internal derivation method._
+**iocane** is used in the browser as well - it works everywhere that `SubtleCrypto`, `ArrayBuffer` and `Promise` are available.
 
 _Note: iocane is written in TypeScript, though versions before v2 where written in JavaScript._
 

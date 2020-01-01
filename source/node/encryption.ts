@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
-import { constantTimeCompare } from "./timing";
-import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "./constructs";
+import { constantTimeCompare } from "../base/timing";
+import { DerivedKeyInfo, EncryptedComponents, EncryptionType } from "../base/constructs";
 
 const ENC_ALGORITHM_CBC = "aes-256-cbc";
 const ENC_ALGORITHM_GCM = "aes-256-gcm";
@@ -22,7 +22,7 @@ export async function decryptCBC(
     const salt = encryptedComponents.salt;
     const hmacData = encryptedComponents.auth;
     // Get HMAC tool
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
+    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     // Generate the HMAC
     hmacTool.update(encryptedContent);
     hmacTool.update(encryptedComponents.iv);
@@ -33,7 +33,11 @@ export async function decryptCBC(
         throw new Error("Authentication failed while decrypting content");
     }
     // Decrypt
-    const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
+    const decryptTool = crypto.createDecipheriv(
+        ENC_ALGORITHM_CBC,
+        keyDerivationInfo.key as Buffer,
+        iv
+    );
     const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
     return `${decryptedText}${decryptTool.final("utf8")}`;
 }
@@ -53,7 +57,11 @@ export async function decryptGCM(
     const iv = new Buffer(encryptedComponents.iv, "hex");
     const { auth: tagHex } = encryptedComponents;
     // Prepare tool
-    const decryptTool = crypto.createDecipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+    const decryptTool = crypto.createDecipheriv(
+        ENC_ALGORITHM_GCM,
+        keyDerivationInfo.key as Buffer,
+        iv
+    );
     // Add additional auth data
     decryptTool.setAAD(new Buffer(`${encryptedComponents.iv}${keyDerivationInfo.salt}`, "utf8"));
     // Set auth tag
@@ -76,8 +84,12 @@ export async function encryptCBC(
     iv: Buffer
 ): Promise<EncryptedComponents> {
     const ivHex = iv.toString("hex");
-    const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_CBC, keyDerivationInfo.key, iv);
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac);
+    const encryptTool = crypto.createCipheriv(
+        ENC_ALGORITHM_CBC,
+        keyDerivationInfo.key as Buffer,
+        iv
+    );
+    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     const { rounds } = keyDerivationInfo;
     // Perform encryption
     let encryptedContent = encryptTool.update(text, "utf8", "base64");
@@ -112,7 +124,11 @@ export async function encryptGCM(
 ): Promise<EncryptedComponents> {
     const ivHex = iv.toString("hex");
     const { rounds } = keyDerivationInfo;
-    const encryptTool = crypto.createCipheriv(ENC_ALGORITHM_GCM, keyDerivationInfo.key, iv);
+    const encryptTool = crypto.createCipheriv(
+        ENC_ALGORITHM_GCM,
+        keyDerivationInfo.key as Buffer,
+        iv
+    );
     // Add additional auth data
     encryptTool.setAAD(new Buffer(`${ivHex}${keyDerivationInfo.salt}`, "utf8"));
     // Perform encryption

@@ -1,14 +1,5 @@
-import { pbkdf2 } from "./derivation";
 import {
-    decryptCBC,
-    decryptGCM,
-    encryptCBC,
-    encryptGCM,
-    generateIV,
-    generateSalt
-} from "./encryption";
-import { ALGO_DEFAULT } from "./shared";
-import {
+    ConfigurationOptions,
     DecryptionFunction,
     EncryptionFunction,
     EncryptionType,
@@ -16,72 +7,9 @@ import {
     KeyDerivationFunction,
     SaltGenerationFunction
 } from "./constructs";
+import { DERIVED_KEY_ITERATIONS } from "./shared";
 
-interface ConfigurationOptions {
-    /**
-     * AES-CBC decryption function
-     */
-    decryption_cbc: DecryptionFunction;
-    /**
-     * AES-GCM decryption function
-     */
-    decryption_gcm: DecryptionFunction;
-    /**
-     * Default number of key derivation iterations
-     */
-    derivationRounds: number;
-    /**
-     * Keys derivation function
-     */
-    deriveKey: KeyDerivationFunction;
-    /**
-     * AES-CBC encryption function
-     */
-    encryption_cbc: EncryptionFunction;
-    /**
-     * AES-GCM encryption function
-     */
-    encryption_gcm: EncryptionFunction;
-    /**
-     * Random IV generation function
-     */
-    generateIV: IVGenerationFunction;
-    /**
-     * Random salt generation function
-     */
-    generateSalt: SaltGenerationFunction;
-    /**
-     * The encryption method - cbc/gcm
-     */
-    method: EncryptionType;
-    /**
-     * Salt character length
-     */
-    saltLength: number;
-}
-
-const DERIVED_KEY_ITERATIONS = 250000;
 const METHODS = [EncryptionType.CBC, EncryptionType.GCM];
-const SALT_LENGTH = 12;
-
-/**
- * Get the default options
- * @returns Default configuration options
- */
-function getDefaultOptions(): ConfigurationOptions {
-    return {
-        decryption_cbc: decryptCBC,
-        decryption_gcm: decryptGCM,
-        derivationRounds: DERIVED_KEY_ITERATIONS,
-        deriveKey: pbkdf2,
-        encryption_cbc: encryptCBC,
-        encryption_gcm: encryptGCM,
-        generateIV,
-        generateSalt,
-        method: ALGO_DEFAULT,
-        saltLength: SALT_LENGTH
-    };
-}
 
 /**
  * Validate an encryption method specification
@@ -98,9 +26,13 @@ function validateEncryptionMethod(method: EncryptionType) {
  * System configuration
  */
 export class Configuration {
-    static getDefaultOptions = getDefaultOptions;
+    constructor(options: ConfigurationOptions) {
+        this._baseOptions = Object.assign({}, options);
+        this._options = options;
+    }
 
-    _options = getDefaultOptions();
+    _baseOptions: ConfigurationOptions;
+    _options: ConfigurationOptions;
 
     /**
      * Configuration options
@@ -125,7 +57,7 @@ export class Configuration {
      */
     overrideDecryption(method: EncryptionType, func?: DecryptionFunction): Configuration {
         validateEncryptionMethod(method);
-        this._options[`decryption_${method}`] = func || getDefaultOptions()[`decryption_${method}`];
+        this._options[`decryption_${method}`] = func || this._baseOptions[`decryption_${method}`];
         return this;
     }
 
@@ -143,7 +75,7 @@ export class Configuration {
      */
     overrideEncryption(method: EncryptionType, func?: EncryptionFunction): Configuration {
         validateEncryptionMethod(method);
-        this._options[`encryption_${method}`] = func || getDefaultOptions()[`encryption_${method}`];
+        this._options[`encryption_${method}`] = func || this._baseOptions[`encryption_${method}`];
         return this;
     }
 
@@ -158,7 +90,7 @@ export class Configuration {
      *  });
      */
     overrideIVGeneration(func?: IVGenerationFunction): Configuration {
-        this._options.generateIV = func || getDefaultOptions().generateIV;
+        this._options.generateIV = func || this._baseOptions.generateIV;
         return this;
     }
 
@@ -174,7 +106,7 @@ export class Configuration {
      *  });
      */
     overrideKeyDerivation(func?: KeyDerivationFunction): Configuration {
-        this._options.deriveKey = func || getDefaultOptions().deriveKey;
+        this._options.deriveKey = func || this._baseOptions.deriveKey;
         return this;
     }
 
@@ -189,7 +121,7 @@ export class Configuration {
      *  });
      */
     overrideSaltGeneration(func?: SaltGenerationFunction): Configuration {
-        this._options.generateSalt = func || getDefaultOptions().generateSalt;
+        this._options.generateSalt = func || this._baseOptions.generateSalt;
         return this;
     }
 
@@ -199,7 +131,7 @@ export class Configuration {
      * @returns Returns self
      */
     reset(): Configuration {
-        this._options = getDefaultOptions();
+        this._options = this._baseOptions;
         return this;
     }
 

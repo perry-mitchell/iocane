@@ -1,3 +1,50 @@
+export interface ConfigurationOptions {
+    /**
+     * AES-CBC decryption function
+     */
+    decryption_cbc: DecryptionFunction;
+    /**
+     * AES-GCM decryption function
+     */
+    decryption_gcm: DecryptionFunction;
+    /**
+     * Default number of key derivation iterations
+     */
+    derivationRounds: number;
+    /**
+     * Key derivation helper/wrapper function
+     */
+    deriveKey: KeyDerivationFunction;
+    /**
+     * AES-CBC encryption function
+     */
+    encryption_cbc: EncryptionFunction;
+    /**
+     * AES-GCM encryption function
+     */
+    encryption_gcm: EncryptionFunction;
+    /**
+     * Random IV generation function
+     */
+    generateIV: IVGenerationFunction;
+    /**
+     * Random salt generation function
+     */
+    generateSalt: SaltGenerationFunction;
+    /**
+     * The encryption method - cbc/gcm
+     */
+    method: EncryptionType;
+    /**
+     * PBKDF2 derivation function
+     */
+    pbkdf2: PBKDF2Function;
+    /**
+     * Salt character length
+     */
+    saltLength: number;
+}
+
 /**
  * Decryption function that takes encrypted components and key derivation
  * data and returns a decrypted string asynchronously
@@ -8,8 +55,8 @@ export interface DecryptionFunction {
 
 export interface DerivedKeyInfo {
     salt: string;
-    key: Buffer;
-    hmac: Buffer | null;
+    key: Buffer | ArrayBuffer;
+    hmac: Buffer | ArrayBuffer | null;
     rounds: number;
 }
 
@@ -44,7 +91,21 @@ export enum EncryptionType {
  * Random IV generation function - returns an IV buffer aynchronously
  */
 export interface IVGenerationFunction {
-    (): Promise<Buffer>;
+    (): Promise<Buffer | ArrayBuffer>;
+}
+
+/**
+ * Key derivation helper - wraps a key derivation method and produces
+ * derived-key information that can be provided to several functions.
+ */
+export interface KeyDerivationFunction {
+    (
+        deriveKey: PBKDF2Function,
+        password: string,
+        salt: string,
+        rounds: number,
+        generateHMAC?: boolean
+    ): Promise<DerivedKeyInfo>;
 }
 
 /**
@@ -53,8 +114,8 @@ export interface IVGenerationFunction {
  * random salt, number of derivation rounds/iterations and the bits of
  * key to generate.
  */
-export interface KeyDerivationFunction {
-    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer>;
+export interface PBKDF2Function {
+    (password: string, salt: string, rounds: number, bits: number): Promise<Buffer | ArrayBuffer>;
 }
 
 /**

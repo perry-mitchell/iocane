@@ -1,4 +1,4 @@
-const { deriveFromPassword, pbkdf2 } = require("../../dist/derivation.js");
+const { deriveFromPassword, pbkdf2 } = require("../../dist/node/derivation.js");
 
 describe("derivation", function() {
     describe("deriveFromPassword", function() {

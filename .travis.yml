@@ -1,5 +1,25 @@
 language: node_js
-node_js:
-  - "stable"
-  - "10"
-  - "8"
+jobs:
+  include:
+    - node_js: "stable"
+      name: "Test-Environemnts"
+      sudo: required
+      dist: trusty
+      addons:
+        # firefox: latest
+        apt:
+          sources:
+            - google-chrome
+          packages:
+            - google-chrome-stable
+      before_script:
+        - export DISPLAY=:99.0
+        - sh -e /etc/init.d/xvfb start
+        - sleep 3 # give xvfb some time to start
+      script: "npm run test:ci:env"
+    - node_js: "stable"
+      script: "npm run test:ci"
+    - node_js: "10"
+      script: "npm run test:ci"
+    - node_js: "8"
+      script: "npm run test:ci"
