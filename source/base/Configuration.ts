@@ -55,7 +55,7 @@ export class Configuration {
      *    // return Promise
      *  });
      */
-    overrideDecryption(method: EncryptionType, func?: DecryptionFunction): Configuration {
+    overrideDecryption(method: EncryptionType, func?: DecryptionFunction): this {
         validateEncryptionMethod(method);
         this._options[`decryption_${method}`] = func || this._baseOptions[`decryption_${method}`];
         return this;
@@ -73,7 +73,7 @@ export class Configuration {
      *    // return Promise
      *  });
      */
-    overrideEncryption(method: EncryptionType, func?: EncryptionFunction): Configuration {
+    overrideEncryption(method: EncryptionType, func?: EncryptionFunction): this {
         validateEncryptionMethod(method);
         this._options[`encryption_${method}`] = func || this._baseOptions[`encryption_${method}`];
         return this;
@@ -89,7 +89,7 @@ export class Configuration {
      *    return Promise.resolve(ivBuffer);
      *  });
      */
-    overrideIVGeneration(func?: IVGenerationFunction): Configuration {
+    overrideIVGeneration(func?: IVGenerationFunction): this {
         this._options.generateIV = func || this._baseOptions.generateIV;
         return this;
     }
@@ -105,7 +105,7 @@ export class Configuration {
      *    return Promise.resolve(derivedKeyBuffer);
      *  });
      */
-    overrideKeyDerivation(func?: KeyDerivationFunction): Configuration {
+    overrideKeyDerivation(func?: KeyDerivationFunction): this {
         this._options.deriveKey = func || this._baseOptions.deriveKey;
         return this;
     }
@@ -120,7 +120,7 @@ export class Configuration {
      *    return Promise.resolve(saltText);
      *  });
      */
-    overrideSaltGeneration(func?: SaltGenerationFunction): Configuration {
+    overrideSaltGeneration(func?: SaltGenerationFunction): this {
         this._options.generateSalt = func || this._baseOptions.generateSalt;
         return this;
     }
@@ -130,7 +130,7 @@ export class Configuration {
      * @memberof Configuration
      * @returns Returns self
      */
-    reset(): Configuration {
+    reset(): this {
         this._options = this._baseOptions;
         return this;
     }
@@ -143,7 +143,7 @@ export class Configuration {
      * @example
      *  config.setDerivationRounds(250000);
      */
-    setDerivationRounds(rounds?: number): Configuration {
+    setDerivationRounds(rounds?: number): this {
         if (typeof rounds === "undefined") {
             this._options.derivationRounds = DERIVED_KEY_ITERATIONS;
         } else if (typeof rounds === "number") {
@@ -160,7 +160,7 @@ export class Configuration {
      * @example
      *  config.use("gcm");
      */
-    use(method: EncryptionType): Configuration {
+    use(method: EncryptionType): this {
         validateEncryptionMethod(method);
         this._options.method = method;
         return this;
