@@ -1,4 +1,4 @@
-import { EncryptedComponents, EncryptionType, PackedEncryptedContent } from "./constructs";
+import { EncryptedComponents, EncryptionType, PackedEncryptedText } from "./constructs";
 import { ALGO_DEFAULT } from "./shared";
 
 const PBKDF2_ROUND_DEFAULT = 1000;
@@ -8,9 +8,7 @@ const PBKDF2_ROUND_DEFAULT = 1000;
  * @param encryptedComponents The encrypted components payload
  * @returns The final encrypted form
  */
-export function packEncryptedContent(
-    encryptedComponents: EncryptedComponents
-): PackedEncryptedContent {
+export function packEncryptedText(encryptedComponents: EncryptedComponents): PackedEncryptedText {
     const { content, iv, salt, auth, rounds, method } = encryptedComponents;
     return [content, iv, salt, auth, rounds, method].join("$");
 }
@@ -21,9 +19,7 @@ export function packEncryptedContent(
  * @returns The extracted components
  * @throws {Error} Throws if the number of components is incorrect
  */
-export function unpackEncryptedContent(
-    encryptedContent: PackedEncryptedContent
-): EncryptedComponents {
+export function unpackEncryptedText(encryptedContent: PackedEncryptedText): EncryptedComponents {
     const [content, iv, salt, auth, roundsRaw, methodRaw] = <
         [string, string, string, string, string, EncryptionType]
     >encryptedContent.split("$");

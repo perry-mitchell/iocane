@@ -1,9 +1,9 @@
-const { packEncryptedContent, unpackEncryptedContent } = require("../../dist/base/packing.js");
+const { packEncryptedText, unpackEncryptedText } = require("../../dist/base/packing.js");
 
 describe("packing", function() {
-    describe("packEncryptedContent", function() {
+    describe("packEncryptedText", function() {
         it("packs everything into a string", function() {
-            const output = packEncryptedContent({
+            const output = packEncryptedText({
                 content: "ENC",
                 iv: "IV",
                 salt: "SALT",
@@ -15,9 +15,9 @@ describe("packing", function() {
         });
     });
 
-    describe("unpackEncryptedContent", function() {
+    describe("unpackEncryptedText", function() {
         beforeEach(function() {
-            this.packed = packEncryptedContent({
+            this.packed = packEncryptedText({
                 content: "ENC",
                 iv: "IV",
                 salt: "SALT",
@@ -28,7 +28,7 @@ describe("packing", function() {
         });
 
         it("unpacks to correct properties", function() {
-            const unpacked = unpackEncryptedContent(this.packed);
+            const unpacked = unpackEncryptedText(this.packed);
             expect(unpacked).to.have.property("content", "ENC");
             expect(unpacked).to.have.property("iv", "IV");
             expect(unpacked).to.have.property("salt", "SALT");

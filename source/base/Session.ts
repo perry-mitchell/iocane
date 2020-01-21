@@ -1,6 +1,6 @@
 import { Configuration } from "./Configuration";
-import { packEncryptedContent, unpackEncryptedContent } from "./packing";
-import { DerivedKeyInfo, EncryptionType, PackedEncryptedContent } from "./constructs";
+// import { packEncryptedContent, unpackEncryptedContent } from "./packing";
+import { DerivedKeyInfo, EncryptionType, PackedEncryptedText } from "./constructs";
 
 /**
  * Encryption session
@@ -14,7 +14,8 @@ export class Session extends Configuration {
      * @memberof Session
      */
     async decrypt(text: string, password: string): Promise<string> {
-        const encryptedComponents = unpackEncryptedContent(text);
+        const unpack = this.options.unpack_text;
+        const encryptedComponents = unpack(text);
         const { salt, rounds, method } = encryptedComponents;
         const decryptMethod = this.options[`decryption_${method}`];
         const keyDerivationInfo = await this._deriveKey(password, salt, rounds, method);
@@ -28,15 +29,16 @@ export class Session extends Configuration {
      * @returns A promise that resolves with encrypted text
      * @memberof Session
      */
-    async encrypt(text: string, password: string): Promise<PackedEncryptedContent> {
+    async encrypt(text: string, password: string): Promise<PackedEncryptedText> {
         const { generateIV, method } = this.options;
         const encryptMethod = this.options[`encryption_${method}`];
+        const pack = this.options.pack_text;
         const [keyDerivationInfo, iv] = await Promise.all([
             this._deriveNewKey(password),
             generateIV()
         ]);
         const encryptedComponents = await encryptMethod(text, keyDerivationInfo, iv);
-        return packEncryptedContent(encryptedComponents);
+        return pack(encryptedComponents);
     }
 
     /**

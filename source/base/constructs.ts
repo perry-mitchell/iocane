@@ -36,6 +36,10 @@ export interface ConfigurationOptions {
      */
     method: EncryptionType;
     /**
+     * The text packing method
+     */
+    pack_text: PackTextFunction;
+    /**
      * PBKDF2 derivation function
      */
     pbkdf2: PBKDF2Function;
@@ -43,6 +47,10 @@ export interface ConfigurationOptions {
      * Salt character length
      */
     saltLength: number;
+    /**
+     * The text unpacking method
+     */
+    unpack_text: UnpackTextFunction;
 }
 
 /**
@@ -109,6 +117,14 @@ export interface KeyDerivationFunction {
 }
 
 /**
+ * Encrypted text packing method - packs components into a single
+ * string.
+ */
+export interface PackTextFunction {
+    (components: EncryptedComponents): PackedEncryptedText;
+}
+
+/**
  * Key derivation method - returns a buffer, asynchronously, that matches
  * the specified number of bits (in hex form). Takes a raw password,
  * random salt, number of derivation rounds/iterations and the bits of
@@ -122,7 +138,7 @@ export interface PBKDF2Function {
  * An encrypted string payload, containing all necessary data for
  * decryption to occur (besides the password).
  */
-export type PackedEncryptedContent = string;
+export type PackedEncryptedText = string;
 
 /**
  * Salt generation function - takes a string length as the only parameter
@@ -130,4 +146,12 @@ export type PackedEncryptedContent = string;
  */
 export interface SaltGenerationFunction {
     (length: number): Promise<string>;
+}
+
+/**
+ * Encrypted text unpacking method - unpacks a string into a group of
+ * encryption components.
+ */
+export interface UnpackTextFunction {
+    (packed: PackedEncryptedText): EncryptedComponents;
 }
