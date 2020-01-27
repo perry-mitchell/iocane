@@ -1,8 +1,10 @@
-import { EncryptedBinaryComponents, PackedEncryptedData } from "../base/constructs";
+import { EncryptedBinaryComponents, EncryptionType } from "../base/constructs";
 import { getBinarySignature } from "../base/packing";
-import { stringToArrayBuffer } from "./shared";
+import { arrayBuffersEqual, arrayBufferToString, stringToArrayBuffer } from "./shared";
 
 export { packEncryptedText, unpackEncryptedText } from "../base/packing";
+
+const SIZE_ENCODING_BYTES = 4;
 
 function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
     if (buffers.length <= 0) {
@@ -18,9 +20,7 @@ function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
     return dataArr.buffer;
 }
 
-export function packEncryptedData(
-    encryptedComponents: EncryptedBinaryComponents
-): PackedEncryptedData {
+export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents): ArrayBuffer {
     const signature = new Uint8Array(getBinarySignature()).buffer;
     const { content, iv, salt, auth, rounds, method } = encryptedComponents;
     return concatArrayBuffers([
@@ -46,4 +46,32 @@ function sizeToBuffer(size: number): ArrayBuffer {
     const dataView = new DataView(buffer);
     dataView.setUint32(0, size, /* little-endian: */ false);
     return buffer;
+}
+
+export function unpackEncryptedData(encryptedContent: ArrayBuffer): EncryptedBinaryComponents {
+    const expectedSignature = new Uint8Array(getBinarySignature()).buffer;
+    const sigLen = expectedSignature.byteLength;
+    const signature = encryptedContent.slice(0, sigLen);
+    if (!arrayBuffersEqual(signature, expectedSignature)) {
+        throw new Error("Failed unpacking data: Signature mismatch");
+    }
+    let offset = sigLen;
+    const items = [];
+    const dataView = new DataView(encryptedContent);
+    while (offset < encryptedContent.byteLength) {
+        const itemSize = dataView.getUint32(offset);
+        offset += SIZE_ENCODING_BYTES;
+        const item = encryptedContent.slice(offset, offset + itemSize);
+        offset += itemSize;
+        items.push(item);
+    }
+    const [content, ivBuff, saltBuff, authBuff, roundsBuff, methodBuff] = items;
+    return {
+        content,
+        iv: arrayBufferToString(ivBuff),
+        salt: arrayBufferToString(saltBuff),
+        auth: arrayBufferToString(authBuff),
+        rounds: parseInt(arrayBufferToString(roundsBuff), 10),
+        method: arrayBufferToString(methodBuff) as EncryptionType
+    };
 }

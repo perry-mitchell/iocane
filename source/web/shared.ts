@@ -9,6 +9,16 @@ export function addHexSupportToArrayBuffer(arrayBuffer: ArrayBuffer): ArrayBuffe
     return arrayBuffer;
 }
 
+export function arrayBuffersEqual(buf1: ArrayBuffer, buf2: ArrayBuffer): Boolean {
+    if (buf1.byteLength !== buf2.byteLength) return false;
+    const dv1 = new Uint8Array(buf1);
+    const dv2 = new Uint8Array(buf2);
+    for (let i = 0; i < buf1.byteLength; i += 1) {
+        if (dv1[i] !== dv2[i]) return false;
+    }
+    return true;
+}
+
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
     const dataArr = Array.from(new Uint8Array(arrayBuffer));
     const rawOutput = dataArr.map(byte => String.fromCharCode(byte)).join("");

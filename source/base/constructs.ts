@@ -126,12 +126,6 @@ export interface KeyDerivationFunction {
 }
 
 /**
- * An encrypted binary payload, containing all necessary data for
- * decryption to occur (besides the password).
- */
-export type PackedEncryptedData = Buffer | ArrayBuffer;
-
-/**
  * An encrypted string payload, containing all necessary data for
  * decryption to occur (besides the password).
  */
