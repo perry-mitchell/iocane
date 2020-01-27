@@ -36,6 +36,10 @@ export interface ConfigurationOptions {
      */
     method: EncryptionType;
     /**
+     * The data packing method
+     */
+    pack_data: PackDataFunction;
+    /**
      * The text packing method
      */
     pack_text: PackTextFunction;
@@ -47,6 +51,10 @@ export interface ConfigurationOptions {
      * Salt character length
      */
     saltLength: number;
+    /**
+     * The data unpacking method
+     */
+    unpack_data: UnpackDataFunction;
     /**
      * The text unpacking method
      */
@@ -140,6 +148,14 @@ export type PackedEncryptedText = string;
  * Encrypted text packing method - packs components into a single
  * string.
  */
+export interface PackDataFunction {
+    (components: EncryptedBinaryComponents): Buffer | ArrayBuffer;
+}
+
+/**
+ * Encrypted text packing method - packs components into a single
+ * string.
+ */
 export interface PackTextFunction {
     (components: EncryptedComponents): PackedEncryptedText;
 }
@@ -160,6 +176,14 @@ export interface PBKDF2Function {
  */
 export interface SaltGenerationFunction {
     (length: number): Promise<string>;
+}
+
+/**
+ * Encrypted data unpacking method - unpacks a buffer into a group of
+ * encryption components.
+ */
+export interface UnpackDataFunction {
+    (packed: Buffer | ArrayBuffer): EncryptedBinaryComponents;
 }
 
 /**
