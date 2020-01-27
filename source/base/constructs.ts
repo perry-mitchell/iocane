@@ -77,6 +77,15 @@ export interface EncryptedComponents {
     method: EncryptionType;
 }
 
+export interface EncryptedBinaryComponents {
+    content: Buffer | ArrayBuffer;
+    iv: string;
+    salt: string;
+    auth: string;
+    rounds: number;
+    method: EncryptionType;
+}
+
 /**
  * Encryption function that takes a raw string, key derivation data and
  * an IV buffer. Returns an encrypted components payload, ready for
@@ -117,6 +126,18 @@ export interface KeyDerivationFunction {
 }
 
 /**
+ * An encrypted binary payload, containing all necessary data for
+ * decryption to occur (besides the password).
+ */
+export type PackedEncryptedData = Buffer | ArrayBuffer;
+
+/**
+ * An encrypted string payload, containing all necessary data for
+ * decryption to occur (besides the password).
+ */
+export type PackedEncryptedText = string;
+
+/**
  * Encrypted text packing method - packs components into a single
  * string.
  */
@@ -133,12 +154,6 @@ export interface PackTextFunction {
 export interface PBKDF2Function {
     (password: string, salt: string, rounds: number, bits: number): Promise<Buffer | ArrayBuffer>;
 }
-
-/**
- * An encrypted string payload, containing all necessary data for
- * decryption to occur (besides the password).
- */
-export type PackedEncryptedText = string;
 
 /**
  * Salt generation function - takes a string length as the only parameter

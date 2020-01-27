@@ -3,6 +3,10 @@ import { ALGO_DEFAULT } from "./shared";
 
 const PBKDF2_ROUND_DEFAULT = 1000;
 
+export function getBinarySignature(): number[] {
+    return "iocane/1".split("").map(char => char.charCodeAt(0));
+}
+
 /**
  * Pack encrypted content components into the final encrypted form
  * @param encryptedComponents The encrypted components payload
