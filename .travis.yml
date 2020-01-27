@@ -2,7 +2,7 @@ language: node_js
 jobs:
   include:
     - node_js: "stable"
-      name: "Test-Environemnts"
+      name: "Test-Environments"
       sudo: required
       dist: trusty
       addons:
