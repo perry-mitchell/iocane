@@ -1,5 +1,4 @@
 import { Configuration } from "./Configuration";
-// import { packEncryptedContent, unpackEncryptedContent } from "./packing";
 import { DerivedKeyInfo, EncryptionType, PackedEncryptedText } from "./constructs";
 
 /**
