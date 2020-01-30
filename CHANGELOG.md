@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v4.0.0
+_2020-01-30_
+
+ * Data encryption and decryption, via buffers
+
 ## v3.0.0
 _2020-01-01_
 
