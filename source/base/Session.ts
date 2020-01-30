@@ -1,20 +1,31 @@
 import { Configuration } from "./Configuration";
-import { packEncryptedContent, unpackEncryptedContent } from "./packing";
-import { DerivedKeyInfo, EncryptionType, PackedEncryptedContent } from "./constructs";
+import {
+    DerivedKeyInfo,
+    EncryptionType,
+    PackedEncryptedText,
+    EncryptedComponents,
+    EncryptedBinaryComponents
+} from "./constructs";
 
 /**
  * Encryption session
  */
 export class Session extends Configuration {
     /**
-     * Decrypt some text
-     * @param text The text to decrypt
+     * Decrypt some text or data
+     * @param content The content to decrypt
      * @param password The password to use for decryption
-     * @returns Decrypted text
+     * @returns Decrypted content
      * @memberof Session
      */
-    async decrypt(text: string, password: string): Promise<string> {
-        const encryptedComponents = unpackEncryptedContent(text);
+    async decrypt(
+        content: string | Buffer | ArrayBuffer,
+        password: string
+    ): Promise<string | Buffer | ArrayBuffer> {
+        const encryptedComponents =
+            typeof content === "string"
+                ? this.options.unpack_text(content)
+                : this.options.unpack_data(content);
         const { salt, rounds, method } = encryptedComponents;
         const decryptMethod = this.options[`decryption_${method}`];
         const keyDerivationInfo = await this._deriveKey(password, salt, rounds, method);
@@ -22,21 +33,26 @@ export class Session extends Configuration {
     }
 
     /**
-     * Encrypt some text
-     * @param text The text to encrypt
+     * Encrypt some text or data
+     * @param content The content to encrypt
      * @param password The password to use for encryption
-     * @returns A promise that resolves with encrypted text
+     * @returns A promise that resolves with encrypted text or data
      * @memberof Session
      */
-    async encrypt(text: string, password: string): Promise<PackedEncryptedContent> {
+    async encrypt(
+        content: string | Buffer | ArrayBuffer,
+        password: string
+    ): Promise<PackedEncryptedText | Buffer | ArrayBuffer> {
         const { generateIV, method } = this.options;
         const encryptMethod = this.options[`encryption_${method}`];
         const [keyDerivationInfo, iv] = await Promise.all([
             this._deriveNewKey(password),
             generateIV()
         ]);
-        const encryptedComponents = await encryptMethod(text, keyDerivationInfo, iv);
-        return packEncryptedContent(encryptedComponents);
+        const encryptedComponents = await encryptMethod(content, keyDerivationInfo, iv);
+        return typeof content === "string"
+            ? this.options.pack_text(encryptedComponents as EncryptedComponents)
+            : this.options.pack_data(encryptedComponents as EncryptedBinaryComponents);
     }
 
     /**

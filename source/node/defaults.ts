@@ -7,6 +7,12 @@ import {
     generateIV,
     generateSalt
 } from "../node/encryption";
+import {
+    packEncryptedData,
+    packEncryptedText,
+    unpackEncryptedData,
+    unpackEncryptedText
+} from "./packing";
 import { ALGO_DEFAULT, DERIVED_KEY_ITERATIONS } from "../base/shared";
 import { ConfigurationOptions } from "../base/constructs";
 
@@ -27,7 +33,11 @@ export function getDefaultOptions(): ConfigurationOptions {
         generateIV,
         generateSalt,
         method: ALGO_DEFAULT,
+        pack_data: packEncryptedData,
+        pack_text: packEncryptedText,
         pbkdf2,
-        saltLength: SALT_LENGTH
+        saltLength: SALT_LENGTH,
+        unpack_data: unpackEncryptedData,
+        unpack_text: unpackEncryptedText
     };
 }
