@@ -17,5 +17,3 @@ jobs:
       script: "npm run test:ci"
     - node_js: "10"
       script: "npm run test:ci"
-    - node_js: "8"
-      script: "npm run test:ci"
