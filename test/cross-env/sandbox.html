@@ -2,6 +2,23 @@
 <html lang="en">
     <head>
         <title>Iocane sandbox</title>
+        <script type="text/javascript">
+            window.helpers = {
+                arrayBufferToBase64: function(arrayBuffer) {
+                    const dataArr = Array.from(new Uint8Array(arrayBuffer));
+                    const rawOutput = dataArr.map(byte => String.fromCharCode(byte)).join("");
+                    return btoa(rawOutput);
+                },
+                base64ToArrayBuffer: function(b64Str) {
+                    const raw = atob(b64Str);
+                    const output = new Uint8Array(new ArrayBuffer(raw.length));
+                    for (let i = 0; i < raw.length; i += 1) {
+                        output[i] = raw.charCodeAt(i);
+                    }
+                    return output.buffer;
+                }
+            };
+        </script>
     </head>
     <body>
     </body>

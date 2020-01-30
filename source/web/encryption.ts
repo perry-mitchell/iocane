@@ -39,6 +39,9 @@ export async function decryptCBC(
         salt
     } = encryptedComponents;
     const iv = hexStringToArrayBuffer(ivStr);
+    // IV needs to be an array buffer for verification, but NOT
+    // decoded from hex - simply from UTF8->buffer:
+    const ivHmacBuff = stringToArrayBuffer(ivStr);
     const saltBuff = stringToArrayBuffer(salt);
     const hmacData = hexStringToArrayBuffer(hmacDataRaw);
     const textMode = typeof encryptedContentRaw === "string";
@@ -68,7 +71,7 @@ export async function decryptCBC(
     // Verify authentication
     const signTargetPayload = textMode
         ? stringToArrayBuffer(`${encryptedContentRaw}${ivStr}${salt}`)
-        : concatArrayBuffers([encryptedContent as ArrayBuffer, iv, saltBuff]);
+        : concatArrayBuffers([encryptedContent as ArrayBuffer, ivHmacBuff, saltBuff]);
     const hmacMatches = await crypto.subtle.verify(
         SIGN_ALGORITHM,
         importedHMACKey,

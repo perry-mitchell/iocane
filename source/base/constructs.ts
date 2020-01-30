@@ -69,7 +69,7 @@ export interface DecryptionFunction {
     (
         encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
         keyDerivationInfo: DerivedKeyInfo
-    ): Promise<string | Buffer>;
+    ): Promise<string | Buffer | ArrayBuffer>;
 }
 
 export interface DerivedKeyInfo {
@@ -103,9 +103,11 @@ export interface EncryptedBinaryComponents {
  * packing.
  */
 export interface EncryptionFunction {
-    (content: string | Buffer, keyDerivationInfo: DerivedKeyInfo, iv: Buffer): Promise<
-        EncryptedComponents | EncryptedBinaryComponents
-    >;
+    (
+        content: string | Buffer | ArrayBuffer,
+        keyDerivationInfo: DerivedKeyInfo,
+        iv: Buffer | ArrayBuffer
+    ): Promise<EncryptedComponents | EncryptedBinaryComponents>;
 }
 
 /**

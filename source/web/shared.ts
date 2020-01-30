@@ -50,7 +50,7 @@ export function base64ToArrayBuffer(b64Str: string): ArrayBuffer {
     for (let i = 0; i < raw.length; i += 1) {
         output[i] = raw.charCodeAt(i);
     }
-    return output;
+    return output.buffer;
 }
 
 export function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
