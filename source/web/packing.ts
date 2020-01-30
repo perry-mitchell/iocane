@@ -1,24 +1,15 @@
 import { EncryptedBinaryComponents, EncryptionType } from "../base/constructs";
 import { getBinarySignature } from "../base/packing";
-import { arrayBuffersEqual, arrayBufferToString, stringToArrayBuffer } from "./shared";
+import {
+    arrayBuffersEqual,
+    arrayBufferToString,
+    concatArrayBuffers,
+    stringToArrayBuffer
+} from "./shared";
 
 export { packEncryptedText, unpackEncryptedText } from "../base/packing";
 
 const SIZE_ENCODING_BYTES = 4;
-
-function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-    if (buffers.length <= 0) {
-        throw new Error("Failed concatenating array buffers: At least one must be passed");
-    }
-    const totalSize = buffers.reduce((total, buff) => total + buff.byteLength, 0);
-    const dataArr = new Uint8Array(totalSize);
-    let offset = 0;
-    buffers.forEach(buff => {
-        dataArr.set(new Uint8Array(buff), offset);
-        offset += buff.byteLength;
-    });
-    return dataArr.buffer;
-}
 
 export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents): ArrayBuffer {
     const signature = new Uint8Array(getBinarySignature()).buffer;

@@ -1,7 +1,7 @@
 import {
     addHexSupportToArrayBuffer,
+    concatArrayBuffers,
     hexStringToArrayBuffer,
-    joinBuffers,
     stringToArrayBuffer
 } from "./shared";
 import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
@@ -107,5 +107,5 @@ export async function pbkdf2(
         subtleCrypto.exportKey("raw", key1),
         subtleCrypto.exportKey("raw", key2)
     ]);
-    return addHexSupportToArrayBuffer(joinBuffers(rawKey1, rawKey2));
+    return addHexSupportToArrayBuffer(concatArrayBuffers([rawKey1, rawKey2]));
 }

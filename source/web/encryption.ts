@@ -3,8 +3,8 @@ import {
     arrayBufferToHexString,
     arrayBufferToString,
     base64ToArrayBuffer,
+    concatArrayBuffers,
     hexStringToArrayBuffer,
-    joinBuffers,
     stringToArrayBuffer
 } from "./shared";
 import {
@@ -27,9 +27,9 @@ const SIGN_ALGORITHM = "HMAC";
  * @returns A promise that resolves with the decrypted string
  */
 export async function decryptCBC(
-    encryptedComponents: EncryptedComponents,
+    encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
-): Promise<string> {
+): Promise<string | ArrayBuffer> {
     const crypto = getCrypto();
     // Extract the components
     const {
@@ -39,8 +39,12 @@ export async function decryptCBC(
         salt
     } = encryptedComponents;
     const iv = hexStringToArrayBuffer(ivStr);
+    const saltBuff = stringToArrayBuffer(salt);
     const hmacData = hexStringToArrayBuffer(hmacDataRaw);
-    const encryptedContent = base64ToArrayBuffer(encryptedContentRaw);
+    const textMode = typeof encryptedContentRaw === "string";
+    const encryptedContent = textMode
+        ? base64ToArrayBuffer(encryptedContentRaw as string)
+        : encryptedContentRaw;
     // Import keys (primary & HMAC signing)
     // @ts-ignore
     const importedKey = await crypto.subtle.importKey(
@@ -62,12 +66,14 @@ export async function decryptCBC(
         ["verify"]
     );
     // Verify authentication
-    const signTargetStr = `${encryptedContentRaw}${ivStr}${salt}`;
+    const signTargetPayload = textMode
+        ? stringToArrayBuffer(`${encryptedContentRaw}${ivStr}${salt}`)
+        : concatArrayBuffers([encryptedContent as ArrayBuffer, iv, saltBuff]);
     const hmacMatches = await crypto.subtle.verify(
         SIGN_ALGORITHM,
         importedHMACKey,
         hmacData,
-        stringToArrayBuffer(signTargetStr)
+        signTargetPayload
     );
     if (!hmacMatches) {
         throw new Error("Authentication failed while decrypting content");
@@ -79,9 +85,9 @@ export async function decryptCBC(
             iv
         },
         importedKey,
-        encryptedContent
+        encryptedContent as ArrayBuffer
     );
-    return arrayBufferToString(decrypted);
+    return textMode ? arrayBufferToString(decrypted) : decrypted;
 }
 
 /**
@@ -91,9 +97,9 @@ export async function decryptCBC(
  * @returns A promise that resolves with the decrypted string
  */
 export async function decryptGCM(
-    encryptedComponents: EncryptedComponents,
+    encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
-): Promise<string> {
+): Promise<string | ArrayBuffer> {
     const crypto = getCrypto();
     // Extract the components
     const {
@@ -104,7 +110,10 @@ export async function decryptGCM(
     } = encryptedComponents;
     const iv = hexStringToArrayBuffer(ivHex);
     const hmacData = hexStringToArrayBuffer(hmacDataRaw);
-    const encryptedContent = joinBuffers(base64ToArrayBuffer(encryptedContentRaw), hmacData);
+    const textMode = typeof encryptedContentRaw === "string";
+    const encryptedContent = textMode
+        ? concatArrayBuffers([base64ToArrayBuffer(encryptedContentRaw as string), hmacData])
+        : concatArrayBuffers([encryptedContentRaw as ArrayBuffer, hmacData]);
     // Import key
     // @ts-ignore
     const importedKey = await crypto.subtle.importKey(
@@ -124,7 +133,7 @@ export async function decryptGCM(
         importedKey,
         encryptedContent
     );
-    return arrayBufferToString(decrypted);
+    return textMode ? arrayBufferToString(decrypted) : decrypted;
 }
 
 /**

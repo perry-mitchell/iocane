@@ -53,17 +53,24 @@ export function base64ToArrayBuffer(b64Str: string): ArrayBuffer {
     return output;
 }
 
+export function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
+    if (buffers.length <= 0) {
+        throw new Error("Failed concatenating array buffers: At least one must be passed");
+    }
+    const totalSize = buffers.reduce((total, buff) => total + buff.byteLength, 0);
+    const dataArr = new Uint8Array(totalSize);
+    let offset = 0;
+    buffers.forEach(buff => {
+        dataArr.set(new Uint8Array(buff), offset);
+        offset += buff.byteLength;
+    });
+    return dataArr.buffer;
+}
+
 export function hexStringToArrayBuffer(string: string): ArrayBuffer {
     const rawArr = string.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16));
     const arr = new Uint8Array(rawArr);
     return arr.buffer;
-}
-
-export function joinBuffers(buffer1: ArrayBuffer, buffer2: ArrayBuffer): ArrayBuffer {
-    const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-    tmp.set(new Uint8Array(buffer1), 0);
-    tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
-    return tmp.buffer;
 }
 
 export function stringToArrayBuffer(string: string): ArrayBuffer {
