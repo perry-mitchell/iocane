@@ -97,30 +97,76 @@ describe("environment consistency", function() {
     });
 
     describe("from web to node", function() {
-        it("decrypts AES-CBC from web", async function() {
-            const encrypted = await nightmare.evaluate(function(raw, done) {
-                const { createSession } = window.iocane;
-                createSession()
-                    .use("cbc")
-                    .encrypt(raw, "sample-pass")
-                    .then(output => done(null, output))
-                    .catch(done);
-            }, TEXT);
-            const decrypted = await createSession().decrypt(encrypted, "sample-pass");
-            expect(decrypted).to.equal(TEXT);
+        describe("text", function() {
+            it("decrypts AES-CBC from web", async function() {
+                const encrypted = await nightmare.evaluate(function(raw, done) {
+                    const { createSession } = window.iocane;
+                    createSession()
+                        .use("cbc")
+                        .encrypt(raw, "sample-pass")
+                        .then(output => done(null, output))
+                        .catch(done);
+                }, TEXT);
+                const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+                expect(decrypted).to.equal(TEXT);
+            });
+
+            it("decrypts AES-GCM from web", async function() {
+                const encrypted = await nightmare.evaluate(function(raw, done) {
+                    const { createSession } = window.iocane;
+                    createSession()
+                        .use("gcm")
+                        .encrypt(raw, "sample-pass")
+                        .then(output => done(null, output))
+                        .catch(done);
+                }, TEXT);
+                const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+                expect(decrypted).to.equal(TEXT);
+            });
         });
 
-        it("decrypts AES-GCM from web", async function() {
-            const encrypted = await nightmare.evaluate(function(raw, done) {
-                const { createSession } = window.iocane;
-                createSession()
-                    .use("gcm")
-                    .encrypt(raw, "sample-pass")
-                    .then(output => done(null, output))
-                    .catch(done);
-            }, TEXT);
-            const decrypted = await createSession().decrypt(encrypted, "sample-pass");
-            expect(decrypted).to.equal(TEXT);
+        describe("data", function() {
+            beforeEach(function() {
+                this.randomData = [];
+                for (let i = 0; i < 50000; i += 1) {
+                    this.randomData.push(Math.floor(Math.random() * 256));
+                }
+                this.data = Buffer.from(this.randomData);
+            });
+
+            it("decrypts AES-CBC from web", async function() {
+                const encrypted = await nightmare.evaluate(function(raw, done) {
+                    const { createSession } = window.iocane;
+                    const data = window.helpers.base64ToArrayBuffer(raw);
+                    createSession()
+                        .use("cbc")
+                        .encrypt(data, "sample-pass")
+                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
+                        .catch(done);
+                }, this.data.toString("base64"));
+                const decrypted = await createSession().decrypt(
+                    Buffer.from(encrypted, "base64"),
+                    "sample-pass"
+                );
+                expect(decrypted).to.satisfy(res => res.equals(this.data));
+            });
+
+            it("decrypts AES-GCM from web", async function() {
+                const encrypted = await nightmare.evaluate(function(raw, done) {
+                    const { createSession } = window.iocane;
+                    const data = window.helpers.base64ToArrayBuffer(raw);
+                    createSession()
+                        .use("gcm")
+                        .encrypt(data, "sample-pass")
+                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
+                        .catch(done);
+                }, this.data.toString("base64"));
+                const decrypted = await createSession().decrypt(
+                    Buffer.from(encrypted, "base64"),
+                    "sample-pass"
+                );
+                expect(decrypted).to.satisfy(res => res.equals(this.data));
+            });
         });
     });
 });

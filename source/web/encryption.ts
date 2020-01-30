@@ -153,7 +153,7 @@ export async function encryptCBC(
 ): Promise<EncryptedComponents | EncryptedBinaryComponents> {
     const crypto = getCrypto();
     const { rounds, salt } = keyDerivationInfo;
-    const ivArr = new Uint8Array(iv);
+    const ivArr = new Uint16Array(iv);
     const ivHex = arrayBufferToHexString(iv);
     const textMode = typeof content === "string";
     const preparedContent = textMode ? stringToArrayBuffer(content as string) : content;
@@ -189,11 +189,17 @@ export async function encryptCBC(
     // Convert encrypted content to base64
     const encryptedContent = textMode ? arrayBufferToBase64(cipherBuffer) : cipherBuffer;
     // Sign content
-    const signTargetStr = `${encryptedContent}${ivHex}${salt}`;
+    const signTargetPayload = textMode
+        ? stringToArrayBuffer(`${encryptedContent}${ivHex}${salt}`)
+        : concatArrayBuffers([
+              encryptedContent as ArrayBuffer,
+              stringToArrayBuffer(ivHex),
+              stringToArrayBuffer(salt)
+          ]);
     const signatureBuffer = await window.crypto.subtle.sign(
         SIGN_ALGORITHM,
         importedHMACKey,
-        stringToArrayBuffer(signTargetStr)
+        signTargetPayload
     );
     const hmacHex = arrayBufferToHexString(signatureBuffer);
     // Output encrypted components
