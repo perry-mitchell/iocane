@@ -38,14 +38,14 @@ export async function deriveFromPassword(
     const derivedKeyHex = derivedKeyData.toString("hex");
     const dkhLength = derivedKeyHex.length;
     const keyBuffer = generateHMAC
-        ? new Buffer(derivedKeyHex.substr(0, dkhLength / 2), "hex")
-        : new Buffer(derivedKeyHex, "hex");
+        ? Buffer.from(derivedKeyHex.substr(0, dkhLength / 2), "hex")
+        : Buffer.from(derivedKeyHex, "hex");
     return {
         salt: salt,
         key: keyBuffer,
         rounds: rounds,
         hmac: generateHMAC
-            ? new Buffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex")
+            ? Buffer.from(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2), "hex")
             : null
     };
 }

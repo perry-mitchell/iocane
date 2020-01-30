@@ -27,7 +27,7 @@ export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents
 }
 
 function sizeToBuffer(size: number): Buffer {
-    const buffer = new Buffer(SIZE_ENCODING_BYTES);
+    const buffer = Buffer.alloc(SIZE_ENCODING_BYTES);
     buffer.writeUInt32BE(size, 0);
     return buffer;
 }

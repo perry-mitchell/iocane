@@ -23,7 +23,7 @@ export async function decryptCBC(
 ): Promise<string | Buffer> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
-    const iv = new Buffer(encryptedComponents.iv, "hex");
+    const iv = Buffer.from(encryptedComponents.iv, "hex");
     const salt = encryptedComponents.salt;
     const hmacData = encryptedComponents.auth;
     // Get HMAC tool
@@ -66,7 +66,7 @@ export async function decryptGCM(
 ): Promise<string | Buffer> {
     // Extract the components
     const encryptedContent = encryptedComponents.content;
-    const iv = new Buffer(encryptedComponents.iv, "hex");
+    const iv = Buffer.from(encryptedComponents.iv, "hex");
     const { auth: tagHex } = encryptedComponents;
     // Prepare tool
     const decryptTool = crypto.createDecipheriv(
@@ -75,9 +75,9 @@ export async function decryptGCM(
         iv
     );
     // Add additional auth data
-    decryptTool.setAAD(new Buffer(`${encryptedComponents.iv}${keyDerivationInfo.salt}`, "utf8"));
+    decryptTool.setAAD(Buffer.from(`${encryptedComponents.iv}${keyDerivationInfo.salt}`, "utf8"));
     // Set auth tag
-    decryptTool.setAuthTag(new Buffer(tagHex, "hex"));
+    decryptTool.setAuthTag(Buffer.from(tagHex, "hex"));
     // Perform decryption
     if (typeof encryptedContent === "string") {
         const decryptedText = decryptTool.update(encryptedContent, "base64", "utf8");
@@ -155,7 +155,7 @@ export async function encryptGCM(
         iv
     );
     // Add additional auth data
-    encryptTool.setAAD(new Buffer(`${ivHex}${keyDerivationInfo.salt}`, "utf8"));
+    encryptTool.setAAD(Buffer.from(`${ivHex}${keyDerivationInfo.salt}`, "utf8"));
     // Perform encryption
     let encryptedContent =
         typeof content === "string"
@@ -187,7 +187,7 @@ export async function encryptGCM(
  * @returns A newly generated IV
  */
 export async function generateIV(): Promise<Buffer> {
-    return new Buffer(crypto.randomBytes(16));
+    return Buffer.from(crypto.randomBytes(16));
 }
 
 /**
