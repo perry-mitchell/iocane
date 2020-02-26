@@ -1,15 +1,12 @@
 import * as crypto from "crypto";
 import { constantTimeCompare } from "../base/timing";
+import { ENC_ALGORITHM_CBC, ENC_ALGORITHM_GCM, HMAC_ALGORITHM } from "../base/shared";
 import {
     DerivedKeyInfo,
     EncryptedComponents,
     EncryptionType,
     EncryptedBinaryComponents
 } from "../types";
-
-const ENC_ALGORITHM_CBC = "aes-256-cbc";
-const ENC_ALGORITHM_GCM = "aes-256-gcm";
-const HMAC_ALGORITHM = "sha256";
 
 /**
  * Decrypt text using AES-CBC
