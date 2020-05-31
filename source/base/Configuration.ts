@@ -5,6 +5,7 @@ import {
     EncryptionType,
     IVGenerationFunction,
     KeyDerivationFunction,
+    PBKDF2Function,
     SaltGenerationFunction
 } from "./constructs";
 import { DERIVED_KEY_ITERATIONS } from "./shared";
@@ -100,13 +101,25 @@ export class Configuration {
      * @param func The new key derivation function
      * @returns Returns self
      * @memberof Configuration
-     * @example
-     *  config.overrideKeyDerivation((password, salt, rounds, bits) => {
-     *    return Promise.resolve(derivedKeyBuffer);
-     *  });
+     * @deprecated Use `overridePBKDF2` instead
      */
     overrideKeyDerivation(func?: KeyDerivationFunction): this {
         this._options.deriveKey = func || this._baseOptions.deriveKey;
+        return this;
+    }
+
+    /**
+     * Override the PBKDF2 implementation
+     * @param func The new PBKDF2 implementation
+     * @returns Returns self
+     * @memberof Configuration
+     * @example
+     *  config.overridePBKDF2((password, salt, rounds, bits) => {
+     *    return Promise.resolve(derivedKeyBuffer);
+     *  });
+     */
+    overridePBKDF2(func?: PBKDF2Function): this {
+        this._options.pbkdf2 = func || this._baseOptions.pbkdf2;
         return this;
     }
 
