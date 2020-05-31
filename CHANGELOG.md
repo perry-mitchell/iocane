@@ -1,5 +1,11 @@
 # iocane changelog
 
+## v4.1.0
+_2020-05-31_
+
+ * `overridePBKDF2` session method for overriding the PBKDF2 implementation
+ * Deprecated `overrideKeyDerivation`
+
 ## v4.0.0
 _2020-01-30_
 
