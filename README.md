@@ -76,11 +76,14 @@ createSession()
     .overrideEncryption("gcm", gcmEncFn)
     .overrideIVGeneration(genIV)
     .overrideKeyDerivation(deriveKey)
+    .overridePBKDF2(pbkdf2)
     .overrideSaltGeneration(genSalt)
     .encrypt(/* ... */);
 ```
 
 _Note that the default encryption mode is `"cbc"` (AES-CBC encryption)._
+
+_`overrideKeyDerivation` and `overridePBKDF2` do two very different things. `overrideKeyDerivation` **wraps** `overridePBKDF2`, so most of the time you'll most likely just want `overridePBKDF2` if you want to change the PBKDF2 implementation._
 
 You can check out the [API documentation](API.md) for more information.
 
