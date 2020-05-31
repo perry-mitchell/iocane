@@ -144,7 +144,7 @@ export class Configuration {
      * @returns Returns self
      */
     reset(): this {
-        this._options = this._baseOptions;
+        this._options = Object.assign({}, this._baseOptions);
         return this;
     }
 
