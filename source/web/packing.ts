@@ -1,4 +1,4 @@
-import { EncryptedBinaryComponents, EncryptionType } from "../base/constructs";
+import { EncryptedBinaryComponents, EncryptionType } from "../types";
 import { getBinarySignature } from "../base/packing";
 import {
     arrayBuffersEqual,

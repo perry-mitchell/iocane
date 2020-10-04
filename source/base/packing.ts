@@ -1,4 +1,4 @@
-import { EncryptedComponents, EncryptionType, PackedEncryptedText } from "./constructs";
+import { EncryptedComponents, EncryptionType, PackedEncryptedText } from "../types";
 import { ALGO_DEFAULT } from "./shared";
 
 const PBKDF2_ROUND_DEFAULT = 1000;

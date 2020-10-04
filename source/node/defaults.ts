@@ -14,7 +14,7 @@ import {
     unpackEncryptedText
 } from "./packing";
 import { ALGO_DEFAULT, DERIVED_KEY_ITERATIONS } from "../base/shared";
-import { ConfigurationOptions } from "../base/constructs";
+import { ConfigurationOptions } from "../types";
 
 const SALT_LENGTH = 12;
 

@@ -1,5 +1,5 @@
 import { pbkdf2 as deriveKey } from "pbkdf2";
-import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
+import { DerivedKeyInfo, PBKDF2Function } from "../types";
 
 const DERIVED_KEY_ALGORITHM = "sha256";
 const HMAC_KEY_SIZE = 32;

@@ -4,7 +4,7 @@ import {
     hexStringToArrayBuffer,
     stringToArrayBuffer
 } from "./shared";
-import { DerivedKeyInfo, PBKDF2Function } from "../base/constructs";
+import { DerivedKeyInfo, PBKDF2Function } from "../types";
 
 const HMAC_KEY_SIZE = 32;
 const PASSWORD_KEY_SIZE = 32;

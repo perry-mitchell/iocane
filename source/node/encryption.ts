@@ -5,7 +5,7 @@ import {
     EncryptedComponents,
     EncryptionType,
     EncryptedBinaryComponents
-} from "../base/constructs";
+} from "../types";
 
 const ENC_ALGORITHM_CBC = "aes-256-cbc";
 const ENC_ALGORITHM_GCM = "aes-256-gcm";

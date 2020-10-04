@@ -12,7 +12,7 @@ import {
     EncryptedComponents,
     EncryptionType,
     EncryptedBinaryComponents
-} from "../base/constructs";
+} from "../types";
 
 const ENC_ALGORITHM_CBC = "AES-CBC";
 const ENC_ALGORITHM_GCM = "AES-GCM";

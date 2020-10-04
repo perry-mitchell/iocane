@@ -5,7 +5,7 @@ import {
     PackedEncryptedText,
     EncryptedComponents,
     EncryptedBinaryComponents
-} from "./constructs";
+} from "../types";
 
 /**
  * Encryption session

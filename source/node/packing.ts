@@ -1,4 +1,4 @@
-import { EncryptedBinaryComponents } from "../base/constructs";
+import { EncryptedBinaryComponents } from "../types";
 import { getBinarySignature } from "../base/packing";
 
 export { packEncryptedText, unpackEncryptedText } from "../base/packing";

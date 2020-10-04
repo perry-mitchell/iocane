@@ -7,7 +7,7 @@ import {
     KeyDerivationFunction,
     PBKDF2Function,
     SaltGenerationFunction
-} from "./constructs";
+} from "../types";
 import { DERIVED_KEY_ITERATIONS } from "./shared";
 
 const METHODS = [EncryptionType.CBC, EncryptionType.GCM];

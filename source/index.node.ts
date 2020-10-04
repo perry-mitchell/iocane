@@ -13,3 +13,5 @@ import { getDefaultOptions } from "./node/defaults";
 export function createSession(): Session {
     return new Session(getDefaultOptions());
 }
+
+export * from "./types";
