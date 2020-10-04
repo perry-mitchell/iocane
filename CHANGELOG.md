@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v4.2.0
+_2020-10-04_
+
+ * Export types
+
 ## v4.1.0
 _2020-05-31_
 
