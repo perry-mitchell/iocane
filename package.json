@@ -82,6 +82,7 @@
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-typescript": "^7.7.7",
+    "@types/pbkdf2": "^3.1.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
     "chai": "^4.2.0",
