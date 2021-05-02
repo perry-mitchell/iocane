@@ -1,7 +1,6 @@
-import { EncryptedBinaryComponents } from "../types";
 import { getBinarySignature } from "../shared/signature";
-
-const SIZE_ENCODING_BYTES = 4;
+import { SIZE_ENCODING_BYTES } from "../symbols";
+import { EncryptedBinaryComponents } from "../types";
 
 export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents): Buffer {
     const signature = Buffer.from(getBinarySignature());
