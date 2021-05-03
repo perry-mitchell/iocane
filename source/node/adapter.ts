@@ -50,6 +50,7 @@ async function decrypt(
             : unpackEncryptedData(encrypted as Buffer);
     const { salt, rounds, method } = encryptedComponents;
     const decryptData = getDecryptionMethod(method);
+    adapter.algorithm = method;
     adapter.derivationRounds = rounds;
     const keyDerivationInfo = await adapter.deriveKey(password, salt);
     return decryptData(encryptedComponents, keyDerivationInfo);

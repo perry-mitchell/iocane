@@ -55,7 +55,7 @@ export function unpackEncryptedData(encryptedContent: Buffer): EncryptedBinaryCo
     const [componentBuff, contentBuff] = items;
     const { iv, salt, auth, rounds, method } = JSON.parse(componentBuff.toString("utf8"));
     return {
-        content: contentBuff.toString("utf8"),
+        content: contentBuff,
         iv,
         salt,
         auth,
