@@ -1,5 +1,7 @@
 export type BufferLike = Buffer | ArrayBuffer;
 
+export type DataLike = string | Buffer | ArrayBuffer;
+
 export interface DerivedKeyInfo {
     salt: string;
     key: Buffer | ArrayBuffer;
@@ -37,8 +39,13 @@ export interface EncryptFunctionOptions {
 }
 
 export interface IocaneAdapter {
-    decryptText: (encrypted: string, password: string) => Promise<string>;
-    encryptText: (text: string, password: string, algo?: EncryptionAlgorithm) => Promise<string>;
+    algorithm: EncryptionAlgorithm;
+    decrypt: (encrypted: DataLike, password: string) => Promise<DataLike>;
+    derivationRounds: number;
+    deriveKey: (password: string, salt: string) => Promise<DerivedKeyInfo>;
+    encrypt: (text: DataLike, password: string) => Promise<DataLike>;
+    setAlgorithm: (algo: EncryptionAlgorithm) => IocaneAdapter;
+    setDerivationRounds: (rounds: number) => IocaneAdapter;
 }
 
 export type PackedEncryptedText = string;
