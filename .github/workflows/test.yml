@@ -55,7 +55,7 @@ jobs:
           DISPLAY: :99.0
           MOZ_HEADLESS: 1
           CI: travis
-      - run: sudo apt install google-chrome-stable
+      - run: sudo apt install google-chrome-stable xvfb -y
       - run: sh -e /etc/init.d/xvfb start && sleep 3
       - run: npm ci
       - run: npm run build
