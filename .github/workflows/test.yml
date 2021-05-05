@@ -56,7 +56,7 @@ jobs:
           MOZ_HEADLESS: 1
           CI: travis
       - run: sudo apt install google-chrome-stable xvfb -y
-      - run: sh -e /etc/init.d/xvfb start && sleep 3
+    #   - run: sh -e /etc/init.d/xvfb start && sleep 3
       - run: npm ci
       - run: npm run build
-      - run: npm run test:cross-env
+      - run: xvfb-run --auto-servernum npm run test:cross-env
