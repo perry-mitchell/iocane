@@ -1,6 +1,6 @@
 const path = require("path");
 const Nightmare = require("nightmare");
-const { createSession } = require("../../dist/index.node.js");
+const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
 
 const TEXT = "Hi there!\nThis is some test text.\n\të ";
 
@@ -27,12 +27,12 @@ describe("environment consistency", function() {
     describe("from node to web", function() {
         describe("text", function() {
             it("decrypts AES-CBC from node", async function() {
-                const encrypted = await createSession()
-                    .use("cbc")
+                const encrypted = await createAdapter()
+                    .setAlgorithm(EncryptionAlgorithm.CBC)
                     .encrypt(TEXT, "sample-pass");
                 const result = await nightmare.evaluate(function(encrypted, done) {
-                    const { createSession } = window.iocane;
-                    createSession()
+                    const { createAdapter } = window.iocane;
+                    createAdapter()
                         .decrypt(encrypted, "sample-pass")
                         .then(output => done(null, output))
                         .catch(done);
@@ -41,12 +41,12 @@ describe("environment consistency", function() {
             });
 
             it("decrypts AES-GCM from node", async function() {
-                const encrypted = await createSession()
-                    .use("gcm")
+                const encrypted = await createAdapter()
+                    .setAlgorithm(EncryptionAlgorithm.GCM)
                     .encrypt(TEXT, "sample-pass");
                 const result = await nightmare.evaluate(function(encrypted, done) {
-                    const { createSession } = window.iocane;
-                    createSession()
+                    const { createAdapter } = window.iocane;
+                    createAdapter()
                         .decrypt(encrypted, "sample-pass")
                         .then(output => done(null, output))
                         .catch(done);
@@ -65,13 +65,13 @@ describe("environment consistency", function() {
             });
 
             it("decrypts AES-CBC from node", async function() {
-                const encrypted = await createSession()
-                    .use("cbc")
+                const encrypted = await createAdapter()
+                    .setAlgorithm(EncryptionAlgorithm.CBC)
                     .encrypt(this.data, "sample-pass");
                 const result = await nightmare.evaluate(function(encrypted, done) {
-                    const { createSession } = window.iocane;
+                    const { createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(encrypted);
-                    createSession()
+                    createAdapter()
                         .decrypt(data, "sample-pass")
                         .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
                         .catch(done);
@@ -80,13 +80,13 @@ describe("environment consistency", function() {
             });
 
             it("decrypts AES-GCM from node", async function() {
-                const encrypted = await createSession()
-                    .use("gcm")
+                const encrypted = await createAdapter()
+                    .setAlgorithm(EncryptionAlgorithm.GCM)
                     .encrypt(this.data, "sample-pass");
                 const result = await nightmare.evaluate(function(encrypted, done) {
-                    const { createSession } = window.iocane;
+                    const { createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(encrypted);
-                    createSession()
+                    createAdapter()
                         .decrypt(data, "sample-pass")
                         .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
                         .catch(done);
@@ -100,27 +100,27 @@ describe("environment consistency", function() {
         describe("text", function() {
             it("decrypts AES-CBC from web", async function() {
                 const encrypted = await nightmare.evaluate(function(raw, done) {
-                    const { createSession } = window.iocane;
-                    createSession()
-                        .use("cbc")
+                    const { EncryptionAlgorithm, createAdapter } = window.iocane;
+                    createAdapter()
+                        .setAlgorithm(EncryptionAlgorithm.CBC)
                         .encrypt(raw, "sample-pass")
                         .then(output => done(null, output))
                         .catch(done);
                 }, TEXT);
-                const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+                const decrypted = await createAdapter().decrypt(encrypted, "sample-pass");
                 expect(decrypted).to.equal(TEXT);
             });
 
             it("decrypts AES-GCM from web", async function() {
                 const encrypted = await nightmare.evaluate(function(raw, done) {
-                    const { createSession } = window.iocane;
-                    createSession()
-                        .use("gcm")
+                    const { EncryptionAlgorithm, createAdapter } = window.iocane;
+                    createAdapter()
+                        .setAlgorithm(EncryptionAlgorithm.GCM)
                         .encrypt(raw, "sample-pass")
                         .then(output => done(null, output))
                         .catch(done);
                 }, TEXT);
-                const decrypted = await createSession().decrypt(encrypted, "sample-pass");
+                const decrypted = await createAdapter().decrypt(encrypted, "sample-pass");
                 expect(decrypted).to.equal(TEXT);
             });
         });
@@ -136,15 +136,15 @@ describe("environment consistency", function() {
 
             it("decrypts AES-CBC from web", async function() {
                 const encrypted = await nightmare.evaluate(function(raw, done) {
-                    const { createSession } = window.iocane;
+                    const { EncryptionAlgorithm, createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(raw);
-                    createSession()
-                        .use("cbc")
+                    createAdapter()
+                        .setAlgorithm(EncryptionAlgorithm.CBC)
                         .encrypt(data, "sample-pass")
                         .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
                         .catch(done);
                 }, this.data.toString("base64"));
-                const decrypted = await createSession().decrypt(
+                const decrypted = await createAdapter().decrypt(
                     Buffer.from(encrypted, "base64"),
                     "sample-pass"
                 );
@@ -153,15 +153,15 @@ describe("environment consistency", function() {
 
             it("decrypts AES-GCM from web", async function() {
                 const encrypted = await nightmare.evaluate(function(raw, done) {
-                    const { createSession } = window.iocane;
+                    const { EncryptionAlgorithm, createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(raw);
-                    createSession()
-                        .use("gcm")
+                    createAdapter()
+                        .setAlgorithm(EncryptionAlgorithm.GCM)
                         .encrypt(data, "sample-pass")
                         .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
                         .catch(done);
                 }, this.data.toString("base64"));
-                const decrypted = await createSession().decrypt(
+                const decrypted = await createAdapter().decrypt(
                     Buffer.from(encrypted, "base64"),
                     "sample-pass"
                 );
