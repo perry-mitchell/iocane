@@ -2,7 +2,7 @@
 
 A powerful and easy-to-use **text** and **data** encryption library for **NodeJS** and the **web**.
 
-[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Build Status](https://travis-ci.org/perry-mitchell/iocane.svg?branch=master)](https://travis-ci.org/perry-mitchell/iocane) [![Downloads per month on NPM](https://img.shields.io/npm/dm/iocane.svg?maxAge=2592000)](https://www.npmjs.com/package/iocane/) [![npm version](https://badge.fury.io/js/iocane.svg)](https://www.npmjs.com/package/iocane/)
+[![Buttercup](https://cdn.rawgit.com/buttercup-pw/buttercup-assets/6582a033/badge/buttercup-slim.svg)](https://buttercup.pw) [![Downloads per month on NPM](https://img.shields.io/npm/dm/iocane.svg?maxAge=2592000)](https://www.npmjs.com/package/iocane/) [![npm version](https://badge.fury.io/js/iocane.svg)](https://www.npmjs.com/package/iocane/)
 
 ## About
 **iocane** makes text and data encryption and decryption easy by bundling all the complicated processes into one succinct library. Encrypt and decrypt strings and buffers easily by using iocane's encryption format - string->string / buffer->buffer.
