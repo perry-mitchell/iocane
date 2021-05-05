@@ -37,7 +37,6 @@ jobs:
           node-version: 14.x
         env:
           MOZ_HEADLESS: 1
-          CI: travis
       - run: sudo apt install google-chrome-stable firefox
       - run: google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
       - run: npm ci
@@ -53,10 +52,7 @@ jobs:
           node-version: 14.x
         env:
           DISPLAY: :99.0
-          MOZ_HEADLESS: 1
-          CI: travis
       - run: sudo apt install google-chrome-stable xvfb -y
-    #   - run: sh -e /etc/init.d/xvfb start && sleep 3
       - run: npm ci
       - run: npm run build
       - run: xvfb-run --auto-servernum npm run test:cross-env
