@@ -14,6 +14,9 @@ const nightmare = Nightmare({
 
 describe("environment consistency", function() {
     beforeEach(async function() {
+        nightmare.on("console", (log, ...args) => {
+            console.log(`[Web] (${log})`, ...args);
+        });
         await nightmare.goto(sandboxURL);
         await nightmare.wait(1000);
         await nightmare.inject("js", path.resolve(__dirname, "../../web/index.js"));

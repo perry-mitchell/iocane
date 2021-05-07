@@ -1,4 +1,4 @@
-import { EncryptedBinaryComponents, EncryptionAlgorithm } from "../types";
+import { EncryptedBinaryComponents, EncryptedComponentsBase } from "../types";
 import { getBinarySignature } from "../shared/signature";
 import {
     arrayBuffersEqual,
@@ -8,19 +8,9 @@ import {
 } from "./tools";
 import { SIZE_ENCODING_BYTES } from "../symbols";
 
-export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents): ArrayBuffer {
-    const signature = new Uint8Array(getBinarySignature()).buffer;
-    const { content, iv, salt, auth, rounds, method } = encryptedComponents;
-    const encryptedComponentPayload = JSON.stringify({
-        iv,
-        salt,
-        auth,
-        rounds,
-        method
-    });
-    return concatArrayBuffers([
-        signature,
-        ...[encryptedComponentPayload, content].reduce((buffers, item) => {
+function itemsToBuffer(items: Array<string | number | ArrayBuffer>): ArrayBuffer {
+    return concatArrayBuffers(
+        items.reduce((buffers: Array<ArrayBuffer>, item) => {
             let data: ArrayBuffer;
             if (typeof item === "string" || typeof item === "number") {
                 data = stringToArrayBuffer(`${item}`);
@@ -33,7 +23,40 @@ export function packEncryptedData(encryptedComponents: EncryptedBinaryComponents
             buffers.push(data);
             return buffers;
         }, [])
-    ]);
+    );
+}
+
+export function packEncryptedData(
+    encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
+): ArrayBuffer {
+    const components: Array<ArrayBuffer> = [prepareHeader(encryptedComponents)];
+    if ((<EncryptedBinaryComponents>encryptedComponents).content) {
+        components.push(
+            itemsToBuffer([(<EncryptedBinaryComponents>encryptedComponents).content as ArrayBuffer])
+        );
+    }
+    components.push(prepareFooter(encryptedComponents));
+    return concatArrayBuffers(components);
+}
+
+export function prepareHeader(encryptedComponents: EncryptedComponentsBase): ArrayBuffer {
+    const signature = Buffer.from(getBinarySignature());
+    const { iv, salt, rounds, method } = encryptedComponents;
+    const componentsPrefix = JSON.stringify({
+        iv,
+        salt,
+        rounds,
+        method
+    });
+    return concatArrayBuffers([signature, itemsToBuffer([componentsPrefix])]);
+}
+
+export function prepareFooter(encryptedComponents: EncryptedComponentsBase): ArrayBuffer {
+    const { auth } = encryptedComponents;
+    const componentsSuffix = JSON.stringify({
+        auth
+    });
+    return itemsToBuffer([componentsSuffix]);
 }
 
 function sizeToBuffer(size: number): ArrayBuffer {
@@ -60,10 +83,11 @@ export function unpackEncryptedData(encryptedContent: ArrayBuffer): EncryptedBin
         offset += itemSize;
         items.push(item);
     }
-    const [componentBuff, content] = items;
-    const { iv, salt, auth, rounds, method } = JSON.parse(arrayBufferToString(componentBuff));
+    const [prefixBuff, contentBuff, suffixBuff] = items;
+    const { iv, salt, rounds, method } = JSON.parse(arrayBufferToString(prefixBuff));
+    const { auth } = JSON.parse(arrayBufferToString(suffixBuff));
     return {
-        content,
+        content: contentBuff,
         iv,
         salt,
         auth,

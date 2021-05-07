@@ -17,7 +17,7 @@ export interface EncryptedComponents extends EncryptedComponentsBase {
     content: string;
 }
 
-interface EncryptedComponentsBase {
+export interface EncryptedComponentsBase {
     iv: string;
     salt: string;
     auth: string;
