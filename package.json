@@ -18,7 +18,7 @@
     "test": "run-s clean build test:specs test:web test:cross-env test:format",
     "test:cross-env": "mocha --timeout 20000 -r test/setup-node.js 'test/cross-env/**/*.spec.js'",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
-    "test:specs": "nyc --reporter=text mocha -r test/setup-node.js 'test/specs/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
+    "test:specs": "nyc --reporter=text mocha -r test/setup-node.js --timeout 5000 'test/specs/**/*.spec.js' && nyc check-coverage --lines 85 --functions 85",
     "test:web": "karma start --single-run"
   },
   "files": [
@@ -98,6 +98,7 @@
     "prettier-check": "^2.0.0",
     "rimraf": "^3.0.0",
     "sinon": "^7.5.0",
+    "stream-to-array": "^2.3.0",
     "typescript": "^3.7.3",
     "webpack": "^4.41.5",
     "webpack-bundle-analyzer": "^3.6.0",

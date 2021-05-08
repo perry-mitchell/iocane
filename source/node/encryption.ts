@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
 import { constantTimeCompare } from "../shared/timing";
+import { NODE_ENC_ALGORITHM_CBC, NODE_ENC_ALGORITHM_GCM, NODE_HMAC_ALGORITHM } from "../symbols";
 import {
     DerivedKeyInfo,
     EncryptedComponents,
@@ -7,9 +8,7 @@ import {
     EncryptedBinaryComponents
 } from "../types";
 
-const ENC_ALGORITHM_CBC = "aes-256-cbc";
-const ENC_ALGORITHM_GCM = "aes-256-gcm";
-const HMAC_ALGORITHM = "sha256";
+// const HMAC_ALGORITHM = "sha256";
 
 export async function decryptCBC(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
@@ -21,7 +20,7 @@ export async function decryptCBC(
     const salt = encryptedComponents.salt;
     const hmacData = encryptedComponents.auth;
     // Get HMAC tool
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
+    const hmacTool = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     // Generate the HMAC
     hmacTool.update(
         typeof encryptedContent === "string"
@@ -30,14 +29,14 @@ export async function decryptCBC(
     );
     hmacTool.update(encryptedComponents.iv);
     hmacTool.update(salt);
-    const newHmaxHex = hmacTool.digest("hex");
+    const newHmacHex = hmacTool.digest("hex");
     // Check hmac for tampering
-    if (constantTimeCompare(hmacData, newHmaxHex) !== true) {
+    if (constantTimeCompare(hmacData, newHmacHex) !== true) {
         throw new Error("Authentication failed while decrypting content");
     }
     // Decrypt
     const decryptTool = crypto.createDecipheriv(
-        ENC_ALGORITHM_CBC,
+        NODE_ENC_ALGORITHM_CBC,
         keyDerivationInfo.key as Buffer,
         iv
     );
@@ -58,7 +57,7 @@ export async function decryptGCM(
     const { auth: tagHex } = encryptedComponents;
     // Prepare tool
     const decryptTool = crypto.createDecipheriv(
-        ENC_ALGORITHM_GCM,
+        NODE_ENC_ALGORITHM_GCM,
         keyDerivationInfo.key as Buffer,
         iv
     );
@@ -81,11 +80,11 @@ export async function encryptCBC(
 ): Promise<EncryptedComponents | EncryptedBinaryComponents> {
     const ivHex = iv.toString("hex");
     const encryptTool = crypto.createCipheriv(
-        ENC_ALGORITHM_CBC,
+        NODE_ENC_ALGORITHM_CBC,
         keyDerivationInfo.key as Buffer,
         iv
     );
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
+    const hmacTool = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     const { rounds } = keyDerivationInfo;
     // Perform encryption
     let encryptedContent =
@@ -124,7 +123,7 @@ export async function encryptGCM(
     const ivHex = iv.toString("hex");
     const { rounds } = keyDerivationInfo;
     const encryptTool = crypto.createCipheriv(
-        ENC_ALGORITHM_GCM,
+        NODE_ENC_ALGORITHM_GCM,
         keyDerivationInfo.key as Buffer,
         iv
     );
