@@ -20,7 +20,8 @@ module.exports = {
 
     node: {
         buffer: "empty",
-        crypto: "empty"
+        crypto: "empty",
+        stream: "empty"
     },
 
     output: {

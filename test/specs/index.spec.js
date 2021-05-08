@@ -1,3 +1,5 @@
+const { PassThrough } = require("stream");
+const streamToArray = require("stream-to-array");
 const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
 
 const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
@@ -72,6 +74,21 @@ describe("index", function() {
                 expect(encrypted).to.be.an.instanceOf(Buffer);
                 const decrypted = await this.adapter.decrypt(encrypted, "passw0rd");
                 expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
+            });
+
+            describe("using streams", function() {
+                it.only("can encrypt with streams and decrypt as a buffer", async function() {
+                    const referenceBuffer = Buffer.from("This is söme text! 北方话");
+                    const input = new PassThrough();
+                    input.write(referenceBuffer);
+                    input.end();
+                    const arrays = await streamToArray(
+                        input.pipe(this.adapter.createEncryptStream("test"))
+                    );
+                    const encrypted = Buffer.concat(arrays);
+                    const decrypted = await this.adapter.decrypt(encrypted, "test");
+                    expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
+                });
             });
         });
     });
