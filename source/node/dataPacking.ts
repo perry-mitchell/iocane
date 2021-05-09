@@ -1,4 +1,4 @@
-import { getBinarySignature } from "../shared/signature";
+import { getBinarySignature, getBinaryContentBorder } from "../shared/signature";
 import { SIZE_ENCODING_BYTES } from "../symbols";
 import {
     EncryptedBinaryComponents,
@@ -28,10 +28,13 @@ function itemsToBuffer(items: Array<string | number | Buffer>): Buffer {
 export function packEncryptedData(
     encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
 ): Buffer {
+    const border = Buffer.from(getBinaryContentBorder());
     const components: Array<Buffer> = [prepareHeader(encryptedComponents)];
     if ((<EncryptedBinaryComponents>encryptedComponents).content) {
         components.push(
-            itemsToBuffer([(<EncryptedBinaryComponents>encryptedComponents).content as Buffer])
+            itemsToBuffer([border]),
+            (<EncryptedBinaryComponents>encryptedComponents).content as Buffer,
+            border
         );
     }
     components.push(prepareFooter(encryptedComponents));
@@ -65,24 +68,43 @@ function sizeToBuffer(size: number): Buffer {
 }
 
 export function unpackEncryptedData(encryptedContent: Buffer): EncryptedBinaryComponents {
+    let offset = 0;
     const expectedSignature = Buffer.from(getBinarySignature());
     const sigLen = expectedSignature.length;
     const signature = encryptedContent.slice(0, sigLen);
     if (!signature.equals(expectedSignature)) {
         throw new Error("Failed unpacking data: Signature mismatch");
     }
-    let offset = sigLen;
-    const items = [];
-    while (offset < encryptedContent.length) {
-        const itemSize = encryptedContent.readUInt32BE(offset);
-        offset += SIZE_ENCODING_BYTES;
-        const item = encryptedContent.slice(offset, offset + itemSize);
-        offset += itemSize;
-        items.push(item);
+    offset = sigLen;
+    // Read header
+    const headerSize = encryptedContent.readUInt32BE(offset);
+    offset += SIZE_ENCODING_BYTES;
+    const headerData = encryptedContent.slice(offset, offset + headerSize);
+    offset += headerSize;
+    // Read content border
+    const contentBorderSize = encryptedContent.readUInt32BE(offset);
+    offset += SIZE_ENCODING_BYTES;
+    const contentBorder = encryptedContent.slice(offset, offset + contentBorderSize);
+    offset += contentBorderSize;
+    const contentBorderRef = Buffer.from(getBinaryContentBorder());
+    if (!contentBorderRef.equals(contentBorder)) {
+        throw new Error("Decoding error: Encrypted content length is corrupt");
     }
-    const [prefixBuff, contentBuff, suffixBuff] = items;
-    const { iv, salt, rounds, method } = JSON.parse(prefixBuff.toString("utf8"));
-    const { auth } = JSON.parse(suffixBuff.toString("utf8"));
+    // Locate end of content
+    const endBorderOffset = encryptedContent.indexOf(contentBorder, offset);
+    if (endBorderOffset === -1) {
+        throw new Error("Decoding error: Encrypted content corrupt or incomplete");
+    }
+    const contentBuff = encryptedContent.slice(offset, endBorderOffset);
+    offset = endBorderOffset + contentBorderSize;
+    // Read footer
+    const footerSize = encryptedContent.readUInt32BE(offset);
+    offset += SIZE_ENCODING_BYTES;
+    const footerData = encryptedContent.slice(offset, offset + footerSize);
+    offset += footerSize;
+    // Decode
+    const { iv, salt, rounds, method } = JSON.parse(headerData.toString("utf8"));
+    const { auth } = JSON.parse(footerData.toString("utf8"));
     return {
         content: contentBuff,
         iv,

@@ -37,7 +37,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
             // Write header (no compression etc.)
             outStream.write(header);
             // Setup crypto streams
-            // const streams: Array<Writable> = [];
             let hmac: Hmac, final: Writable;
             if (adapter.algorithm === EncryptionAlgorithm.CBC) {
                 const encrypt = crypto.createCipheriv(
@@ -46,10 +45,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                     iv
                 );
                 hmac = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
-                // streams.push(
-                //     encrypt,
-                //     hmac
-                // );
                 final = gzip.pipe(encrypt).pipe(hmac);
                 final.on("data", chunk => console.log("IN", chunk));
             } else if (adapter.algorithm === EncryptionAlgorithm.GCM) {
@@ -62,9 +57,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                     Buffer.from(`${ivHex}${keyDerivationInfo.salt}`, "utf8")
                 );
                 final = gzip.pipe(encrypt);
-                // streams.push(
-                //     encrypt
-                // );
             } else {
                 throw new Error(`Invalid encryption algorithm: ${adapter.algorithm}`);
             }
@@ -84,21 +76,10 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                     }
                 },
                 transform(chunk, encoding, callback) {
-                    console.log("CHUNK", chunk);
                     callback(null, chunk);
                 }
             });
             final.pipe(footerTransform).pipe(outStream);
-            // streams[streams.length - 1].pipe(footerTransform);
-            // streams.push(footerTransform);
-            // // Tie streams together
-            // gzip.pipe(streams[0]);
-            // // if (streams.length > 1) {
-            // //     for (let i = 0; i < streams.length - 1; i += 1) {
-            // //         streams[i].pipe(streams[i + 1]);
-            // //     }
-            // // }
-            // streams[streams.length - 1].pipe(outStream);
         })
         .catch(err => {
             output.emit("error", err);

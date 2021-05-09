@@ -1,3 +1,9 @@
+const SIGNATURE_TEXT = "iocane/2";
+
 export function getBinarySignature(): number[] {
-    return "iocane/2".split("").map(char => char.charCodeAt(0));
+    return SIGNATURE_TEXT.split("").map(char => char.charCodeAt(0));
+}
+
+export function getBinaryContentBorder(): number[] {
+    return [1, 0, 0, 0, 0, 0, 0, 1];
 }
