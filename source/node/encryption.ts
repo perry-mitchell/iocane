@@ -1,4 +1,4 @@
-import * as crypto from "crypto";
+import crypto from "crypto";
 import { constantTimeCompare } from "../shared/timing";
 import { NODE_ENC_ALGORITHM_CBC, NODE_ENC_ALGORITHM_GCM, NODE_HMAC_ALGORITHM } from "../symbols";
 import {
@@ -7,8 +7,6 @@ import {
     EncryptionAlgorithm,
     EncryptedBinaryComponents
 } from "../types";
-
-// const HMAC_ALGORITHM = "sha256";
 
 export async function decryptCBC(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,

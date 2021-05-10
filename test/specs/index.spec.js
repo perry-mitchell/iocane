@@ -77,7 +77,7 @@ describe("index", function() {
             });
 
             describe("using streams", function() {
-                it.only("can encrypt with streams and decrypt as a buffer", async function() {
+                it("can encrypt with streams and decrypt as a buffer", async function() {
                     const referenceBuffer = Buffer.from("This is söme text! 北方话");
                     const input = new PassThrough();
                     input.write(referenceBuffer);
@@ -87,12 +87,7 @@ describe("index", function() {
                     );
                     const encrypted = Buffer.concat(arrays);
                     const decrypted = await this.adapter.decrypt(encrypted, "test");
-                    console.log(
-                        "DEC",
-                        referenceBuffer.toString("utf8"),
-                        decrypted.toString("utf8")
-                    );
-                    // expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
+                    expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                 });
             });
         });

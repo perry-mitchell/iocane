@@ -58,12 +58,6 @@ export function prepareHeader(encryptedComponents: EncryptedPayloadHeader): Buff
         rounds,
         method
     });
-    console.log("ITEMS IN", {
-        iv,
-        salt,
-        rounds,
-        method
-    });
     return Buffer.concat([signature, itemsToBuffer([componentsPrefix])]);
 }
 
@@ -111,14 +105,6 @@ export function unpackEncryptedData(encryptedContent: Buffer): EncryptedBinaryCo
     // Decode
     const { iv, salt, rounds, method } = JSON.parse(headerData.toString("utf8"));
     const { auth } = JSON.parse(footerData.toString("utf8"));
-    console.log("ITEMS OUT", {
-        iv,
-        salt,
-        rounds,
-        method,
-        auth
-    });
-    console.log("OUT ENC", contentBuff.toString("utf8"));
     return {
         content: contentBuff,
         iv,

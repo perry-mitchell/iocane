@@ -1,5 +1,4 @@
 import crypto, { CipherGCM, Hmac } from "crypto";
-import zlib from "zlib";
 import { PassThrough, Transform, Writable } from "stream";
 import duplexer from "duplexer";
 import { generateIV, generateSalt } from "./encryption";
@@ -24,8 +23,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
     const outStream = new PassThrough();
     const output = duplexer(inStream, outStream);
     // Internal streams
-    // const gzip = zlib.createGzip();
-    // inStream.pipe(gzip);
     prepareComponents(adapter, password)
         .then(({ iv, keyDerivationInfo }) => {
             const ivHex = iv.toString("hex");
@@ -48,29 +45,21 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                     iv
                 );
                 hmac = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
-                let encSize = 0;
                 final = inStream
                     .pipe(
                         new Transform({
                             flush(callback) {
-                                console.log("ENC FINISH");
-                                const finalChunk = encrypt.final();
-                                this.push(finalChunk);
-                                encSize += finalChunk.length;
-                                console.log("ENC SIZE", encSize);
+                                this.push(encrypt.final());
                                 callback();
                             },
                             transform(chunk, encoding, callback) {
-                                const encChunk = encrypt.update(chunk);
-                                encSize += encChunk.length;
-                                callback(null, encChunk);
+                                callback(null, encrypt.update(chunk));
                             }
                         })
                     )
                     .pipe(
                         new Transform({
                             flush(callback) {
-                                console.log("HMAC ENC FINISH");
                                 this.push(Buffer.from(getBinaryContentBorder()));
                                 callback();
                             },
@@ -80,7 +69,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                             }
                         })
                     );
-                // final.on("data", chunk => console.log("IN", chunk));
             } else if (adapter.algorithm === EncryptionAlgorithm.GCM) {
                 const encrypt = crypto.createCipheriv(
                     NODE_ENC_ALGORITHM_GCM,
@@ -97,7 +85,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
             // Handle transform (footer write)
             const footerTransform = new Transform({
                 flush(callback) {
-                    console.log("FOOTER ENC FINISH");
                     if (hmac) {
                         hmac.update(ivHex);
                         hmac.update(keyDerivationInfo.salt);
@@ -107,9 +94,6 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                                 auth: hmacHex
                             })
                         );
-                        console.log("ITEMS IN", {
-                            auth: hmacHex
-                        });
                         callback();
                     }
                 },
