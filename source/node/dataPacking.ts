@@ -7,7 +7,7 @@ import {
     EncryptedPayloadHeader
 } from "../types";
 
-function itemsToBuffer(items: Array<string | number | Buffer>): Buffer {
+export function itemsToBuffer(items: Array<string | number | Buffer>): Buffer {
     return Buffer.concat(
         items.reduce((buffers: Array<Buffer>, item) => {
             let data: Buffer;
@@ -53,6 +53,12 @@ export function prepareHeader(encryptedComponents: EncryptedPayloadHeader): Buff
     const signature = Buffer.from(getBinarySignature());
     const { iv, salt, rounds, method } = encryptedComponents;
     const componentsPrefix = JSON.stringify({
+        iv,
+        salt,
+        rounds,
+        method
+    });
+    console.log("ITEMS IN", {
         iv,
         salt,
         rounds,
@@ -105,6 +111,14 @@ export function unpackEncryptedData(encryptedContent: Buffer): EncryptedBinaryCo
     // Decode
     const { iv, salt, rounds, method } = JSON.parse(headerData.toString("utf8"));
     const { auth } = JSON.parse(footerData.toString("utf8"));
+    console.log("ITEMS OUT", {
+        iv,
+        salt,
+        rounds,
+        method,
+        auth
+    });
+    console.log("OUT ENC", contentBuff.toString("utf8"));
     return {
         content: contentBuff,
         iv,
