@@ -37,7 +37,7 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
             // Write content border
             outStream.write(itemsToBuffer([Buffer.from(getBinaryContentBorder())]));
             // Setup crypto streams
-            let hmac: Hmac, final: Writable;
+            let hmac: Hmac, final: Writable, authTag: Buffer;
             if (adapter.algorithm === EncryptionAlgorithm.CBC) {
                 const encrypt = crypto.createCipheriv(
                     NODE_ENC_ALGORITHM_CBC,
@@ -78,7 +78,19 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                 (<CipherGCM>encrypt).setAAD(
                     Buffer.from(`${ivHex}${keyDerivationInfo.salt}`, "utf8")
                 );
-                final = inStream.pipe(encrypt);
+                final = inStream.pipe(
+                    new Transform({
+                        flush(callback) {
+                            this.push(encrypt.final());
+                            this.push(Buffer.from(getBinaryContentBorder()));
+                            authTag = encrypt.getAuthTag();
+                            callback();
+                        },
+                        transform(chunk, encoding, callback) {
+                            callback(null, encrypt.update(chunk));
+                        }
+                    })
+                );
             } else {
                 throw new Error(`Invalid encryption algorithm: ${adapter.algorithm}`);
             }
@@ -88,14 +100,19 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
                     if (hmac) {
                         hmac.update(ivHex);
                         hmac.update(keyDerivationInfo.salt);
-                        const hmacHex = hmac.digest("hex");
                         this.push(
                             prepareFooter({
-                                auth: hmacHex
+                                auth: hmac.digest("hex")
                             })
                         );
-                        callback();
+                    } else if (authTag) {
+                        this.push(
+                            prepareFooter({
+                                auth: authTag.toString("hex")
+                            })
+                        );
                     }
+                    callback();
                 },
                 transform(chunk, encoding, callback) {
                     callback(null, chunk);

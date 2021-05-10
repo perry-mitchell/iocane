@@ -77,17 +77,20 @@ describe("index", function() {
             });
 
             describe("using streams", function() {
-                it("can encrypt with streams and decrypt as a buffer", async function() {
-                    const referenceBuffer = Buffer.from("This is söme text! 北方话");
-                    const input = new PassThrough();
-                    input.write(referenceBuffer);
-                    input.end();
-                    const arrays = await streamToArray(
-                        input.pipe(this.adapter.createEncryptStream("test"))
-                    );
-                    const encrypted = Buffer.concat(arrays);
-                    const decrypted = await this.adapter.decrypt(encrypted, "test");
-                    expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
+                [EncryptionAlgorithm.CBC, EncryptionAlgorithm.GCM].forEach(encAlgo => {
+                    it(`can encrypt with streams and decrypt as a buffer (${encAlgo.toUpperCase()})`, async function() {
+                        this.adapter.setAlgorithm(encAlgo);
+                        const referenceBuffer = Buffer.from("This is söme text! 北方话");
+                        const input = new PassThrough();
+                        input.write(referenceBuffer);
+                        input.end();
+                        const arrays = await streamToArray(
+                            input.pipe(this.adapter.createEncryptStream("test"))
+                        );
+                        const encrypted = Buffer.concat(arrays);
+                        const decrypted = await this.adapter.decrypt(encrypted, "test");
+                        expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
+                    });
                 });
             });
         });
