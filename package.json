@@ -106,6 +106,7 @@
   },
   "dependencies": {
     "duplexer": "^0.1.2",
-    "pbkdf2": "~3.0.17"
+    "pbkdf2": "~3.0.17",
+    "peek-readable": "^3.1.3"
   }
 }

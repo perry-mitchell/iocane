@@ -1,4 +1,4 @@
-import { Writable } from "stream";
+import { Readable, Writable } from "stream";
 
 export type BufferLike = Buffer | ArrayBuffer;
 
@@ -47,6 +47,7 @@ export interface EncryptFunctionOptions {
 
 export interface IocaneAdapter {
     algorithm: EncryptionAlgorithm;
+    createDecryptStream: (password: string) => Readable;
     createEncryptStream: (password: string) => Writable;
     decrypt: (encrypted: DataLike, password: string) => Promise<DataLike>;
     derivationRounds: number;
