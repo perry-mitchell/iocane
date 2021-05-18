@@ -1,5 +1,11 @@
 # iocane changelog
 
+## v4.2.1
+_2021-05-18_
+
+ * **Bugfix**:
+   * New lines in encrypted payloads would cause decryption failures
+
 ## v4.2.0
 _2020-10-04_
 
