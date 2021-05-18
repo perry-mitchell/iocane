@@ -24,9 +24,12 @@ export class Session extends Configuration {
     ): Promise<string | Buffer | ArrayBuffer> {
         const encryptedComponents =
             typeof content === "string"
-                ? this.options.unpack_text(content)
+                ? this.options.unpack_text(content.trim())
                 : this.options.unpack_data(content);
         const { salt, rounds, method } = encryptedComponents;
+        if (Object.values(EncryptionType).includes(method) === false) {
+            throw new Error(`Decryption failed: Invalid algorithm in payload: "${method}"`);
+        }
         const decryptMethod = this.options[`decryption_${method}`];
         const keyDerivationInfo = await this._deriveKey(password, salt, rounds, method);
         return decryptMethod(encryptedComponents, keyDerivationInfo);
