@@ -6,7 +6,7 @@ jobs:
       sudo: required
       dist: trusty
       addons:
-        # firefox: latest
+        firefox: latest
         chrome: stable
       before_script:
         - export DISPLAY=:99.0
@@ -14,6 +14,8 @@ jobs:
         - sleep 3 # give xvfb some time to start
       script: "npm run test:ci:env"
     - node_js: "stable"
+      script: "npm run test:ci"
+    - node_js: "14"
       script: "npm run test:ci"
     - node_js: "10"
       script: "npm run test:ci"

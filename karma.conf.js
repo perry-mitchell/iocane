@@ -2,7 +2,7 @@ module.exports = config => {
     config.set({
         autoWatch: false,
         basePath: __dirname,
-        browsers: ["ChromeHeadless"],
+        browsers: ["FirefoxHeadless"],
         captureTimeout: 15000,
         client: {
             mocha: {
