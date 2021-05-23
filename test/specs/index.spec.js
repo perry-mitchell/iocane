@@ -77,7 +77,7 @@ describe("index", function() {
             });
 
             describe("using streams", function() {
-                [EncryptionAlgorithm.CBC, EncryptionAlgorithm.GCM].forEach(encAlgo => {
+                [EncryptionAlgorithm.CBC /*, EncryptionAlgorithm.GCM*/].forEach(encAlgo => {
                     it(`can encrypt with streams and decrypt as a buffer (${encAlgo.toUpperCase()})`, async function() {
                         this.adapter.setAlgorithm(encAlgo);
                         const referenceBuffer = Buffer.from("This is söme text! 北方话");
@@ -97,11 +97,11 @@ describe("index", function() {
                         const referenceBuffer = Buffer.from("This is söme text! 北方话");
                         const encrypted = await this.adapter.encrypt(referenceBuffer, "test");
                         const output = new PassThrough();
-                        output.pipe(this.adapter.createDecryptStream("test"));
+                        const finalStream = output.pipe(this.adapter.createDecryptStream("test"));
                         output.write(encrypted);
                         output.end();
                         const arrays = await streamToArray(
-                            output.pipe(this.adapter.createEncryptStream("test"))
+                            finalStream.pipe(this.adapter.createEncryptStream("test"))
                         );
                         const decrypted = Buffer.concat(arrays);
                         expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
