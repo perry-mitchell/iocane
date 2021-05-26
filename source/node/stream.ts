@@ -40,6 +40,10 @@ class StreamProcessor {
     protected _stream: Readable;
     protected _target: number = -1;
 
+    get finished(): boolean {
+        return this._finished === true;
+    }
+
     constructor(stream: Readable) {
         this._stream = stream;
     }
@@ -70,6 +74,7 @@ class StreamProcessor {
             (data: Buffer, next: StreamProcessorContinueFn) => {
                 this._buffer = this._buffer ? Buffer.concat([this._buffer, data]) : data;
                 console.log("_INIT: data in", data.length, ", TOTAL:", this._buffer.length);
+                console.log("-->", `"${data.toString("utf8")}"`);
                 if (this._buffer.length >= this._target) {
                     this._continue = next;
                     if (this._peekCB) {
@@ -192,6 +197,17 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         const keyDerivationInfo = await adapter.deriveKey(password, header.salt);
         const iv = Buffer.from(header.iv, "hex");
         const decrypt = crypto.createDecipheriv(cipher, keyDerivationInfo.key as Buffer, iv);
+        decrypt.on("readable", () => {
+            let chunk: Buffer;
+            console.log("READBLE NOW");
+            while (null !== (chunk = decrypt.read())) {
+                console.log(" -> CHUNK", chunk.toString("utf8"));
+                outStream.write(chunk);
+            }
+        });
+        decrypt.on("end", () => {
+            outStream.end();
+        });
         // Parse content border
         {
             const sizeBuff = await processor.read(SIZE_ENCODING_BYTES);
@@ -219,7 +235,8 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
                 console.log("READ END", contentBorderIndex);
                 const finalContent = await processor.read(contentBorderIndex);
                 // Write to decrypt stream
-                outStream.write(decrypt.update(finalContent));
+                decrypt.update(finalContent);
+                // outStream.write(decrypt.update(finalContent));
                 // outStream.write(decrypt.final());
                 // Pass border
                 console.log("PASS BORDER", contentBorderReference.length);
@@ -230,8 +247,16 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
                 console.log("END SEG");
                 // finalSegment = Buffer.alloc(CONTENT_FINAL_READ);
                 // const finalSegmentLength = await reader.peek(finalSegment, 0, CONTENT_FINAL_READ);
-                finalSegment = await processor.read(CONTENT_FINAL_READ);
-                console.log("END SEG READ");
+
+                const finalSegSizeBuff = await processor.read(SIZE_ENCODING_BYTES);
+                const finalSegSize = finalSegSizeBuff.readUInt32BE(0);
+                finalSegment = await processor.read(finalSegSize);
+                if (!processor.finished) {
+                    throw new Error("Expected end of stream");
+                }
+                // finalSegment = await processor.read(CONTENT_FINAL_READ);
+                // console.log("END SEG READ");
+
                 // await reader.read(finalSegment, 0, finalSegmentLength);
                 // finalSegment = finalSegment.slice(0, finalSegmentLength);
                 break;
@@ -241,7 +266,8 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
                 console.log("READ CONT", CONTENT_READ);
                 // await reader.read(intermediateBuffer, 0, CONTENT_READ);
                 const intermediateBuffer = await processor.read(CONTENT_READ);
-                outStream.write(decrypt.update(intermediateBuffer));
+                decrypt.update(intermediateBuffer);
+                // outStream.write(decrypt.update(intermediateBuffer));
                 // continue
             }
         } while (true);
@@ -250,8 +276,9 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         footer = JSON.parse(finalSegment.toString("utf8"));
         // Finalise decryption
         console.log("END STREAM");
-        outStream.write(decrypt.final());
-        outStream.end();
+        decrypt.end();
+        // outStream.write(decrypt.final());
+        // outStream.end(decrypt.final());
     })().catch(err => {
         console.log("STREAM ERR");
         output.emit("error", err);

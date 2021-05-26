@@ -101,9 +101,12 @@ describe("index", function() {
                         output.write(encrypted);
                         output.end();
                         const arrays = await streamToArray(
-                            finalStream.pipe(this.adapter.createEncryptStream("test"))
+                            finalStream
+                            // finalStream.pipe(this.adapter.createEncryptStream("test"))
                         );
                         const decrypted = Buffer.concat(arrays);
+                        console.log("ORIG", referenceBuffer.toString("utf8"));
+                        console.log("DECR", decrypted.toString("utf8"));
                         expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                     });
                 });
