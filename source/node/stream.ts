@@ -1,10 +1,11 @@
-import crypto, { CipherGCM, Hmac } from "crypto";
+import crypto, { CipherGCM, DecipherGCM, Hmac } from "crypto";
 import { PassThrough, Readable, Transform, Writable } from "stream";
 import duplexer from "duplexer";
 import streamEach from "stream-each";
 import { generateIV, generateSalt } from "./encryption";
 import { itemsToBuffer, prepareFooter, prepareHeader } from "./dataPacking";
 import { getBinaryContentBorder, getBinarySignature } from "../shared/signature";
+import { constantTimeCompare } from "../shared/timing";
 import {
     NODE_ENC_ALGORITHM_CBC,
     NODE_ENC_ALGORITHM_GCM,
@@ -178,6 +179,14 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         const keyDerivationInfo = await adapter.deriveKey(password, header.salt);
         const iv = Buffer.from(header.iv, "hex");
         const decrypt = crypto.createDecipheriv(cipher, keyDerivationInfo.key as Buffer, iv);
+        let hmacTool: Hmac = null;
+        if (header.method === EncryptionAlgorithm.CBC) {
+            hmacTool = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
+        } else if (header.method === EncryptionAlgorithm.GCM) {
+            (<DecipherGCM>decrypt).setAAD(
+                Buffer.from(`${header.iv}${keyDerivationInfo.salt}`, "utf8")
+            );
+        }
         // Parse content border
         {
             const sizeBuff = await processor.read(SIZE_ENCODING_BYTES);
@@ -197,6 +206,9 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
                 // End in sight: Process until the content border
                 const finalContent = await processor.read(contentBorderIndex);
                 // Write to decrypt stream
+                if (hmacTool) {
+                    hmacTool.update(finalContent);
+                }
                 outStream.write(decrypt.update(finalContent));
                 // Pass border
                 await processor.read(contentBorderReference.length);
@@ -211,12 +223,27 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
             } else {
                 // No border in sight: Read more and repeat
                 const intermediateBuffer = await processor.read(CONTENT_READ);
+                if (hmacTool) {
+                    hmacTool.update(intermediateBuffer);
+                }
                 outStream.write(decrypt.update(intermediateBuffer));
                 // continue
             }
         } while (true);
         // Parse footer
         footer = JSON.parse(finalSegment.toString("utf8"));
+        // Set auth tag
+        if (header.method === EncryptionAlgorithm.CBC) {
+            hmacTool.update(header.iv);
+            hmacTool.update(header.salt);
+            // Check hmac for tampering
+            const newHmacHex = hmacTool.digest("hex");
+            if (constantTimeCompare(footer.auth, newHmacHex) !== true) {
+                throw new Error("Authentication failed while decrypting content");
+            }
+        } else if (header.method === EncryptionAlgorithm.GCM) {
+            (<DecipherGCM>decrypt).setAuthTag(Buffer.from(footer.auth, "hex"));
+        }
         // Finalise decryption
         outStream.end(decrypt.final());
     })().catch(err => {
