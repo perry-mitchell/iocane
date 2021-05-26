@@ -77,7 +77,7 @@ describe("index", function() {
             });
 
             describe("using streams", function() {
-                [EncryptionAlgorithm.CBC /*, EncryptionAlgorithm.GCM*/].forEach(encAlgo => {
+                [EncryptionAlgorithm.CBC, EncryptionAlgorithm.GCM].forEach(encAlgo => {
                     it(`can encrypt with streams and decrypt as a buffer (${encAlgo.toUpperCase()})`, async function() {
                         this.adapter.setAlgorithm(encAlgo);
                         const referenceBuffer = Buffer.from("This is söme text! 北方话");
@@ -92,7 +92,7 @@ describe("index", function() {
                         expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                     });
 
-                    it.only(`can encrypt as a buffer and decrypt with streams (${encAlgo.toUpperCase()})`, async function() {
+                    it(`can encrypt as a buffer and decrypt with streams (${encAlgo.toUpperCase()})`, async function() {
                         this.adapter.setAlgorithm(encAlgo);
                         const referenceBuffer = Buffer.from("This is söme text! 北方话");
                         const encrypted = await this.adapter.encrypt(referenceBuffer, "test");
@@ -100,13 +100,8 @@ describe("index", function() {
                         const finalStream = output.pipe(this.adapter.createDecryptStream("test"));
                         output.write(encrypted);
                         output.end();
-                        const arrays = await streamToArray(
-                            finalStream
-                            // finalStream.pipe(this.adapter.createEncryptStream("test"))
-                        );
+                        const arrays = await streamToArray(finalStream);
                         const decrypted = Buffer.concat(arrays);
-                        console.log("ORIG", referenceBuffer.toString("utf8"));
-                        console.log("DECR", decrypted.toString("utf8"));
                         expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                     });
                 });

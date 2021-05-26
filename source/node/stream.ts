@@ -28,7 +28,6 @@ interface PreparedEncryptionComponents {
 type StreamProcessorContinueFn = () => void;
 type StreamProcessorPeekCB = () => void;
 
-const CONTENT_FINAL_READ = 16384;
 const CONTENT_READAHEAD = 2048;
 const CONTENT_READ = CONTENT_READAHEAD - getBinaryContentBorder().length * 2;
 
@@ -48,10 +47,7 @@ class StreamProcessor {
         this._stream = stream;
     }
 
-    destroy() {}
-
     async peek(bytes: number): Promise<Buffer> {
-        console.log("PEEK", bytes);
         if (this._finished instanceof Error) {
             throw this._finished;
         }
@@ -59,7 +55,6 @@ class StreamProcessor {
     }
 
     async read(bytes: number): Promise<Buffer> {
-        console.log("READ", bytes);
         if (this._finished instanceof Error) {
             throw this._finished;
         }
@@ -73,12 +68,9 @@ class StreamProcessor {
             this._stream,
             (data: Buffer, next: StreamProcessorContinueFn) => {
                 this._buffer = this._buffer ? Buffer.concat([this._buffer, data]) : data;
-                console.log("_INIT: data in", data.length, ", TOTAL:", this._buffer.length);
-                console.log("-->", `"${data.toString("utf8")}"`);
                 if (this._buffer.length >= this._target) {
                     this._continue = next;
                     if (this._peekCB) {
-                        console.log("CALL: PEEK CB");
                         this._peekCB();
                     }
                     return;
@@ -110,11 +102,9 @@ class StreamProcessor {
                 bufferLen = this._buffer.length;
             }
             if (this._buffer.length >= this._target) {
-                // const bufferLen = this._finished ? this._buffer.length : this._target;
                 const output = Buffer.alloc(bufferLen);
                 this._buffer.copy(output, 0, 0, bufferLen);
                 if (remove) {
-                    console.log("REMOVE1:", bufferLen);
                     this._buffer = this._buffer.slice(bufferLen);
                 }
                 return output;
@@ -125,20 +115,12 @@ class StreamProcessor {
             peekCBCalled = true;
         };
         return new Promise<Buffer>(resolve => {
-            console.log(
-                "WAIT FOR DATA",
-                this._buffer?.length,
-                "/",
-                this._target,
-                `(finished? ${this._finished})`
-            );
             const completePeek = () => {
                 this._peekCB = null;
                 const peekLength = this._finished ? this._buffer.length : this._target;
                 const output = Buffer.alloc(peekLength);
                 this._buffer.copy(output, 0, 0, peekLength);
                 if (remove) {
-                    console.log("REMOVE2:", peekLength);
                     this._buffer = this._buffer.slice(peekLength);
                 }
                 resolve(output);
@@ -180,7 +162,6 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
             header = JSON.parse(headerBuff.toString("utf8"));
         }
         // Setup decrypt tool
-        console.log("PROC HEADER", header);
         adapter.setAlgorithm(header.method);
         adapter.setDerivationRounds(header.rounds);
         let cipher: string;
@@ -197,17 +178,6 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         const keyDerivationInfo = await adapter.deriveKey(password, header.salt);
         const iv = Buffer.from(header.iv, "hex");
         const decrypt = crypto.createDecipheriv(cipher, keyDerivationInfo.key as Buffer, iv);
-        decrypt.on("readable", () => {
-            let chunk: Buffer;
-            console.log("READBLE NOW");
-            while (null !== (chunk = decrypt.read())) {
-                console.log(" -> CHUNK", chunk.toString("utf8"));
-                outStream.write(chunk);
-            }
-        });
-        decrypt.on("end", () => {
-            outStream.end();
-        });
         // Parse content border
         {
             const sizeBuff = await processor.read(SIZE_ENCODING_BYTES);
@@ -220,67 +190,36 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         // Process content, looking for the final content border
         let finalSegment: Buffer = null;
         do {
-            console.log("DO LOOP");
             // Peek
-            // let peekBuffer = Buffer.alloc(CONTENT_READAHEAD);
-            // const peakRead = await reader.peek(peekBuffer, 0, CONTENT_READAHEAD);
             const peekBuffer = await processor.peek(CONTENT_READAHEAD);
-            // if (peakRead < CONTENT_READAHEAD) {
-            //     // Stream ran out: trim it
-            //     peekBuffer = peekBuffer.slice(0, peakRead);
-            // }
             const contentBorderIndex = peekBuffer.indexOf(contentBorderReference);
             if (contentBorderIndex >= 0) {
                 // End in sight: Process until the content border
-                console.log("READ END", contentBorderIndex);
                 const finalContent = await processor.read(contentBorderIndex);
                 // Write to decrypt stream
-                decrypt.update(finalContent);
-                // outStream.write(decrypt.update(finalContent));
-                // outStream.write(decrypt.final());
+                outStream.write(decrypt.update(finalContent));
                 // Pass border
-                console.log("PASS BORDER", contentBorderReference.length);
-                // const endBorder = Buffer.alloc(contentBorderReference.length);
-                // await reader.read(endBorder, 0, contentBorderReference.length);
                 await processor.read(contentBorderReference.length);
                 // Fetch the end segment
-                console.log("END SEG");
-                // finalSegment = Buffer.alloc(CONTENT_FINAL_READ);
-                // const finalSegmentLength = await reader.peek(finalSegment, 0, CONTENT_FINAL_READ);
-
                 const finalSegSizeBuff = await processor.read(SIZE_ENCODING_BYTES);
                 const finalSegSize = finalSegSizeBuff.readUInt32BE(0);
                 finalSegment = await processor.read(finalSegSize);
                 if (!processor.finished) {
                     throw new Error("Expected end of stream");
                 }
-                // finalSegment = await processor.read(CONTENT_FINAL_READ);
-                // console.log("END SEG READ");
-
-                // await reader.read(finalSegment, 0, finalSegmentLength);
-                // finalSegment = finalSegment.slice(0, finalSegmentLength);
                 break;
             } else {
                 // No border in sight: Read more and repeat
-                // const intermediateBuffer = Buffer.alloc(CONTENT_READ);
-                console.log("READ CONT", CONTENT_READ);
-                // await reader.read(intermediateBuffer, 0, CONTENT_READ);
                 const intermediateBuffer = await processor.read(CONTENT_READ);
-                decrypt.update(intermediateBuffer);
-                // outStream.write(decrypt.update(intermediateBuffer));
+                outStream.write(decrypt.update(intermediateBuffer));
                 // continue
             }
         } while (true);
         // Parse footer
-        console.log("PREP FOOTER", finalSegment.toString("utf8"));
         footer = JSON.parse(finalSegment.toString("utf8"));
         // Finalise decryption
-        console.log("END STREAM");
-        decrypt.end();
-        // outStream.write(decrypt.final());
-        // outStream.end(decrypt.final());
+        outStream.end(decrypt.final());
     })().catch(err => {
-        console.log("STREAM ERR");
         output.emit("error", err);
         output.destroy();
     });
