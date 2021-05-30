@@ -25,7 +25,7 @@ import * as iocane from "iocane/web" // web
  * AES-CBC / AES-GCM encryption
  * 256bit keys
  * PBKDF2 key derivation (with 250k iterations)
- * ~14kb minified web version
+ * 35KB minified web version (10KB gzipped)
 
 ## Installation
 Install `iocane` as a dependency using `npm`:
