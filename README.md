@@ -24,9 +24,12 @@ import * as iocane from "iocane/web" // web
 
 **iocane** by default boasts the following features:
 
- * AES-CBC / AES-GCM encryption
+ * AES-CBC / AES-GCM encryption:
+   * Text
+   * Buffers
+   * Streams _(only in NodeJS)_
  * 256bit keys
- * PBKDF2 key derivation (with 250k iterations)
+ * PBKDF2 key derivation (with 250k/custom iterations)
  * 35KB minified web version (10KB gzipped)
 
 ## Installation
