@@ -1,5 +1,3 @@
-const { PassThrough } = require("stream");
-const streamToArray = require("stream-to-array");
 const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
 
 const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
@@ -74,37 +72,6 @@ describe("index", function() {
                 expect(encrypted).to.be.an.instanceOf(Buffer);
                 const decrypted = await this.adapter.decrypt(encrypted, "passw0rd");
                 expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
-            });
-
-            describe("using streams", function() {
-                [EncryptionAlgorithm.CBC, EncryptionAlgorithm.GCM].forEach(encAlgo => {
-                    it(`can encrypt with streams and decrypt as a buffer (${encAlgo.toUpperCase()})`, async function() {
-                        this.adapter.setAlgorithm(encAlgo);
-                        const referenceBuffer = Buffer.from("This is söme text! 北方话");
-                        const input = new PassThrough();
-                        input.write(referenceBuffer);
-                        input.end();
-                        const arrays = await streamToArray(
-                            input.pipe(this.adapter.createEncryptStream("test"))
-                        );
-                        const encrypted = Buffer.concat(arrays);
-                        const decrypted = await this.adapter.decrypt(encrypted, "test");
-                        expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
-                    });
-
-                    it(`can encrypt as a buffer and decrypt with streams (${encAlgo.toUpperCase()})`, async function() {
-                        this.adapter.setAlgorithm(encAlgo);
-                        const referenceBuffer = Buffer.from("This is söme text! 北方话");
-                        const encrypted = await this.adapter.encrypt(referenceBuffer, "test");
-                        const output = new PassThrough();
-                        const finalStream = output.pipe(this.adapter.createDecryptStream("test"));
-                        output.write(encrypted);
-                        output.end();
-                        const arrays = await streamToArray(finalStream);
-                        const decrypted = Buffer.concat(arrays);
-                        expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
-                    });
-                });
             });
         });
     });

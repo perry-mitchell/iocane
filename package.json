@@ -18,7 +18,7 @@
     "test": "run-s clean build test:specs test:web test:cross-env test:format",
     "test:cross-env": "mocha --timeout 20000 -r test/setup-node.js 'test/cross-env/**/*.spec.js'",
     "test:format": "prettier-check \"{source,test}/**/*.js\"",
-    "test:specs": "nyc --reporter=text mocha -r test/setup-node.js --timeout 5000 'test/specs/**/*.spec.js' && nyc check-coverage --lines 65 --functions 65",
+    "test:specs": "nyc --reporter=text mocha -r test/setup-node.js --timeout 30000 'test/specs/**/*.spec.js' && nyc check-coverage --lines 65 --functions 65",
     "test:web": "karma start --single-run"
   },
   "files": [
@@ -82,6 +82,9 @@
     "babel-plugin-transform-async-to-promises": "^0.8.15",
     "chai": "^4.2.0",
     "concat-md": "^0.3.2",
+    "dev-null": "^0.1.1",
+    "end-of-stream-promise": "^1.0.0",
+    "hash-through": "^0.1.16",
     "husky": "^3.1.0",
     "karma": "^4.4.1",
     "karma-chai": "^0.1.0",
@@ -96,6 +99,7 @@
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
     "prettier-check": "^2.0.0",
+    "random-bytes-readable-stream": "^2.1.0",
     "rimraf": "^3.0.0",
     "sinon": "^7.5.0",
     "stream-to-array": "^2.3.0",
