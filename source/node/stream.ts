@@ -28,10 +28,8 @@ interface PreparedEncryptionComponents {
 }
 
 type StreamEachCallable = () => void;
-// type StreamProcessorContinueFn = () => void;
-// type StreamProcessorPeekCB = () => void;
 
-const CONTENT_READAHEAD = 32 * 1024; //2048;
+const CONTENT_READAHEAD = 256 * 1024;
 const CONTENT_READ = CONTENT_READAHEAD - getBinaryContentBorder().length * 2;
 
 class Streamer extends EventEmitter {
@@ -55,12 +53,10 @@ class Streamer extends EventEmitter {
     }
 
     async peek(bytes: number): Promise<Buffer> {
-        // console.log("PEEK", bytes);
         return this._read(bytes, false);
     }
 
     async read(bytes: number): Promise<Buffer> {
-        // console.log("READ", bytes);
         return this._read(bytes, true);
     }
 
@@ -75,13 +71,11 @@ class Streamer extends EventEmitter {
                     if (this._buffer.length >= this._target) {
                         this.emit("target");
                     } else {
-                        // console.log("[] NEXT main");
                         next();
                         return;
                     }
                 }
                 this.once("wait", () => {
-                    // console.log("[] NEXT event");
                     next();
                 });
             },
@@ -110,7 +104,6 @@ class Streamer extends EventEmitter {
         }
         this._target = bytes;
         if (!this._buffer || this._buffer.length < this._target) {
-            // console.log("[] WAIT", this._buffer?.length, this._target);
             return new Promise<Buffer>((resolve, reject) => {
                 const finishedCB = () => {
                     this.removeListener("target", finishedCB);
@@ -137,126 +130,11 @@ class Streamer extends EventEmitter {
     }
 }
 
-// class StreamProcessor {
-//     protected _buffer: Buffer = null;
-//     protected _bytesRead: number = 0;
-//     protected _continue: StreamProcessorContinueFn = null;
-//     protected _finished: boolean | Error = false;
-//     protected _peekCB: StreamProcessorPeekCB = null;
-//     protected _stream: Readable;
-//     protected _target: number = -1;
-
-//     get bytesRead(): number {
-//         return this._bytesRead;
-//     }
-
-//     get finished(): boolean {
-//         return this._finished === true;
-//     }
-
-//     constructor(stream: Readable) {
-//         this._stream = stream;
-//     }
-
-//     async peek(bytes: number): Promise<Buffer> {
-//         if (this._finished instanceof Error) {
-//             throw this._finished;
-//         }
-//         return this._read(bytes, false);
-//     }
-
-//     async read(bytes: number): Promise<Buffer> {
-//         if (this._finished instanceof Error) {
-//             throw this._finished;
-//         }
-//         return this._read(bytes, true);
-//     }
-
-//     _init() {
-//         if (this._target !== -1) return;
-//         this._target = 0;
-//         streamEach(
-//             this._stream,
-//             (data: Buffer, next: StreamProcessorContinueFn) => {
-//                 this._buffer = this._buffer ? Buffer.concat([this._buffer, data]) : data;
-//                 if (this._buffer.length >= this._target) {
-//                     this._continue = next;
-//                     if (this._peekCB) {
-//                         this._peekCB();
-//                         this._peekCB = null;
-//                     }
-//                     return;
-//                 }
-//                 this._continue = null;
-//                 next();
-//             },
-//             (err?: Error) => {
-//                 // Finish
-//                 console.log("STR FINISHED");
-//                 this._finished = err || true;
-//             }
-//         );
-//     }
-
-//     async _read(bytes: number, remove: boolean): Promise<Buffer> {
-//         this._init();
-//         if (this._peekCB) {
-//             throw new Error("A read operation is already in progress");
-//         }
-//         console.log("WAIT:", bytes, { remove }, this._peekCB, this._continue);
-//         this._target = bytes;
-//         this._init();
-//         if (this._continue) {
-//             this._continue();
-//             this._continue = null;
-//         }
-//         if (this._buffer) {
-//             let bufferLen = this._target;
-//             if (this._finished && bufferLen > this._buffer.length) {
-//                 bufferLen = this._buffer.length;
-//             }
-//             if (this._buffer.length >= this._target) {
-//                 const output = Buffer.alloc(bufferLen);
-//                 this._bytesRead += bufferLen;
-//                 this._buffer.copy(output, 0, 0, bufferLen);
-//                 if (remove) {
-//                     this._buffer = this._buffer.slice(bufferLen);
-//                 }
-//                 return output;
-//             }
-//         }
-//         let peekCBCalled = false;
-//         this._peekCB = () => {
-//             peekCBCalled = true;
-//         };
-//         return new Promise<Buffer>(resolve => {
-//             const completePeek = () => {
-//                 this._peekCB = null;
-//                 const peekLength = this._finished ? this._buffer.length : this._target;
-//                 const output = Buffer.alloc(peekLength);
-//                 this._bytesRead += peekLength;
-//                 this._buffer.copy(output, 0, 0, peekLength);
-//                 if (remove) {
-//                     this._buffer = this._buffer.slice(peekLength);
-//                 }
-//                 resolve(output);
-//             };
-//             if (peekCBCalled || this._finished) {
-//                 completePeek();
-//                 return;
-//             }
-//             this._peekCB = completePeek;
-//         });
-//     }
-// }
-
 export function createDecryptStream(adapter: IocaneAdapter, password: string): Readable {
     // Setup exposed streams
     const inStream = new PassThrough();
     const outStream = new PassThrough();
     const output = duplexer(inStream, outStream);
-    outStream.on("finish", () => console.log("FINISH OUTSTREAM"));
-    output.on("finish", () => console.log("FINISH OUTPUT"));
     // Reader
     const processor = new Streamer(inStream);
     (async function() {
@@ -315,16 +193,10 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         }
         // Process content, looking for the final content border
         let finalSegment: Buffer = null;
-
-        // setInterval(() => {
-        //     console.log(`READ: ${processor.bytesRead} bytes`);
-        // }, 2000);
-
         do {
             // Peek
             const peekBuffer = await processor.peek(CONTENT_READAHEAD);
             const contentBorderIndex = peekBuffer.indexOf(contentBorderReference);
-            // console.log("BORDER IND", contentBorderIndex);
             if (contentBorderIndex >= 0) {
                 // End in sight: Process until the content border
                 const finalContent = await processor.read(contentBorderIndex);
@@ -355,7 +227,6 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
         } while (true);
         // Parse footer
         footer = JSON.parse(finalSegment.toString("utf8"));
-        console.log("FOOTER", footer);
         // Set auth tag
         if (header.method === EncryptionAlgorithm.CBC) {
             hmacTool.update(header.iv);
@@ -369,10 +240,8 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
             (<DecipherGCM>decrypt).setAuthTag(Buffer.from(footer.auth, "hex"));
         }
         // Finalise decryption
-        console.log("FINAL!");
         inStream.destroy();
         outStream.end(decrypt.final());
-        console.log("STREAM ENDED");
     })().catch(err => {
         output.emit("error", err);
         output.destroy();

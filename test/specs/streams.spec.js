@@ -75,9 +75,7 @@ describe("index", function() {
                                 .pipe(readHash)
                                 .pipe(devNull());
                             readPipe.on("error", console.error);
-                            console.log("PIPE BUILT");
                             await endOfStream(readPipe);
-                            console.log("STREAM END");
                             const retrievedHash = readHash.digest("hex");
                             // Check hashes
                             expect(retrievedHash).to.equal(writtenHash);
