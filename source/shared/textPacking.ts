@@ -1,31 +1,16 @@
-import { EncryptedComponents, EncryptionType, PackedEncryptedText } from "../types";
-import { ALGO_DEFAULT } from "./shared";
+import { EncryptedComponents, EncryptionAlgorithm, PackedEncryptedText } from "../types";
+import { ALGO_DEFAULT } from "../symbols";
 
 const PBKDF2_ROUND_DEFAULT = 1000;
 
-export function getBinarySignature(): number[] {
-    return "iocane/1".split("").map(char => char.charCodeAt(0));
-}
-
-/**
- * Pack encrypted content components into the final encrypted form
- * @param encryptedComponents The encrypted components payload
- * @returns The final encrypted form
- */
 export function packEncryptedText(encryptedComponents: EncryptedComponents): PackedEncryptedText {
     const { content, iv, salt, auth, rounds, method } = encryptedComponents;
     return [content, iv, salt, auth, rounds, method].join("$");
 }
 
-/**
- * Unpack encrypted content components from an encrypted string
- * @param encryptedContent The encrypted string
- * @returns The extracted components
- * @throws {Error} Throws if the number of components is incorrect
- */
 export function unpackEncryptedText(encryptedContent: PackedEncryptedText): EncryptedComponents {
     const [content, iv, salt, auth, roundsRaw, methodRaw] = <
-        [string, string, string, string, string, EncryptionType]
+        [string, string, string, string, string, EncryptionAlgorithm]
     >encryptedContent.split("$");
     // iocane was originally part of Buttercup's core package and used defaults from that originally.
     // There will be 4 components for pre 0.15.0 archives, and 5 in newer archives. The 5th component

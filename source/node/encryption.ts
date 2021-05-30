@@ -1,22 +1,13 @@
-import * as crypto from "crypto";
-import { constantTimeCompare } from "../base/timing";
+import crypto from "crypto";
+import { constantTimeCompare } from "../shared/timing";
+import { NODE_ENC_ALGORITHM_CBC, NODE_ENC_ALGORITHM_GCM, NODE_HMAC_ALGORITHM } from "../symbols";
 import {
     DerivedKeyInfo,
     EncryptedComponents,
-    EncryptionType,
+    EncryptionAlgorithm,
     EncryptedBinaryComponents
 } from "../types";
 
-const ENC_ALGORITHM_CBC = "aes-256-cbc";
-const ENC_ALGORITHM_GCM = "aes-256-gcm";
-const HMAC_ALGORITHM = "sha256";
-
-/**
- * Decrypt text using AES-CBC
- * @param encryptedComponents Encrypted components
- * @param keyDerivationInfo Key derivation information
- * @returns A promise that resolves with the decrypted string
- */
 export async function decryptCBC(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
@@ -27,7 +18,7 @@ export async function decryptCBC(
     const salt = encryptedComponents.salt;
     const hmacData = encryptedComponents.auth;
     // Get HMAC tool
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
+    const hmacTool = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     // Generate the HMAC
     hmacTool.update(
         typeof encryptedContent === "string"
@@ -36,14 +27,14 @@ export async function decryptCBC(
     );
     hmacTool.update(encryptedComponents.iv);
     hmacTool.update(salt);
-    const newHmaxHex = hmacTool.digest("hex");
+    const newHmacHex = hmacTool.digest("hex");
     // Check hmac for tampering
-    if (constantTimeCompare(hmacData, newHmaxHex) !== true) {
+    if (constantTimeCompare(hmacData, newHmacHex) !== true) {
         throw new Error("Authentication failed while decrypting content");
     }
     // Decrypt
     const decryptTool = crypto.createDecipheriv(
-        ENC_ALGORITHM_CBC,
+        NODE_ENC_ALGORITHM_CBC,
         keyDerivationInfo.key as Buffer,
         iv
     );
@@ -54,12 +45,6 @@ export async function decryptCBC(
     return Buffer.concat([decryptTool.update(encryptedContent as Buffer), decryptTool.final()]);
 }
 
-/**
- * Decrypt text using AES-GCM
- * @param encryptedComponents Encrypted components
- * @param keyDerivationInfo Key derivation information
- * @returns A promise that resolves with the decrypted string
- */
 export async function decryptGCM(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
@@ -70,7 +55,7 @@ export async function decryptGCM(
     const { auth: tagHex } = encryptedComponents;
     // Prepare tool
     const decryptTool = crypto.createDecipheriv(
-        ENC_ALGORITHM_GCM,
+        NODE_ENC_ALGORITHM_GCM,
         keyDerivationInfo.key as Buffer,
         iv
     );
@@ -86,13 +71,6 @@ export async function decryptGCM(
     return Buffer.concat([decryptTool.update(encryptedContent as Buffer), decryptTool.final()]);
 }
 
-/**
- * Encrypt text using AES-CBC
- * @param text The text to encrypt
- * @param keyDerivationInfo Key derivation information
- * @param iv A buffer containing the IV
- * @returns A promise that resolves with encrypted components
- */
 export async function encryptCBC(
     content: string | Buffer,
     keyDerivationInfo: DerivedKeyInfo,
@@ -100,11 +78,11 @@ export async function encryptCBC(
 ): Promise<EncryptedComponents | EncryptedBinaryComponents> {
     const ivHex = iv.toString("hex");
     const encryptTool = crypto.createCipheriv(
-        ENC_ALGORITHM_CBC,
+        NODE_ENC_ALGORITHM_CBC,
         keyDerivationInfo.key as Buffer,
         iv
     );
-    const hmacTool = crypto.createHmac(HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
+    const hmacTool = crypto.createHmac(NODE_HMAC_ALGORITHM, keyDerivationInfo.hmac as Buffer);
     const { rounds } = keyDerivationInfo;
     // Perform encryption
     let encryptedContent =
@@ -123,7 +101,7 @@ export async function encryptCBC(
     const hmacHex = hmacTool.digest("hex");
     // Output encrypted components
     const output = {
-        method: EncryptionType.CBC,
+        method: EncryptionAlgorithm.CBC,
         auth: hmacHex,
         iv: ivHex,
         salt: keyDerivationInfo.salt,
@@ -135,13 +113,6 @@ export async function encryptCBC(
         : (output as EncryptedBinaryComponents);
 }
 
-/**
- * Encrypt text using AES-GCM
- * @param text The text to encrypt
- * @param keyDerivationInfo Key derivation information
- * @param iv A buffer containing the IV
- * @returns A promise that resolves with encrypted components
- */
 export async function encryptGCM(
     content: string | Buffer,
     keyDerivationInfo: DerivedKeyInfo,
@@ -150,7 +121,7 @@ export async function encryptGCM(
     const ivHex = iv.toString("hex");
     const { rounds } = keyDerivationInfo;
     const encryptTool = crypto.createCipheriv(
-        ENC_ALGORITHM_GCM,
+        NODE_ENC_ALGORITHM_GCM,
         keyDerivationInfo.key as Buffer,
         iv
     );
@@ -170,7 +141,7 @@ export async function encryptGCM(
     const tag = encryptTool.getAuthTag();
     // Output encrypted components
     const output = {
-        method: EncryptionType.GCM,
+        method: EncryptionAlgorithm.GCM,
         iv: ivHex,
         salt: keyDerivationInfo.salt,
         rounds,
@@ -182,20 +153,10 @@ export async function encryptGCM(
         : (output as EncryptedBinaryComponents);
 }
 
-/**
- * IV generator
- * @returns A newly generated IV
- */
 export async function generateIV(): Promise<Buffer> {
     return Buffer.from(crypto.randomBytes(16));
 }
 
-/**
- * Generate a random salt
- * @param length The length of the string to generate
- * @returns A promise that resolves with a salt (hex)
- * @throws {Error} Rejects if length is invalid
- */
 export async function generateSalt(length: number): Promise<string> {
     if (length <= 0) {
         throw new Error(`Failed generating salt: Invalid length supplied: ${length}`);

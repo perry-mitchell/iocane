@@ -1,9 +1,3 @@
-/**
- * Compare 2 values using time-secure checks
- * @param val1 A value
- * @param val2 Another value
- * @returns True if the values match
- */
 export function constantTimeCompare(val1: string, val2: string): boolean {
     let sentinel: number;
     if (val1.length !== val2.length) {

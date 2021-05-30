@@ -6,11 +6,11 @@ import {
     concatArrayBuffers,
     hexStringToArrayBuffer,
     stringToArrayBuffer
-} from "./shared";
+} from "./tools";
 import {
     DerivedKeyInfo,
     EncryptedComponents,
-    EncryptionType,
+    EncryptionAlgorithm,
     EncryptedBinaryComponents
 } from "../types";
 
@@ -20,12 +20,6 @@ const GCM_AUTH_TAG_LENGTH = 128;
 const HMAC_ALGORITHM = "SHA-256";
 const SIGN_ALGORITHM = "HMAC";
 
-/**
- * Decrypt text using AES-CBC
- * @param encryptedComponents Encrypted components
- * @param keyDerivationInfo Key derivation information
- * @returns A promise that resolves with the decrypted string
- */
 export async function decryptCBC(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
@@ -93,12 +87,6 @@ export async function decryptCBC(
     return textMode ? arrayBufferToString(decrypted) : decrypted;
 }
 
-/**
- * Decrypt text using AES-GCM
- * @param encryptedComponents Encrypted components
- * @param keyDerivationInfo Key derivation information
- * @returns A promise that resolves with the decrypted string
- */
 export async function decryptGCM(
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
@@ -139,13 +127,6 @@ export async function decryptGCM(
     return textMode ? arrayBufferToString(decrypted) : decrypted;
 }
 
-/**
- * Encrypt text using AES-CBC
- * @param text The text to encrypt
- * @param keyDerivationInfo Key derivation information
- * @param iv A buffer containing the IV
- * @returns A promise that resolves with encrypted components
- */
 export async function encryptCBC(
     content: string | ArrayBuffer,
     keyDerivationInfo: DerivedKeyInfo,
@@ -204,7 +185,7 @@ export async function encryptCBC(
     const hmacHex = arrayBufferToHexString(signatureBuffer);
     // Output encrypted components
     const output = {
-        method: EncryptionType.CBC,
+        method: EncryptionAlgorithm.CBC,
         auth: hmacHex,
         iv: ivHex,
         salt,
@@ -214,13 +195,6 @@ export async function encryptCBC(
     return textMode ? (output as EncryptedComponents) : (output as EncryptedBinaryComponents);
 }
 
-/**
- * Encrypt text using AES-GCM
- * @param text The text to encrypt
- * @param keyDerivationInfo Key derivation information
- * @param iv A buffer containing the IV
- * @returns A promise that resolves with encrypted components
- */
 export async function encryptGCM(
     content: string | ArrayBuffer,
     keyDerivationInfo: DerivedKeyInfo,
@@ -259,7 +233,7 @@ export async function encryptGCM(
     const encryptedContent = textMode ? arrayBufferToBase64(cipherBuffer) : cipherBuffer;
     // Output encrypted components
     const output = {
-        method: EncryptionType.GCM,
+        method: EncryptionAlgorithm.GCM,
         iv: ivHex,
         salt: keyDerivationInfo.salt,
         rounds,
@@ -275,22 +249,12 @@ function extractAuthTag(encryptedBuffer: ArrayBuffer, tagBytes: number): ArrayBu
     return [shortedEnc, tagBuff];
 }
 
-/**
- * IV generator
- * @returns A newly generated IV
- */
 export async function generateIV(): Promise<ArrayBuffer> {
     const randArr = new Uint8Array(16);
     getCrypto().getRandomValues(randArr);
     return randArr.buffer;
 }
 
-/**
- * Generate a random salt
- * @param length The length of the string to generate
- * @returns A promise that resolves with a salt (hex)
- * @throws {Error} Rejects if length is invalid
- */
 export async function generateSalt(length: number): Promise<string> {
     if (length <= 0) {
         throw new Error(`Failed generating salt: Invalid length supplied: ${length}`);

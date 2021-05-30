@@ -1,0 +1,58 @@
+name: Tests
+
+on: push
+
+jobs:
+  nodejs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 15.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Node.js specs ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build:node
+      - run: npm run test:specs
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Formatting
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm ci
+      - run: npm run test:format
+  web-specs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Node.js web specs
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+        env:
+          MOZ_HEADLESS: 1
+      - run: sudo apt install google-chrome-stable firefox
+      - run: google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+      - run: npm ci
+      - run: npm run build:web
+      - run: npm run test:web
+  crossenv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cross-Env
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+        env:
+          DISPLAY: :99.0
+      - run: sudo apt install google-chrome-stable xvfb -y
+      - run: npm ci
+      - run: npm run build
+      - run: xvfb-run --auto-servernum npm run test:cross-env

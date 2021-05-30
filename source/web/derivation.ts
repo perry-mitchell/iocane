@@ -1,13 +1,11 @@
 import {
-    addHexSupportToArrayBuffer,
+    arrayBufferToHexString,
     concatArrayBuffers,
     hexStringToArrayBuffer,
     stringToArrayBuffer
-} from "./shared";
-import { DerivedKeyInfo, PBKDF2Function } from "../types";
-
-const HMAC_KEY_SIZE = 32;
-const PASSWORD_KEY_SIZE = 32;
+} from "./tools";
+import { HMAC_KEY_SIZE, PASSWORD_KEY_SIZE } from "../symbols";
+import { DerivedKeyInfo } from "../types";
 
 function checkBrowserSupport() {
     if (!window.TextEncoder || !window.TextDecoder) {
@@ -15,20 +13,7 @@ function checkBrowserSupport() {
     }
 }
 
-/**
- * Derive a key from a password
- * @param pbkdf2Gen The generator method
- * @param password The password to derive from
- * @param salt The salt
- * @param rounds The number of iterations
- * @param generateHMAC Enable HMAC key generation
- * @throws {Error} Rejects if no password is provided
- * @throws {Error} Rejects if no salt is provided
- * @throws {Error} Rejects if no rounds are provided
- * @returns A promise that resolves with derived key information
- */
-export async function deriveFromPassword(
-    pbkdf2Gen: PBKDF2Function,
+export async function deriveKeyFromPassword(
     password: string,
     salt: string,
     rounds: number,
@@ -44,8 +29,8 @@ export async function deriveFromPassword(
         throw new Error("Failed deriving key: Rounds must be greater than 0");
     }
     const bits = generateHMAC ? (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8 : PASSWORD_KEY_SIZE * 8;
-    const derivedKeyData = await pbkdf2Gen(password, salt, rounds, bits);
-    const derivedKeyHex = derivedKeyData.toString("hex");
+    const derivedKeyData = await pbkdf2(password, salt, rounds, bits);
+    const derivedKeyHex = arrayBufferToHexString(derivedKeyData);
     const dkhLength = derivedKeyHex.length;
     const keyBuffer = generateHMAC
         ? hexStringToArrayBuffer(derivedKeyHex.substr(0, dkhLength / 2))
@@ -60,15 +45,7 @@ export async function deriveFromPassword(
     };
 }
 
-/**
- * The default PBKDF2 function
- * @param password The password to use
- * @param salt The salt to use
- * @param rounds The number of iterations
- * @param bits The size of the key to generate, in bits
- * @returns A Promise that resolves with the hash
- */
-export async function pbkdf2(
+async function pbkdf2(
     password: string,
     salt: string,
     rounds: number,
@@ -107,5 +84,5 @@ export async function pbkdf2(
         subtleCrypto.exportKey("raw", key1),
         subtleCrypto.exportKey("raw", key2)
     ]);
-    return addHexSupportToArrayBuffer(concatArrayBuffers([rawKey1, rawKey2]));
+    return concatArrayBuffers([rawKey1, rawKey2]);
 }

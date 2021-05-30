@@ -13,6 +13,7 @@ module.exports = config => {
             "web/index.js",
             "test/web/**/*.spec.js"
         ],
-        frameworks: ["mocha", "chai", "sinon"]
+        frameworks: ["mocha", "chai", "sinon"],
+        reporters: ["spec"]
     });
 };
