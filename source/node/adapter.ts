@@ -9,6 +9,7 @@ import {
 import { deriveKeyFromPassword } from "./derivation";
 import { packEncryptedText, unpackEncryptedText } from "../shared/textPacking";
 import { packEncryptedData, unpackEncryptedData } from "./dataPacking";
+import { createDecryptStream, createEncryptStream } from "./stream";
 import { ALGO_DEFAULT, DERIVED_KEY_ITERATIONS, SALT_LENGTH } from "../symbols";
 import {
     BufferLike,
@@ -23,6 +24,8 @@ import {
 export function createAdapter(): IocaneAdapter {
     const adapter: IocaneAdapter = {
         algorithm: ALGO_DEFAULT,
+        createDecryptStream: (password: string) => createDecryptStream(adapter, password),
+        createEncryptStream: (password: string) => createEncryptStream(adapter, password),
         decrypt: (encrypted: DataLike, password: string) => decrypt(adapter, encrypted, password),
         derivationRounds: DERIVED_KEY_ITERATIONS,
         deriveKey: (password: string, salt: string) => deriveKey(adapter, password, salt),

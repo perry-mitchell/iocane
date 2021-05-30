@@ -1,14 +1,3 @@
-// export function addHexSupportToArrayBuffer(arrayBuffer: ArrayBuffer): ArrayBuffer {
-//     const _toString = arrayBuffer.toString || function NOOP() {};
-//     arrayBuffer.toString = function(mode?: string): string {
-//         if (mode === "hex") {
-//             return arrayBufferToHexString(arrayBuffer);
-//         }
-//         return _toString.call(arrayBuffer, mode);
-//     };
-//     return arrayBuffer;
-// }
-
 export function arrayBuffersEqual(buf1: ArrayBuffer, buf2: ArrayBuffer): Boolean {
     if (buf1.byteLength !== buf2.byteLength) return false;
     const dv1 = new Uint8Array(buf1);
@@ -17,6 +6,20 @@ export function arrayBuffersEqual(buf1: ArrayBuffer, buf2: ArrayBuffer): Boolean
         if (dv1[i] !== dv2[i]) return false;
     }
     return true;
+}
+
+export function arrayBufferFindIndex(
+    source: ArrayBuffer,
+    search: ArrayBuffer,
+    offset: number = 0
+): number {
+    const uintView = new Uint8Array(source);
+    const isTarget = (element: number, index: number, arr: Uint8Array): boolean => {
+        if (index < offset) return false;
+        const portion = arr.slice(index, index + search.byteLength).buffer;
+        return Boolean(arrayBuffersEqual(search, portion));
+    };
+    return uintView.findIndex(isTarget);
 }
 
 export function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
