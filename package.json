@@ -1,6 +1,6 @@
 {
   "name": "iocane",
-  "version": "4.2.1",
+  "version": "5.0.0",
   "description": "Textual encryption library",
   "main": "dist/index.node.js",
   "types": "dist/index.node.d.ts",
