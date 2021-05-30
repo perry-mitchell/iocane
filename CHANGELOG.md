@@ -1,5 +1,21 @@
 # iocane changelog
 
+## v5.0.0
+_2021-05-30_
+
+ * Major upgrade:
+   * Streams support
+   * New API
+   * New buffer/stream encryption method **(incompatible with previous versions)**
+
+ * **Breaking Changes**:
+   * New API
+     * `createSession` -> `createAdapter`
+     * `adapter.use(encMethod)` -> `adapter.setAlgorithm(encMethod)`
+     * No method overrides (pending new structure)
+     * _Check readme for usage_
+   * Encrypted buffers from **v4** are **not compatible with v5** decryption, just as v5 encrypted buffers/streams are not compatible with v4 decryption.
+
 ## v4.2.1
 _2021-05-18_
 
