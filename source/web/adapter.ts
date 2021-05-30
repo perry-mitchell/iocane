@@ -17,11 +17,11 @@ import {
     EncryptedBinaryComponents,
     EncryptedComponents,
     EncryptionAlgorithm,
-    IocaneAdapter
+    IocaneAdapterBase
 } from "../types";
 
-export function createAdapter(): IocaneAdapter {
-    const adapter: IocaneAdapter = {
+export function createAdapter(): IocaneAdapterBase {
+    const adapter: IocaneAdapterBase = {
         algorithm: ALGO_DEFAULT,
         decrypt: (encrypted: DataLike, password: string) => decrypt(adapter, encrypted, password),
         derivationRounds: DERIVED_KEY_ITERATIONS,
@@ -40,7 +40,7 @@ export function createAdapter(): IocaneAdapter {
 }
 
 async function decrypt(
-    adapter: IocaneAdapter,
+    adapter: IocaneAdapterBase,
     encrypted: DataLike,
     password: string
 ): Promise<DataLike> {
@@ -57,7 +57,7 @@ async function decrypt(
 }
 
 async function deriveKey(
-    adapter: IocaneAdapter,
+    adapter: IocaneAdapterBase,
     password: string,
     salt: string
 ): Promise<DerivedKeyInfo> {
@@ -66,7 +66,7 @@ async function deriveKey(
 }
 
 async function encrypt(
-    adapter: IocaneAdapter,
+    adapter: IocaneAdapterBase,
     text: DataLike,
     password: string
 ): Promise<DataLike> {

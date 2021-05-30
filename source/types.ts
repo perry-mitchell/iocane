@@ -45,16 +45,19 @@ export interface EncryptFunctionOptions {
     algo?: EncryptionAlgorithm;
 }
 
-export interface IocaneAdapter {
+export interface IocaneAdapterBase {
     algorithm: EncryptionAlgorithm;
-    createDecryptStream: (password: string) => Readable;
-    createEncryptStream: (password: string) => Writable;
     decrypt: (encrypted: DataLike, password: string) => Promise<DataLike>;
     derivationRounds: number;
     deriveKey: (password: string, salt: string) => Promise<DerivedKeyInfo>;
     encrypt: (text: DataLike, password: string) => Promise<DataLike>;
-    setAlgorithm: (algo: EncryptionAlgorithm) => IocaneAdapter;
-    setDerivationRounds: (rounds: number) => IocaneAdapter;
+    setAlgorithm: (algo: EncryptionAlgorithm) => IocaneAdapterBase;
+    setDerivationRounds: (rounds: number) => IocaneAdapterBase;
+}
+
+export interface IocaneAdapter extends IocaneAdapterBase {
+    createDecryptStream: (password: string) => Readable;
+    createEncryptStream: (password: string) => Writable;
 }
 
 export type PackedEncryptedText = string;
