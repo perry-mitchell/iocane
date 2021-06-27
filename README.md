@@ -31,6 +31,7 @@ import * as iocane from "iocane/web" // web
  * 256bit keys
  * PBKDF2 key derivation (with 250k/custom iterations)
  * 35KB minified web version (10KB gzipped)
+ * Overridable encryption/derivation/packing functionality to allow for adaptation to yet-unsupported environments
 
 ## Installation
 
