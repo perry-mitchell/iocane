@@ -76,6 +76,74 @@ describe("index", function() {
             //     const decrypted = await this.adapter.decrypt(encrypted, "passw0rd");
             //     expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
             // });
+
+            it("supports overriding each individual core function in CBC mode", async function() {
+                const functionNames = [
+                    "decryptCBC",
+                    "deriveKey",
+                    "encryptCBC",
+                    "generateIV",
+                    "generateSalt",
+                    "packData",
+                    "packText",
+                    "unpackData",
+                    "unpackText"
+                ];
+                const referenceBuffer = new TextEncoder().encode("This is söme text! 北方话")
+                    .buffer;
+                const referenceAdapter = createAdapter();
+                const stubs = {};
+                for (const fnName of functionNames) {
+                    stubs[fnName] = this.adapter[fnName] = sinon
+                        .stub()
+                        .callsFake((...args) => referenceAdapter[fnName](...args));
+                }
+                this.adapter.setAlgorithm(EncryptionAlgorithm.CBC);
+                const encText = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
+                const encData = await this.adapter.encrypt(referenceBuffer, "passw0rd");
+                await this.adapter.decrypt(encText, "test");
+                await this.adapter.decrypt(encData, "passw0rd");
+                for (const fnName of functionNames) {
+                    expect(stubs[fnName].callCount).to.be.at.least(
+                        1,
+                        `"${fnName}" should have been called once`
+                    );
+                }
+            });
+
+            it("supports overriding each individual core function in GCM mode", async function() {
+                const functionNames = [
+                    "decryptGCM",
+                    "deriveKey",
+                    "encryptGCM",
+                    "generateIV",
+                    "generateSalt",
+                    "packData",
+                    "packText",
+                    "unpackData",
+                    "unpackText"
+                ];
+                const referenceBuffer = new TextEncoder().encode("This is söme text! 北方话")
+                    .buffer;
+                const referenceAdapter = createAdapter();
+                const stubs = {};
+                for (const fnName of functionNames) {
+                    stubs[fnName] = this.adapter[fnName] = sinon
+                        .stub()
+                        .callsFake((...args) => referenceAdapter[fnName](...args));
+                }
+                this.adapter.setAlgorithm(EncryptionAlgorithm.GCM);
+                const encText = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
+                const encData = await this.adapter.encrypt(referenceBuffer, "passw0rd");
+                await this.adapter.decrypt(encText, "test");
+                await this.adapter.decrypt(encData, "passw0rd");
+                for (const fnName of functionNames) {
+                    expect(stubs[fnName].callCount).to.be.at.least(
+                        1,
+                        `"${fnName}" should have been called once`
+                    );
+                }
+            });
         });
     });
 });
