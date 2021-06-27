@@ -27,6 +27,8 @@ export function createAdapter(): IocaneAdapterBase {
         derivationRounds: DERIVED_KEY_ITERATIONS,
         deriveKey: (password: string, salt: string) => deriveKey(adapter, password, salt),
         encrypt: (text: DataLike, password: string) => encrypt(adapter, text, password),
+        packData: packEncryptedData,
+        packText: packEncryptedText,
         setAlgorithm: (algo: EncryptionAlgorithm) => {
             adapter.algorithm = algo;
             return adapter;
@@ -34,7 +36,9 @@ export function createAdapter(): IocaneAdapterBase {
         setDerivationRounds: (rounds: number) => {
             adapter.derivationRounds = rounds;
             return adapter;
-        }
+        },
+        unpackData: unpackEncryptedData,
+        unpackText: unpackEncryptedText
     };
     return adapter;
 }
@@ -46,8 +50,8 @@ async function decrypt(
 ): Promise<DataLike> {
     const encryptedComponents =
         typeof encrypted === "string"
-            ? unpackEncryptedText(encrypted)
-            : unpackEncryptedData(encrypted as ArrayBuffer);
+            ? adapter.unpackText(encrypted)
+            : adapter.unpackData(encrypted as ArrayBuffer);
     const { salt, rounds, method } = encryptedComponents;
     const decryptData = getDecryptionMethod(method);
     adapter.algorithm = method;
@@ -79,8 +83,8 @@ async function encrypt(
     ]);
     const encryptedComponents = await encryptData(text, keyDerivationInfo, iv);
     return typeof text === "string"
-        ? packEncryptedText(encryptedComponents as EncryptedComponents)
-        : packEncryptedData(encryptedComponents as EncryptedBinaryComponents);
+        ? adapter.packText(encryptedComponents as EncryptedComponents)
+        : adapter.packData(encryptedComponents as EncryptedBinaryComponents);
 }
 
 function getDecryptionMethod(

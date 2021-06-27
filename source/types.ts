@@ -51,8 +51,14 @@ export interface IocaneAdapterBase {
     derivationRounds: number;
     deriveKey: (password: string, salt: string) => Promise<DerivedKeyInfo>;
     encrypt: (text: DataLike, password: string) => Promise<DataLike>;
+    packData: (
+        encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
+    ) => BufferLike;
+    packText: (encryptedComponents: EncryptedComponents) => PackedEncryptedText;
     setAlgorithm: (algo: EncryptionAlgorithm) => IocaneAdapterBase;
     setDerivationRounds: (rounds: number) => IocaneAdapterBase;
+    unpackData: (encryptedContent: BufferLike) => EncryptedBinaryComponents;
+    unpackText: (encryptedContent: PackedEncryptedText) => EncryptedComponents;
 }
 
 export interface IocaneAdapter extends IocaneAdapterBase {
