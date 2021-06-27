@@ -34,6 +34,8 @@ export function createAdapter(): IocaneAdapter {
         encrypt: (text: DataLike, password: string) => encrypt(adapter, text, password),
         encryptCBC,
         encryptGCM,
+        generateIV,
+        generateSalt,
         packData: packEncryptedData,
         packText: packEncryptedText,
         setAlgorithm: (algo: EncryptionAlgorithm) => {
@@ -83,10 +85,10 @@ async function encrypt(
 ): Promise<DataLike> {
     const { algorithm } = adapter;
     const encryptData = getEncryptionMethod(adapter, algorithm);
-    const salt = await generateSalt(SALT_LENGTH);
+    const salt = await adapter.generateSalt(SALT_LENGTH);
     const [keyDerivationInfo, iv] = await Promise.all([
         adapter.deriveKey(password, salt),
-        generateIV()
+        adapter.generateIV()
     ]);
     const encryptedComponents = await encryptData(text, keyDerivationInfo, iv);
     return typeof text === "string"

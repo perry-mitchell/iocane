@@ -69,6 +69,8 @@ export interface IocaneAdapterBase {
         keyDerivationInfo: DerivedKeyInfo,
         iv: BufferLike
     ) => Promise<EncryptedComponents | EncryptedBinaryComponents>;
+    generateIV: () => Promise<BufferLike>;
+    generateSalt: (length: number) => Promise<string>;
     packData: (
         encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
     ) => BufferLike;
