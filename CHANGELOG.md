@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v5.1.1
+_2021-06-27_
+
+ * Export symbols
+
 ## v5.1.0
 _2021-06-27_
 
