@@ -48,11 +48,37 @@ export interface EncryptFunctionOptions {
 export interface IocaneAdapterBase {
     algorithm: EncryptionAlgorithm;
     decrypt: (encrypted: DataLike, password: string) => Promise<DataLike>;
+    decryptCBC: (
+        encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
+        keyDerivationInfo: DerivedKeyInfo
+    ) => Promise<string | BufferLike>;
+    decryptGCM: (
+        encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
+        keyDerivationInfo: DerivedKeyInfo
+    ) => Promise<string | BufferLike>;
     derivationRounds: number;
     deriveKey: (password: string, salt: string) => Promise<DerivedKeyInfo>;
     encrypt: (text: DataLike, password: string) => Promise<DataLike>;
+    encryptCBC: (
+        content: string | BufferLike,
+        keyDerivationInfo: DerivedKeyInfo,
+        iv: BufferLike
+    ) => Promise<EncryptedComponents | EncryptedBinaryComponents>;
+    encryptGCM: (
+        content: string | BufferLike,
+        keyDerivationInfo: DerivedKeyInfo,
+        iv: BufferLike
+    ) => Promise<EncryptedComponents | EncryptedBinaryComponents>;
+    generateIV: () => Promise<BufferLike>;
+    generateSalt: (length: number) => Promise<string>;
+    packData: (
+        encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
+    ) => BufferLike;
+    packText: (encryptedComponents: EncryptedComponents) => PackedEncryptedText;
     setAlgorithm: (algo: EncryptionAlgorithm) => IocaneAdapterBase;
     setDerivationRounds: (rounds: number) => IocaneAdapterBase;
+    unpackData: (encryptedContent: BufferLike) => EncryptedBinaryComponents;
+    unpackText: (encryptedContent: PackedEncryptedText) => EncryptedComponents;
 }
 
 export interface IocaneAdapter extends IocaneAdapterBase {
