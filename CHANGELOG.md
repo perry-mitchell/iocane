@@ -1,5 +1,16 @@
 # iocane changelog
 
+## v5.1.0
+_2021-06-27_
+
+ * Exposed additional properties on adapter for:
+   * Encryption
+   * Decryption
+   * Packing
+   * Unpacking
+   * IV generation
+   * Salt generation
+
 ## v5.0.0
 _2021-05-30_
 
