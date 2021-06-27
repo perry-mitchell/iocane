@@ -27,9 +27,13 @@ export function createAdapter(): IocaneAdapter {
         createDecryptStream: (password: string) => createDecryptStream(adapter, password),
         createEncryptStream: (password: string) => createEncryptStream(adapter, password),
         decrypt: (encrypted: DataLike, password: string) => decrypt(adapter, encrypted, password),
+        decryptCBC,
+        decryptGCM,
         derivationRounds: DERIVED_KEY_ITERATIONS,
         deriveKey: (password: string, salt: string) => deriveKey(adapter, password, salt),
         encrypt: (text: DataLike, password: string) => encrypt(adapter, text, password),
+        encryptCBC,
+        encryptGCM,
         packData: packEncryptedData,
         packText: packEncryptedText,
         setAlgorithm: (algo: EncryptionAlgorithm) => {
@@ -56,7 +60,7 @@ async function decrypt(
             ? adapter.unpackText(encrypted)
             : adapter.unpackData(encrypted as Buffer);
     const { salt, rounds, method } = encryptedComponents;
-    const decryptData = getDecryptionMethod(method);
+    const decryptData = getDecryptionMethod(adapter, method);
     adapter.algorithm = method;
     adapter.derivationRounds = rounds;
     const keyDerivationInfo = await adapter.deriveKey(password, salt);
@@ -78,7 +82,7 @@ async function encrypt(
     password: string
 ): Promise<DataLike> {
     const { algorithm } = adapter;
-    const encryptData = getEncryptionMethod(algorithm);
+    const encryptData = getEncryptionMethod(adapter, algorithm);
     const salt = await generateSalt(SALT_LENGTH);
     const [keyDerivationInfo, iv] = await Promise.all([
         adapter.deriveKey(password, salt),
@@ -91,20 +95,22 @@ async function encrypt(
 }
 
 function getDecryptionMethod(
+    adapter: IocaneAdapter,
     algo: EncryptionAlgorithm
 ): (
     encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
     keyDerivationInfo: DerivedKeyInfo
 ) => Promise<DataLike> {
     if (algo === EncryptionAlgorithm.CBC) {
-        return decryptCBC;
+        return adapter.decryptCBC;
     } else if (algo === EncryptionAlgorithm.GCM) {
-        return decryptGCM;
+        return adapter.decryptGCM;
     }
     throw new Error(`Invalid algorithm: ${algo}`);
 }
 
 function getEncryptionMethod(
+    adapter: IocaneAdapter,
     algo: EncryptionAlgorithm
 ): (
     content: DataLike,
@@ -112,9 +118,9 @@ function getEncryptionMethod(
     iv: BufferLike
 ) => Promise<EncryptedComponents | EncryptedBinaryComponents> {
     if (algo === EncryptionAlgorithm.CBC) {
-        return encryptCBC;
+        return adapter.encryptCBC;
     } else if (algo === EncryptionAlgorithm.GCM) {
-        return encryptGCM;
+        return adapter.encryptGCM;
     }
     throw new Error(`Invalid algorithm: ${algo}`);
 }

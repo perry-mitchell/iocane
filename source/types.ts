@@ -48,9 +48,27 @@ export interface EncryptFunctionOptions {
 export interface IocaneAdapterBase {
     algorithm: EncryptionAlgorithm;
     decrypt: (encrypted: DataLike, password: string) => Promise<DataLike>;
+    decryptCBC: (
+        encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
+        keyDerivationInfo: DerivedKeyInfo
+    ) => Promise<string | BufferLike>;
+    decryptGCM: (
+        encryptedComponents: EncryptedComponents | EncryptedBinaryComponents,
+        keyDerivationInfo: DerivedKeyInfo
+    ) => Promise<string | BufferLike>;
     derivationRounds: number;
     deriveKey: (password: string, salt: string) => Promise<DerivedKeyInfo>;
     encrypt: (text: DataLike, password: string) => Promise<DataLike>;
+    encryptCBC: (
+        content: string | BufferLike,
+        keyDerivationInfo: DerivedKeyInfo,
+        iv: BufferLike
+    ) => Promise<EncryptedComponents | EncryptedBinaryComponents>;
+    encryptGCM: (
+        content: string | BufferLike,
+        keyDerivationInfo: DerivedKeyInfo,
+        iv: BufferLike
+    ) => Promise<EncryptedComponents | EncryptedBinaryComponents>;
     packData: (
         encryptedComponents: EncryptedBinaryComponents | EncryptedComponentsBase
     ) => BufferLike;
