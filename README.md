@@ -145,7 +145,7 @@ iocane supports NodeJS version 10 and above. Node 8 was supported in `3.x` and v
 
 iocane is used in the browser as well - it works everywhere that `SubtleCrypto`, `ArrayBuffer` and `Promise` are available.
 
-_Note: iocane is written in TypeScript, though versions before v2 where written in JavaScript._
+_Note: iocane is written in TypeScript, though versions before v2 were written in JavaScript._
 
 ## Buttercup
 
