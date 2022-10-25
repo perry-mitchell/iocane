@@ -10,3 +10,4 @@ node_modules
 /web
 /docs
 /test/web/node-sample.js
+/test.js
