@@ -30,7 +30,7 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".json"],
         fallback: {
-            Buffer: false,
+            buffer: false,
             crypto: false,
             stream: false,
             util: false
