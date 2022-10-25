@@ -97,7 +97,7 @@ export function unpackEncryptedData(encryptedContent: ArrayBuffer): EncryptedBin
     offset += SIZE_ENCODING_BYTES;
     const contentBorder = encryptedContent.slice(offset, offset + contentBorderSize);
     offset += contentBorderSize;
-    const contentBorderRef = Buffer.from(getBinaryContentBorder());
+    const contentBorderRef = new Uint8Array(getBinaryContentBorder());
     if (!arrayBuffersEqual(contentBorderRef, contentBorder)) {
         throw new Error("Decoding error: Encrypted content length is corrupt");
     }

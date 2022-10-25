@@ -1,7 +1,3 @@
-// const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
-
-// const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
-
 describe("index", function() {
     const { EncryptionAlgorithm, createAdapter } = window.iocane;
     const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
