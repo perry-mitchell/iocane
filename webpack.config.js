@@ -18,12 +18,6 @@ module.exports = {
         ]
     },
 
-    node: {
-        buffer: "empty",
-        crypto: "empty",
-        stream: "empty"
-    },
-
     output: {
         filename: "index.js",
         path: path.resolve(__dirname, "./web"),
@@ -34,6 +28,12 @@ module.exports = {
     plugins,
 
     resolve: {
-        extensions: [".ts", ".js", ".json"]
+        extensions: [".ts", ".js", ".json"],
+        fallback: {
+            buffer: false,
+            crypto: false,
+            stream: false,
+            util: false
+        }
     }
 };

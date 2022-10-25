@@ -1,49 +1,41 @@
-// const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
-
-// const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
-
-describe("index", function() {
+describe("index", function () {
     const { EncryptionAlgorithm, createAdapter } = window.iocane;
     const ENCRYPTED_SAMPLE_RAW = "iocane secret text";
 
-    describe("createAdapter", function() {
-        it("returns an adapter", function() {
+    describe("createAdapter", function () {
+        it("returns an adapter", function () {
             const adapter = createAdapter();
-            expect(adapter)
-                .to.have.property("encrypt")
-                .that.is.a("function");
-            expect(adapter)
-                .to.have.property("decrypt")
-                .that.is.a("function");
+            expect(adapter).to.have.property("encrypt").that.is.a("function");
+            expect(adapter).to.have.property("decrypt").that.is.a("function");
         });
 
-        describe("returned adapter", function() {
-            beforeEach(function() {
+        describe("returned adapter", function () {
+            beforeEach(function () {
                 this.adapter = createAdapter();
                 this.adapter.derivationRounds = 1000;
             });
 
-            it("can encrypt and decrypt text", async function() {
+            it("can encrypt and decrypt text", async function () {
                 const encrypted = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
                 const decrypted = await this.adapter.decrypt(encrypted, "test");
                 expect(decrypted).to.equal(ENCRYPTED_SAMPLE_RAW);
             });
 
-            it("can encrypt and decrypt in CBC mode", async function() {
+            it("can encrypt and decrypt in CBC mode", async function () {
                 this.adapter.setAlgorithm(EncryptionAlgorithm.CBC);
                 const encrypted = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
                 const decrypted = await this.adapter.decrypt(encrypted, "test");
                 expect(decrypted).to.equal(ENCRYPTED_SAMPLE_RAW);
             });
 
-            it("can encrypt and decrypt in GCM mode", async function() {
+            it("can encrypt and decrypt in GCM mode", async function () {
                 this.adapter.setAlgorithm(EncryptionAlgorithm.GCM);
                 const encrypted = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
                 const decrypted = await this.adapter.decrypt(encrypted, "test");
                 expect(decrypted).to.equal(ENCRYPTED_SAMPLE_RAW);
             });
 
-            it("auto-detects and updates derivation rounds to match decrypted", async function() {
+            it("auto-detects and updates derivation rounds to match decrypted", async function () {
                 this.adapter.derivationRounds = 5560;
                 const encrypted = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
                 this.adapter.derivationRounds = 1;
@@ -51,7 +43,7 @@ describe("index", function() {
                 expect(this.adapter.derivationRounds).to.equal(5560);
             });
 
-            it("auto-detects and updates algorithm to match decrypted", async function() {
+            it("auto-detects and updates algorithm to match decrypted", async function () {
                 this.adapter.algorithm = EncryptionAlgorithm.GCM;
                 const encrypted = await this.adapter.encrypt(ENCRYPTED_SAMPLE_RAW, "test");
                 this.adapter.algorithm = EncryptionAlgorithm.CBC;
@@ -77,7 +69,7 @@ describe("index", function() {
             //     expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
             // });
 
-            it("supports overriding each individual core function in CBC mode", async function() {
+            it("supports overriding each individual core function in CBC mode", async function () {
                 const functionNames = [
                     "decryptCBC",
                     "deriveKey",
@@ -89,8 +81,9 @@ describe("index", function() {
                     "unpackData",
                     "unpackText"
                 ];
-                const referenceBuffer = new TextEncoder().encode("This is söme text! 北方话")
-                    .buffer;
+                const referenceBuffer = new TextEncoder().encode(
+                    "This is söme text! 北方话"
+                ).buffer;
                 const referenceAdapter = createAdapter();
                 const stubs = {};
                 for (const fnName of functionNames) {
@@ -111,7 +104,7 @@ describe("index", function() {
                 }
             });
 
-            it("supports overriding each individual core function in GCM mode", async function() {
+            it("supports overriding each individual core function in GCM mode", async function () {
                 const functionNames = [
                     "decryptGCM",
                     "deriveKey",
@@ -123,8 +116,9 @@ describe("index", function() {
                     "unpackData",
                     "unpackText"
                 ];
-                const referenceBuffer = new TextEncoder().encode("This is söme text! 北方话")
-                    .buffer;
+                const referenceBuffer = new TextEncoder().encode(
+                    "This is söme text! 北方话"
+                ).buffer;
                 const referenceAdapter = createAdapter();
                 const stubs = {};
                 for (const fnName of functionNames) {

@@ -16,22 +16,22 @@ function createHash() {
     return crypto.createHash("sha1");
 }
 
-describe("index", function() {
-    describe("createAdapter", function() {
-        describe("returned adapter", function() {
-            beforeEach(function() {
+describe("index", function () {
+    describe("createAdapter", function () {
+        describe("returned adapter", function () {
+            beforeEach(function () {
                 this.adapter = createAdapter();
                 this.adapter.derivationRounds = 1000;
             });
 
-            describe("using streams", function() {
+            describe("using streams", function () {
                 [EncryptionAlgorithm.CBC, EncryptionAlgorithm.GCM].forEach(encAlgo => {
-                    describe(`using ${encAlgo.toUpperCase()}`, function() {
-                        beforeEach(function() {
+                    describe(`using ${encAlgo.toUpperCase()}`, function () {
+                        beforeEach(function () {
                             this.adapter.setAlgorithm(encAlgo);
                         });
 
-                        it("can encrypt with streams and decrypt as a buffer", async function() {
+                        it("can encrypt with streams and decrypt as a buffer", async function () {
                             const referenceBuffer = Buffer.from("This is söme text! 北方话");
                             const input = new PassThrough();
                             input.write(referenceBuffer);
@@ -44,7 +44,7 @@ describe("index", function() {
                             expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                         });
 
-                        it("can encrypt as a buffer and decrypt with streams", async function() {
+                        it("can encrypt as a buffer and decrypt with streams", async function () {
                             const referenceBuffer = Buffer.from("This is söme text! 北方话");
                             const encrypted = await this.adapter.encrypt(referenceBuffer, "test");
                             const output = new PassThrough();
@@ -58,7 +58,7 @@ describe("index", function() {
                             expect(decrypted).to.satisfy(data => data.equals(referenceBuffer));
                         });
 
-                        it("can encrypt and decrypt large streams", async function() {
+                        it("can encrypt and decrypt large streams", async function () {
                             // Write to disk
                             const writeHash = hashThrough(createHash);
                             const writePipe = randomBytesReadableStream({ size: TEST_FILE_SIZE })
