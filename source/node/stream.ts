@@ -137,7 +137,7 @@ export function createDecryptStream(adapter: IocaneAdapter, password: string): R
     const output = duplexer(inStream, outStream);
     // Reader
     const processor = new Streamer(inStream);
-    (async function() {
+    (async function () {
         let header: EncryptedPayloadHeader = null,
             footer: EncryptedPayloadFooter = null;
         const contentBorderReference = Buffer.from(getBinaryContentBorder());
