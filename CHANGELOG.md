@@ -1,5 +1,10 @@
 # iocane changelog
 
+## v5.2.0
+_2023-12-09_
+
+ * Dependency updates / audit
+
 ## v5.1.1
 _2021-06-27_
 
