@@ -24,7 +24,7 @@ jobs:
       - name: Formatting
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: 18.x
       - run: npm ci
       - run: npm run test:format
   web-specs:
@@ -37,7 +37,7 @@ jobs:
           node-version: 18.x
         env:
           MOZ_HEADLESS: 1
-      - run: sudo apt install google-chrome-stable firefox
+      - run: sudo apt install google-chrome-stable
       - run: google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
       - run: npm ci
       - run: npm run build:web
