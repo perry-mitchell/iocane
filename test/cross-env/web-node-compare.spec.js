@@ -1,30 +1,42 @@
 const path = require("path");
-const Nightmare = require("nightmare");
+const puppeteer = require("puppeteer");
 const { EncryptionAlgorithm, createAdapter } = require("../../dist/index.node.js");
 
 const TEXT = "Hi there!\nThis is some test text.\n\të ";
 
 const sandboxURL = `file://${path.resolve(__dirname, "./sandbox.html")}`;
 
-const nightmare = Nightmare({
-    executionTimeout: 15000,
-    loadTimeout: 5000,
-    show: false
-});
+async function sleep(ms) {
+    await new Promise(resolve => {
+        setTimeout(() => resolve(), ms);
+    });
+}
 
 describe("environment consistency", function () {
-    beforeEach(async function () {
-        nightmare.on("console", (log, ...args) => {
-            console.log(`[Web] (${log})`, ...args);
+    before(async function () {
+        this.browser = await puppeteer.launch({
+            headless: "new"
         });
-        await nightmare.goto(sandboxURL);
-        await nightmare.wait(1000);
-        await nightmare.inject("js", path.resolve(__dirname, "../../web/index.js"));
-        await nightmare.wait(1000);
     });
 
     after(async function () {
-        await nightmare.end();
+        await this.browser.close();
+    });
+
+    beforeEach(async function () {
+        this.page = await this.browser.newPage();
+        await this.page.setViewport({ width: 1024, height: 768 });
+        await this.page.goto(sandboxURL);
+        await this.page.waitForNetworkIdle();
+        await sleep(500);
+        await this.page.addScriptTag({
+            path: path.resolve(__dirname, "../../web/index.js")
+        });
+        await sleep(500);
+    });
+
+    afterEach(async function () {
+        await this.page.close();
     });
 
     describe("from node to web", function () {
@@ -33,12 +45,9 @@ describe("environment consistency", function () {
                 const encrypted = await createAdapter()
                     .setAlgorithm(EncryptionAlgorithm.CBC)
                     .encrypt(TEXT, "sample-pass");
-                const result = await nightmare.evaluate(function (encrypted, done) {
+                const result = await this.page.evaluate(async function (encrypted) {
                     const { createAdapter } = window.iocane;
-                    createAdapter()
-                        .decrypt(encrypted, "sample-pass")
-                        .then(output => done(null, output))
-                        .catch(done);
+                    return createAdapter().decrypt(encrypted, "sample-pass");
                 }, encrypted);
                 expect(result).to.equal(TEXT);
             });
@@ -47,12 +56,9 @@ describe("environment consistency", function () {
                 const encrypted = await createAdapter()
                     .setAlgorithm(EncryptionAlgorithm.GCM)
                     .encrypt(TEXT, "sample-pass");
-                const result = await nightmare.evaluate(function (encrypted, done) {
+                const result = await this.page.evaluate(async function (encrypted) {
                     const { createAdapter } = window.iocane;
-                    createAdapter()
-                        .decrypt(encrypted, "sample-pass")
-                        .then(output => done(null, output))
-                        .catch(done);
+                    return createAdapter().decrypt(encrypted, "sample-pass");
                 }, encrypted);
                 expect(result).to.equal(TEXT);
             });
@@ -71,13 +77,11 @@ describe("environment consistency", function () {
                 const encrypted = await createAdapter()
                     .setAlgorithm(EncryptionAlgorithm.CBC)
                     .encrypt(this.data, "sample-pass");
-                const result = await nightmare.evaluate(function (encrypted, done) {
+                const result = await this.page.evaluate(async function (encrypted) {
                     const { createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(encrypted);
-                    createAdapter()
-                        .decrypt(data, "sample-pass")
-                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
-                        .catch(done);
+                    const output = await createAdapter().decrypt(data, "sample-pass");
+                    return window.helpers.arrayBufferToBase64(output);
                 }, encrypted.toString("base64"));
                 expect(Buffer.from(result, "base64")).to.satisfy(res => res.equals(this.data));
             });
@@ -86,13 +90,11 @@ describe("environment consistency", function () {
                 const encrypted = await createAdapter()
                     .setAlgorithm(EncryptionAlgorithm.GCM)
                     .encrypt(this.data, "sample-pass");
-                const result = await nightmare.evaluate(function (encrypted, done) {
+                const result = await this.page.evaluate(async function (encrypted) {
                     const { createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(encrypted);
-                    createAdapter()
-                        .decrypt(data, "sample-pass")
-                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
-                        .catch(done);
+                    const output = await createAdapter().decrypt(data, "sample-pass");
+                    return window.helpers.arrayBufferToBase64(output);
                 }, encrypted.toString("base64"));
                 expect(Buffer.from(result, "base64")).to.satisfy(res => res.equals(this.data));
             });
@@ -102,26 +104,22 @@ describe("environment consistency", function () {
     describe("from web to node", function () {
         describe("text", function () {
             it("decrypts AES-CBC from web", async function () {
-                const encrypted = await nightmare.evaluate(function (raw, done) {
+                const encrypted = await this.page.evaluate(async function (raw) {
                     const { EncryptionAlgorithm, createAdapter } = window.iocane;
-                    createAdapter()
+                    return createAdapter()
                         .setAlgorithm(EncryptionAlgorithm.CBC)
-                        .encrypt(raw, "sample-pass")
-                        .then(output => done(null, output))
-                        .catch(done);
+                        .encrypt(raw, "sample-pass");
                 }, TEXT);
                 const decrypted = await createAdapter().decrypt(encrypted, "sample-pass");
                 expect(decrypted).to.equal(TEXT);
             });
 
             it("decrypts AES-GCM from web", async function () {
-                const encrypted = await nightmare.evaluate(function (raw, done) {
+                const encrypted = await this.page.evaluate(async function (raw) {
                     const { EncryptionAlgorithm, createAdapter } = window.iocane;
-                    createAdapter()
+                    return createAdapter()
                         .setAlgorithm(EncryptionAlgorithm.GCM)
-                        .encrypt(raw, "sample-pass")
-                        .then(output => done(null, output))
-                        .catch(done);
+                        .encrypt(raw, "sample-pass");
                 }, TEXT);
                 const decrypted = await createAdapter().decrypt(encrypted, "sample-pass");
                 expect(decrypted).to.equal(TEXT);
@@ -138,14 +136,13 @@ describe("environment consistency", function () {
             });
 
             it("decrypts AES-CBC from web", async function () {
-                const encrypted = await nightmare.evaluate(function (raw, done) {
+                const encrypted = await this.page.evaluate(async function (raw) {
                     const { EncryptionAlgorithm, createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(raw);
-                    createAdapter()
+                    const output = await createAdapter()
                         .setAlgorithm(EncryptionAlgorithm.CBC)
-                        .encrypt(data, "sample-pass")
-                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
-                        .catch(done);
+                        .encrypt(data, "sample-pass");
+                    return window.helpers.arrayBufferToBase64(output);
                 }, this.data.toString("base64"));
                 const decrypted = await createAdapter().decrypt(
                     Buffer.from(encrypted, "base64"),
@@ -155,14 +152,13 @@ describe("environment consistency", function () {
             });
 
             it("decrypts AES-GCM from web", async function () {
-                const encrypted = await nightmare.evaluate(function (raw, done) {
+                const encrypted = await this.page.evaluate(async function (raw) {
                     const { EncryptionAlgorithm, createAdapter } = window.iocane;
                     const data = window.helpers.base64ToArrayBuffer(raw);
-                    createAdapter()
+                    const output = await createAdapter()
                         .setAlgorithm(EncryptionAlgorithm.GCM)
-                        .encrypt(data, "sample-pass")
-                        .then(output => done(null, window.helpers.arrayBufferToBase64(output)))
-                        .catch(done);
+                        .encrypt(data, "sample-pass");
+                    return window.helpers.arrayBufferToBase64(output);
                 }, this.data.toString("base64"));
                 const decrypted = await createAdapter().decrypt(
                     Buffer.from(encrypted, "base64"),
