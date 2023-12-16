@@ -259,6 +259,7 @@ export function createEncryptStream(adapter: IocaneAdapter, password: string): W
         .then(({ iv, keyDerivationInfo }) => {
             const ivHex = iv.toString("hex");
             const header = prepareHeader({
+                derivation: keyDerivationInfo.method,
                 iv: ivHex,
                 salt: keyDerivationInfo.salt,
                 rounds: keyDerivationInfo.rounds,

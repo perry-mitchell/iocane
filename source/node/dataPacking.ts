@@ -1,6 +1,7 @@
 import { getBinarySignature, getBinaryContentBorder } from "../shared/signature";
 import { SIZE_ENCODING_BYTES } from "../symbols";
 import {
+    DerivationMethod,
     EncryptedBinaryComponents,
     EncryptedComponentsBase,
     EncryptedPayloadFooter,
@@ -51,8 +52,9 @@ export function prepareFooter(encryptedComponents: EncryptedPayloadFooter): Buff
 
 export function prepareHeader(encryptedComponents: EncryptedPayloadHeader): Buffer {
     const signature = Buffer.from(getBinarySignature());
-    const { iv, salt, rounds, method } = encryptedComponents;
+    const { derivation, iv, salt, rounds, method } = encryptedComponents;
     const componentsPrefix = JSON.stringify({
+        derivation,
         iv,
         salt,
         rounds,
@@ -103,10 +105,17 @@ export function unpackEncryptedData(encryptedContent: Buffer): EncryptedBinaryCo
     const footerData = encryptedContent.slice(offset, offset + footerSize);
     offset += footerSize;
     // Decode
-    const { iv, salt, rounds, method } = JSON.parse(headerData.toString("utf8"));
+    const {
+        derivation = DerivationMethod.PBKDF2_SHA256,
+        iv,
+        salt,
+        rounds,
+        method
+    } = JSON.parse(headerData.toString("utf8"));
     const { auth } = JSON.parse(footerData.toString("utf8"));
     return {
         content: contentBuff,
+        derivation,
         iv,
         salt,
         auth,
