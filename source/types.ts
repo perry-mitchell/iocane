@@ -4,11 +4,17 @@ export type BufferLike = Buffer | ArrayBuffer;
 
 export type DataLike = string | Buffer | ArrayBuffer;
 
+export enum DerivationMethod {
+    PBKDF2_SHA256 = 1,
+    PBKDF2_SHA512 = 2
+}
+
 export interface DerivedKeyInfo {
-    salt: string;
-    key: Buffer | ArrayBuffer;
     hmac: Buffer | ArrayBuffer | null;
+    key: Buffer | ArrayBuffer;
+    method: DerivationMethod;
     rounds: number;
+    salt: string;
 }
 
 export interface EncryptedBinaryComponents extends EncryptedComponentsBase {
@@ -26,10 +32,11 @@ export interface EncryptedPayloadFooter {
 }
 
 export interface EncryptedPayloadHeader {
+    derivation: DerivationMethod;
     iv: string;
-    salt: string;
-    rounds: number;
     method: EncryptionAlgorithm;
+    rounds: number;
+    salt: string;
 }
 
 export enum EncryptionAlgorithm {

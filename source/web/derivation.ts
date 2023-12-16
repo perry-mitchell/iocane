@@ -5,7 +5,7 @@ import {
     stringToArrayBuffer
 } from "./tools";
 import { HMAC_KEY_SIZE, PASSWORD_KEY_SIZE } from "../symbols";
-import { DerivedKeyInfo } from "../types";
+import { DerivationMethod, DerivedKeyInfo } from "../types";
 
 function checkBrowserSupport() {
     if (!window.TextEncoder || !window.TextDecoder) {
@@ -28,6 +28,7 @@ export async function deriveKeyFromPassword(
     if (!rounds || rounds <= 0) {
         throw new Error("Failed deriving key: Rounds must be greater than 0");
     }
+    const method = DerivationMethod.PBKDF2_SHA256;
     const bits = generateHMAC ? (PASSWORD_KEY_SIZE + HMAC_KEY_SIZE) * 8 : PASSWORD_KEY_SIZE * 8;
     const derivedKeyData = await pbkdf2(password, salt, rounds, bits);
     const derivedKeyHex = arrayBufferToHexString(derivedKeyData);
@@ -36,12 +37,13 @@ export async function deriveKeyFromPassword(
         ? hexStringToArrayBuffer(derivedKeyHex.substr(0, dkhLength / 2))
         : hexStringToArrayBuffer(derivedKeyHex);
     return {
-        salt: salt,
-        key: keyBuffer,
-        rounds: rounds,
         hmac: generateHMAC
             ? hexStringToArrayBuffer(derivedKeyHex.substr(dkhLength / 2, dkhLength / 2))
-            : null
+            : null,
+        key: keyBuffer,
+        method,
+        rounds: rounds,
+        salt
     };
 }
 
